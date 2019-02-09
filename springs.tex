@@ -1,0 +1,110 @@
+\pgfkeys{
+/springs/.is family, /springs,
+default/.style={
+startx = 0cm,
+starty = 0cm,
+start rigid length = 2cm,
+end rigid length = 1.5cm,
+rigid bar length = 1cm,
+rigid end offset ratio = 0.05,
+spring length = 2cm,
+spring zigzag segment length = 0.2cm,
+rotational spring diameter = 0.0005cm,
+rotational spring cycle number = 4,
+horizontal spring pre length = 0.2cm,
+horizontal spring end length = 0.3cm,
+vertical spring pre length ratio = 0.25,
+vertical spring tick ratio = 0.4},
+startx/.store in = \startx,
+starty/.store in = \starty,
+start rigid length/.store in = \strl,
+end rigid length/.store in = \enrl,
+rigid bar length/.store in = \rbl,
+rigid end offset ratio/.store in = \reor,
+spring length/.store in = \splen,
+spring zigzag segment length/.store in = \segl,
+rotational spring diameter/.store in = \rsdi,
+rotational spring cycle number/.store in = \rscn,
+horizontal spring pre length/.store in = \hspl,
+horizontal spring end length/.store in = \hsel,
+vertical spring pre length ratio/.store in = \vsplr,
+vertical spring tick ratio/.store in = \vstr,
+}
+\newcommand{\springs}[1][]{
+\pgfkeys{/springs, default, #1}
+\tikzmath{
+coordinate \c;
+real \startx, \starty;
+real \strl, \rbl, \enrl, \splen, \segl, \reor;
+real \rsdi, \rscn, \rspl, \rsel, \rssl;
+real \vsplr, \vstr, \hspl, \hsel;
+real \hssl, \vstu, \vspl, \vsel, \vssl, \rssx, \rssxx, \rstrd;
+%Conversion all units to the unit pt
+\startx = \startx;
+\starty = \starty;
+\strl=\strl;
+\rbl=\rbl;
+\enrl=\enrl;
+\splen=\splen;
+\segl=\segl;
+\reor=\reor;
+\rsdi=\rsdi;
+\rscn=\rscn;
+\hspl=\hspl;
+\hsel=\hsel;
+\vsplr=\vsplr;
+\vstr=\vstr;
+%End conversion, All values are now in pt units
+\hssl = \segl;           %horizontal spring segment length
+\vstu = \vstr*\rbl;      %vertical spring tick up
+\vspl = \vsplr*\vstu;    %vertical spring pre length
+\vsel = \vspl;           %vertical spring end length
+\vssl = \segl;           %vertical spring segment length (pt)
+\rssx = \strl+\splen/2; 
+\rssxx = \rssx + \rscn*2*pi*\rscn*2*pi*\rsdi;
+\rstrd = \strl+\splen-\rssxx; %rotational spring to right rigid bar distance
+\c1 = (0,0);
+\c2 = (\strl pt,0 pt);
+\c3 = (\strl pt,\rbl pt);
+\c4 = (\strl pt,-\rbl pt);
+\c5 = (\strl+\splen pt,0 pt);
+\c6 = (\strl+\splen+\enrl pt,0 pt);
+\c7 = (\strl+\splen pt,\rbl pt);
+\c8 = (\strl+\splen pt,-\rbl pt);
+}
+\begin{scope}[x=1pt, y=1pt, xshift = \startx, yshift=\starty]; % Draw everything in pt units
+\tikzset{hspring/.style={thick,decorate,decoration={zigzag,pre length=\hspl pt,post length=\hsel pt,segment length=\hssl pt}}}
+\tikzset{vspring/.style={thick,decorate,decoration={zigzag,pre length=\vspl pt,post length=\vsel pt,segment length=\vssl pt}}}
+\draw [line width=4pt] (\c1) -- node[anchor=south] {\small $l_1$}(\c2) ;
+\draw [line width=4pt] (\c3) -- (\c4);
+\draw [line width=4pt] (\c5) -- node[anchor=south] {\small $l_2$}(\c6);
+\draw [line width=4pt] (\c7) -- (\c8);
+\draw [hspring] (\c3) ++(0,-\rbl*\reor) -- node[anchor=south] {\small $k_x$}++(\splen,0);
+\draw [thick] (\c2) -- ++(\splen/4,0) -- ++(0,\vstu) -- ++(\splen/4,0);
+\draw [vspring] (\c2) ++(\splen/4,0) ++(0,\vstu) ++(\splen/4,0) -- node[very near end, left] {\small $k_y$}++(0,-\vstu*2);
+\draw [thick] (\c2) ++(\splen/2,-\vstu) -- ++(\splen/4,0) -- ++(0,\vstu) -- ++(\splen/4,0);
+\draw [thick,domain=0:\rscn*2*pi,variable=\t,smooth,samples=75,xshift=\rssx,yshift=-\rbl*(1-\reor)] plot ({\t r}: {\rsdi*\t*\t});
+\draw [thick](\c4) ++(0,\rbl*\reor) -- node[near end, below] {\small $k_\theta$}++(\splen/2,0);
+\draw [thick](\rssxx,-\rbl*(1-\reor) -- ++(\rstrd,0);
+%\draw [->](\strl+\splen+\enrl+1.0,0) -- +(0.8cm,0) node[near end, above]{\small $x$};
+%\draw [->](0,1.2 cm) -- +(0,0.8 cm) node[near end, left]{\small $y$};
+\end{scope}
+}
+
+%\begin{tikzpicture}
+%\springs[startx = 2cm,
+%starty = 3cm,
+%start rigid length = 1cm,
+%end rigid length = 1.5cm,
+%rigid bar length = 1cm,
+%rigid end offset ratio = 0.2,
+%spring length = 2cm,
+%spring zigzag segment length = 0.2cm,
+%rotational spring diameter = 0.0004cm,
+%rotational spring cycle number = 4,
+%horizontal spring pre length = 0.3cm,
+%horizontal spring end length = 0.3cm,
+%vertical spring pre length ratio = 0.5,
+%vertical spring tick ratio = 0.5]
+%\draw (0,0) -- (1cm,1cm);
+%\end{tikzpicture}

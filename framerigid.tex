@@ -1,0 +1,66 @@
+\pgfkeys{
+ /framerigid/.is family, /framerigid,
+  default/.style={
+  startx = 0cm,
+  starty = 0cm,
+  endx = 3cm,
+  endy = 3cm,
+  rigid start = 0.5cm,
+  rigid end = 0.5cm,
+  tick length = 0.1cm,
+  tick width = 0.5pt},
+  startx/.store in =\startx,
+  starty/.store in =\starty,
+  endx/.store in =\endx,
+  endy/.store in =\endy,
+  rigid start/.store in =\rgds,
+  rigid end/.store in =\rgde,
+  tick length/.store in =\tic,
+  tick width/.store in =\ticklw
+}
+
+
+\newcommand{\framerigid}[1][]{
+\pgfkeys{/framerigid, default, #1}
+
+\tikzmath{
+int \i;
+real \startx, \starty, \endx, \endy;
+real \len, \dxx, \dyy;
+real \dx1, \dx2, \dx3, \dx4, \dx5, \dx6;
+real \dy1, \dy2, \dy3, \dy4, \dy5, \dy6;
+real \x1, \x2, \x3, \x4, \x5, \x6;
+real \y1, \y2, \y3, \y4, \y5, \y6;
+real \r1, \r2, \r3, \r4, \r5, \r6
+real \rgds, \rgde, \radi;
+real \angg;
+real \tic, \tickdx, \tickdy, \ticklw;
+\dxx = (\endx-\startx)/28.45274;
+\dyy = (\endy-\starty)/28.45274;
+\len = ((\dxx)^2+(\dyy)^2)^0.5;
+\r1 = \rgds/28.45274/\len;
+\r2 = 1-(\rgde/28.45274/\len);
+\dx1 = \r1*\dxx;
+\dx2 = \r2*\dxx;
+\dy1 = \r1*\dyy;
+\dy2 = \r2*\dyy;
+\x1 = \startx/28.45274+\dx1;
+\x2 = \startx/28.45274+\dx2;
+\y1 = \starty/28.45274+\dy1;
+\y2 = \starty/28.45274+\dy2;
+%print {$\x1 -$};
+%print {$\starty -$};
+%print {$\y1 -$};
+%print {$ang = \angg -$};
+%print {$dyy = \dyy -$};
+%print {$dxx = \dxx -$};
+\angg = atan2(\dyy,\dxx);
+\tickdx = \tic/28.45274*sin(\angg);
+\tickdy = \tic/28.45274*cos(\angg);
+}
+\draw [line width = 2pt] (\startx,\starty) -- (\x1,\y1);
+\draw [line width = 1pt] (\x1,\y1) -- (\x2,\y2);
+\draw [line width = 2pt] (\x2,\y2) -- (\endx,\endy);
+\foreach \i in {1,2}{
+\draw [line width = {\ticklw}] (\x{\i}-\tickdx,\y{\i}+\tickdy) -- (\x{\i}+\tickdx,\y{\i}-\tickdy);}
+}
