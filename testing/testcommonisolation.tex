@@ -21,24 +21,57 @@
 
 \begin{document}
 \begin{tikzpicture}
-\framestructure[%
+\commonisolation[%
+  startX = 0cm,
+  startY = 0cm,
+  support width = 0.5cm,
+  support body = 11.5cm,
+  support height = 0.15cm,
+  support line thickness = 1.5pt,
+  number of isolators = 8,
+  isolator width = 0.3cm,
+  isolator thickness = 0.15cm,
+  isolator line thickness = 1.5pt,
+  foundation thickness = 0.5cm,
+  foundation side width = 1cm,]
+  
+ \framestructure[%
 number of storys=3,
 number of bays=2,
 story height=1cm,
-bay width=2cm,
+bay width=1.5cm,
 startX=0cm,
 startY=0cm,
 frame line thickness = 1.5pt,
-foundation side width = 0.75cm,
-support width = 0.5cm,
-support height = 0.2cm,
-support line thickness = 1.0pt,
-number of isolators = 4,
-isolator width = 0.4cm,
-isolator thickness = 0.2cm,
-isolator line thickness = 1.5pt,
-foundation thickness = 0.3cm,
-show supports = 4,
+show supports = 0,
+show mass = 0,
+show dof=0,
+show axes=0,
+show piles=0,]
+
+\framestructure[%
+number of storys=4,
+number of bays=2,
+story height=1cm,
+bay width=1.5cm,
+startX=3.5cm,
+startY=0cm,
+frame line thickness = 1.5pt,
+show supports = 0,
+show mass = 0,
+show dof=0,
+show axes=0,
+show piles=0,]
+
+\framestructure[%
+number of storys=2,
+number of bays=3,
+story height=1cm,
+bay width=1.5cm,
+startX=7.0cm,
+startY=0cm,
+frame line thickness = 1.5pt,
+show supports = 0,
 show mass = 0,
 show dof=0,
 show axes=0,

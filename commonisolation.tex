@@ -1,0 +1,80 @@
+\pgfkeys{
+ /commonisolation/.is family, /commonisolation,
+  default/.style = {
+  startX = 0cm,
+  startY = 0cm,
+  support width = 1cm,
+  support body = 5cm,
+  support height = 0.15cm,
+  support line thickness = 1.5pt,
+  number of isolators = 4,
+  isolator width = 0.3cm,
+  isolator thickness = 0.2cm,
+  isolator line thickness = 1.5pt,
+  foundation thickness = 0.5cm,
+  foundation side width = 1cm,},
+  startX/.store in = \startx,
+  startY/.store in = \starty,
+  support width/.store in = \supportwidth,
+  support body/.store in = \supportbody,
+  support height/.store in = \supportheight,
+  support line thickness/.store in = \baselinet,
+  number of isolators/.store in = \numberofisolators,
+  isolator width/.store in = \isolationwidth,
+  isolator thickness/.store in = \isolationdepth,
+  isolator line thickness/.store in = \isolinet,
+  foundation thickness/.store in = \foundationdepth,
+  foundation side width/.store in = \foundsidew,}
+
+\newcommand{\commonisolation}[1][]{
+\pgfkeys{/commonisolation, default, #1}
+\tikzmath{
+real \startx, \starty;
+int \numberofisolators, \kiso;
+real \supportwidth, \supportbody, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \xiso, \isospace;
+real \baselinet, \isolinet;
+real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
+real \foundboty, \foundtopy, \foundstartx, \foundendx;
+%Conversion all units to the unit pt
+\startx = \startx;
+\starty = \starty;
+\supportwidth = \supportwidth;
+\supportbody =  \supportbody;
+\supportheight = \supportheight;
+\baselinet = \baselinet;
+\isolationwidth = \isolationwidth;
+\isolationdepth = \isolationdepth;
+\isolinet = \isolinet;
+\foundationdepth = \foundationdepth;
+\foundsidew = \foundsidew;
+%End conversion, All values are now in pt units.
+\rigbasestartx = -\supportwidth;
+\rigbaseendx = \supportbody+\supportwidth;
+\isoboty = -\supportheight-\baselinet/2-\isolationdepth;
+\isotopy = -\supportheight-\baselinet/2;
+\foundboty = -\supportheight-\baselinet-\isolationdepth-\foundationdepth;
+\foundtopy = -\supportheight-\baselinet-\isolationdepth;
+\foundstartx = -\foundsidew;
+\foundendx = +\supportbody+\foundsidew;
+%Some isolator properties
+\isospace = (\supportbody)/(\numberofisolators-1);
+for \kiso in {1,...,{\numberofisolators}}{
+\xiso{\kiso} = (\kiso-1)*\isospace;
+};
+}
+\begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
+
+\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);
+
+\foreach \j in {1,...,{\numberofisolators}}
+{\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
+(\xiso{\j},0) +(-\isolationwidth/2,\isoboty) rectangle +(\isolationwidth/2,\isotopy);}
+
+\fill [fill=gray]
+(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
+\draw [line width = \baselinet] (\foundstartx, \foundtopy) -- (\foundendx, \foundtopy);
+
+
+\end{scope}
+}
+
