@@ -22,7 +22,8 @@
 	x axis length=0.5cm,
 	y axis length=0.5cm,
 	drift distance=0.4cm,
-	drift curve ratio=0.65,
+	drift curve ratio x=0.65,
+	drift curve ratio y=0.65,
 	base slab drift=1.1cm,
 	foundation drift=2cm,
 	arrow tip length=3pt,
@@ -36,7 +37,8 @@
 	text for the story properties={$k_i,c_i$},
 	story dof arrow tick = 6pt,
 	vertical dof ref line start ratio=0.6,
-	show superstructure dofs = 1},
+	show superstructure dofs = 1,
+	show ground drift = 1,},
 	number of storys/.store in = \nstory,
 	story height/.store in = \storyheight,
 	startX/.store in = \startx,
@@ -59,7 +61,8 @@
 	x axis length/.store in=\axeslenX,
 	y axis length/.store in=\axeslenY,
 	drift distance/.store in=\driftdist,
-	drift curve ratio/.store in=\driftcurveratio,
+	drift curve ratio x/.store in=\driftcurveratiox,
+	drift curve ratio y/.store in=\driftcurveratioy,
 	base slab drift/.store in=\basedriftdist,
 	foundation drift/.store in=\foundationdrift,
 	arrow tip length/.store in=\arrlen,
@@ -73,7 +76,8 @@
 	text for the story properties/.store in=\storyproptext,
 	story dof arrow tick/.store in=\storydofendtick,
 	vertical dof ref line start ratio/.store in=\vertreflineratio,
-	show superstructure dofs/.store in=\showsuperstructuredof}
+	show superstructure dofs/.store in=\showsuperstructuredof,
+	show ground drift/.store in=\showgrounddrift,}
 \newcommand{\lumpedmass}[1][]{
 \pgfkeys{/lumpedmass, default, #1}
 \tikzmath{
@@ -85,11 +89,12 @@ real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
 int \showmass;
 real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
-real \driftdist, \driftcurve, \driftcurveratio;
+real \driftdist, \driftcurve, \driftcurveratioy, \driftcurveratiox;
 real \arrlen, \arrwid;
 int \showsuperstructuredof, \doftextstory, \doftextfloor;
 real \grdofarrstartx, \grdofarrstarty, \grdofarrendx, \grdofarrendy, \grdoftickboty, \grdofticktopy;
 real \vertrefineratio;
+int \showgrounddrift;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \startx = \startx;
@@ -103,18 +108,19 @@ real \vertrefineratio;
 \baselinet = \baselinet;
 \isolinet = \isolinet;
 \massrad = \massrad;
-\baseslabw=\baseslabw;
-\baseslabh=\baseslabh;
-\foundationw=\foundationw;
-\axeslenX=\axeslenX;
-\axeslenY=\axeslenY;
-\driftdist=\driftdist;
-\driftcurveratio=\driftcurveratio;
-\basedriftdist=\basedriftdist;
-\foundationdrift=\foundationdrift;
-\arrlen=\arrlen;
-\arrwid=\arrwid;
-\doftextstory=\doftextstory;
+\baseslabw = \baseslabw;
+\baseslabh = \baseslabh;
+\foundationw = \foundationw;
+\axeslenX = \axeslenX;
+\axeslenY = \axeslenY;
+\driftdist = \driftdist;
+\driftcurveratiox = \driftcurveratiox;
+\driftcurveratioy = \driftcurveratioy;
+\basedriftdist = \basedriftdist;
+\foundationdrift = \foundationdrift;
+\arrlen = \arrlen;
+\arrwid = \arrwid;
+\doftextstory = \doftextstory;
 \storydofendtick = \storydofendtick;
 %End conversion, All values are now in pt units.
 \axissp = 0.2cm;
@@ -142,13 +148,12 @@ for \jjj in {1,...,{\ncol}}{
 \foundtopy = -\baseslabh-\baselinet-\isot;
 \foundstartx = \x1-\foundationw/2;
 \foundendx = \x{\ncol}+\foundationw/2;
-if \showss==4 then {\grdofarrstartx = 0;
-\grdofarrstarty = \foundboty+\foundt*0.5;
+if \showss==0 then {\grdofarrstartx = 0;
+\grdofarrstarty = -\suph/2;
 \grdofarrendx = \foundationdrift;
-\grdofarrendy = \foundboty+\foundt*0.5;
-\grdoftickboty = \foundboty+\foundt*0.25;
-\grdofticktopy = \foundboty+\foundt*0.25 + \foundt*0.5;}
-else{\basedriftdist=0;};
+\grdofarrendy = -\suph/2;
+\grdoftickboty = -\suph*0.75;
+\grdofticktopy = -\suph*0.25;} else {};
 if \showss==1 then {\grdofarrstartx = 0;
 \grdofarrstarty = -\suph/2;
 \grdofarrendx = \foundationdrift;
@@ -161,6 +166,13 @@ if \showss==2 || \showss==3   then {\grdofarrstartx = 0;
 \grdofarrendy = -\baseslabh/2;
 \grdoftickboty = -\baseslabh*0.75;
 \grdofticktopy = -\baseslabh*0.25;} else {};
+if \showss==4 then {\grdofarrstartx = 0;
+\grdofarrstarty = \foundboty+\foundt*0.5;
+\grdofarrendx = \foundationdrift;
+\grdofarrendy = \foundboty+\foundt*0.5;
+\grdoftickboty = \foundboty+\foundt*0.25;
+\grdofticktopy = \foundboty+\foundt*0.25 + \foundt*0.5;}
+else{\basedriftdist=0;};
 %%%%%Axes%%%%%
 \Xaxesstarty = \y{1};
 \Yaxesstartx = \x{1};
@@ -169,7 +181,7 @@ if equal(\showss,0) then {\Xaxesstartx = \x{\ncol}+\axissp;}         else {\Xaxe
 if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxesstartx = \x{\ncol}+\axissp+\supw;};
 %%%%%%%Deflected Shape%%%%%%%%%%%%%%%%%
 \driftdist = \driftdist;
-\driftcurv = \driftcurveratio*\storyheight;
+\driftcurv = \driftcurveratioy*\storyheight;
 %%%%%%%DOFs%%%%%%%%%%
 \doftextstory = \doftextstory;
 \doftextfloor = \doftextstory+1;
@@ -260,10 +272,14 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 }{}
 
 
-%Support Conditions
+%%%%%%%%%%%%%%%%%%%%%Support Conditions
+
+%%%% Support Type = 0
 
 \ifthenelse{\showss=0}{
 }{}
+
+%%%% Support Type = 1
 
 \ifthenelse{\showss=1}{
 \foreach \jjj in {1,...,{\ncol}}
@@ -273,6 +289,8 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 }
 }{}
 
+%%%% Support Type = 2
+
 \ifthenelse{\showss=2}{
 \foreach \jjj in {1,...,{\ncol}}
 {
@@ -281,11 +299,15 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 }
 }{}
 
+%%%% Support Type = 3
+
 \ifthenelse{\showss=3}{
 \foreach \jjj in {1,...,{\ncol}}
 {\fill [fill=gray, draw=black, line width = \baselinet]
 (\rigbasestartx, 0) rectangle (\rigbaseendx,-\baseslabh);}
 }{}
+
+%%%% Support Type = 4
 
 \ifthenelse{\showss=4}{
 
@@ -301,7 +323,12 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 node[above=-2pt, xshift =-\baseslabw/4, midway]{\isodoftext}(0,-\baseslabh/2);
 }{}
 
-% Super Structure DOF Arrows
+
+
+%%%%%%%%%%%%%%%%% Super Structure DOF Arrows
+
+%%%%% SuperStructure DOF = 1
+
 \ifthenelse{\showsuperstructuredof=1}{
 \foreach \iii in {2,...,{\nlev}}{
 
@@ -321,6 +348,8 @@ node[above=-2pt, xshift =-\baseslabw/4, midway]{\isodoftext}(0,-\baseslabh/2);
 	\draw (0,\vertrefstart) -- (0, \y{\nlev}+\massrad+\storydofendtick*1.5);   %Vertical reference line for the DOFss
 }{}
 
+%%%%% SuperStructure DOF = 2
+
 \ifthenelse{\showsuperstructuredof=2}{
 
 	\ifthenelse{\doftextfloor=\nlev}{
@@ -334,11 +363,13 @@ node[above=-2pt, xshift =-\baseslabw/4, midway]{\isodoftext}(0,-\baseslabh/2);
 		\draw [arrowbe] (\x{1},\y{\doftextfloor}+\storydofshift) -- (\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\storydofshift); %story DOF arrows
 		\draw (\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\storydofshift-\storydofendtick/2) --
 		(\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\storydofshift+\storydofendtick/2); %Story DOF end tick
-		\draw (0,\vertrefstart) -- (0, \y{\doftextfloor}+\storydofshift+\storydofendtick/2);   %Vertical reference line for the DOFss
+		\draw (0,\vertrefstart) -- (0, \y{\doftextfloor}+\storydofshift+\storydofendtick/2);   %Vertical reference line for the DOFs
 	}
 }{}
 
-%Place the DOF Text to the selected story
+
+%%%%%%%%%%%%%%%%%% Place the DOF Text to the selected story
+
 \ifthenelse{\doftextstory=\nstory}{
 \path [line width=0] (\x{1},\y{\useeval{\doftextstory+1}}+\massrad+\storydofendtick) --
 node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval{\doftextstory+1}}+\massrad+\storydofendtick);   %DOF text
@@ -348,10 +379,10 @@ node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval
 node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval{\doftextstory+1}}+\storydofshift);   %DOF text
 }
 
-
 \end{scope}
 
-%Foundation
+%%%%%%%%%%%%%%%%%  Foundation
+
 \ifthenelse{\showss=4}{
 \fill [fill=white!75!black]
 (\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
@@ -361,17 +392,23 @@ node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval
 
 \end{scope}
 
-%% Ground DOF
+%%%%%%%%%%%%%%%%  Ground DOF
+
+\ifthenelse{\showgrounddrift=1}{
 \draw (0,\grdoftickboty) --  (0,\grdofticktopy);  %Vertical tick line for ground DOF
 \draw [arrowbe] (\grdofarrstartx,\grdofarrstarty) --
 node[above=-2pt, midway, xshift=1pt]{\grounddoftext}  (\grdofarrendx,\grdofarrendy);  % Ground DOF arrow
 \draw (\grdofarrendx,\grdoftickboty) --  (\grdofarrendx,\grdofticktopy);  %Vertical tick line for ground DOF
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+}{}
 
-%Show axes
+
+%%%%%%%%%%%%%%%  Show axes
+
 \ifthenelse{\showaxes=1}{
 \draw [{->}] (\Xaxesstartx,\Xaxesstarty) -- +(\axeslenX,0) node[above]{$X$};
 \draw [{->}] (\Yaxesstartx,\Yaxesstarty) -- +(0,\axeslenY) node[right]{$Y$};
 }{}
+
+
 \end{scope}
 }
