@@ -181,11 +181,12 @@ if equal(\showss,0) then {\Xaxesstartx = \x{\ncol}+\axissp;}         else {\Xaxe
 if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxesstartx = \x{\ncol}+\axissp+\supw;};
 %%%%%%%Deflected Shape%%%%%%%%%%%%%%%%%
 \driftdist = \driftdist;
-\driftcurv = \driftcurveratioy*\storyheight;
+\driftcurvy = \driftcurveratioy*\storyheight;
+\driftcurvx = \driftcurveratiox*\driftdist;
 %%%%%%%DOFs%%%%%%%%%%
 \doftextstory = \doftextstory;
 \doftextfloor = \doftextstory+1;
-\vertrefstart = \vertreflineratio*\driftcurv;
+\vertrefstart = \vertreflineratio*\driftcurvy;
 \storydofshift = \vertrefstart;
 }
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
@@ -260,7 +261,7 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 %Deflected Shape
 \foreach \iii in {2,...,{\nlev}}{
 \draw [line width = \framelinet, gray] (\x{1}+\driftdist*\useeval{\iii-2},\usevar\y{\iii-1})
-..controls++(0,\driftcurv) and ++(0,-\driftcurv)..(\x{1}+\driftdist*\useeval{\iii-1},\usevar\y{\iii});
+..controls++(\driftcurvx,\driftcurvy) and ++(-\driftcurvx,-\driftcurvy)..(\x{1}+\driftdist*\useeval{\iii-1},\usevar\y{\iii});
 }
 
 % Show Mass
