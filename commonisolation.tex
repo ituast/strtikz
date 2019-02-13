@@ -13,6 +13,7 @@
   isolator line thickness = 1.5pt,
   isolator drift=1cm,
   show isolation drift=0,
+  isolator number to show drift=1,
   foundation thickness = 0.5cm,
   foundation side width = 1cm,
   mass text for slab = $m_\text{b}$,
@@ -33,6 +34,7 @@
   isolator line thickness/.store in = \isolinet,
   isolator drift/.store in = \isolationdrift,
   show isolation drift/.store in = \showisodrift,
+  isolator number to show drift/.store in = \isonumberdrift,
   foundation thickness/.store in = \foundationdepth,
   foundation side width/.store in = \foundsidew,
   mass text for slab/.store in = \masstextslab,
@@ -47,7 +49,7 @@
 \pgfkeys{/commonisolation, default, #1}
 \tikzmath{
 real \startx, \starty;
-int \numberofisolators, \kiso, \showmasstext;
+int \numberofisolators, \kiso, \showmasstext, \isonumberdrift;
 real \supportsidewidth, \supportbody, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \xiso, \isospace;
 real \baselinet, \isolinet;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
@@ -111,12 +113,14 @@ for \kiso in {1,...,{\numberofisolators}}{\xiso{\kiso} = (\kiso-1)*\isospace;};
 {\ifthenelse{\showisodrift=1}{\filldraw [fill = white!80!black, draw=black, line width=\isolinet, line join=bevel]
 (\xiso{\j}-\isolationdrift-\isolationwidth/2,\isoboty) -- ++(\isolationwidth,0)
 -- ++(\isolationdrift,\isolationdepth) -- ++(-\isolationwidth,0) -- cycle;
+\ifthenelse{\j=\isonumberdrift}{
 \draw (\xiso{\j}-\isolationdrift,\isoboty+2pt) -- ++(0,-\foundationdepth-10pt);
 \draw (\xiso{\j},\isotopy+2pt) -- ++(0,-\isolationdepth-\foundationdepth-10pt);
 \draw [arrowbe] (\xiso{\j}-\isolationdrift,\isoboty-\foundationdepth-6pt) --
-node[below=-2pt, midway]{\isodrifttext}  ++(\isolationdrift,0);}
+node[inner sep=2pt, anchor=north, midway]{\isodrifttext}  ++(\isolationdrift,0);}{}
+} %%% If deflected shapes of isolators to be shown
 {\filldraw [fill = white!20!black, draw=black, line width=\isolinet, line join=bevel]
-(\xiso{\j},0) +(-\isolationwidth/2,\isoboty) rectangle +(\isolationwidth/2,\isotopy);}
+(\xiso{\j},0) +(-\isolationwidth/2,\isoboty) rectangle +(\isolationwidth/2,\isotopy);} %%% If undeflected shapes of isolators to be shown.
 }
 
 
