@@ -21,6 +21,7 @@
 
 \begin{document}
 \begin{tikzpicture}
+
 \commonisolation[%
 startX = 0cm,
 startY = 0cm,
@@ -32,12 +33,19 @@ number of isolators = 8,
 isolator width = 0.5cm,
 isolator thickness = 0.2cm,
 isolator line thickness = 1pt,
+isolator drift=0.5cm,
+isolator number to show drift=1,
+show isolation drift=1,
 foundation thickness = 0.3cm,
 foundation side width = 1.3cm,
 mass text for slab = $m_\text{b}$,
-text location for mass=right,
-show mass text=0,]
-  
+text location for mass=left,
+show mass text=1,
+arrow tip length=3pt,
+arrow tip width=2pt,
+isolation drift text=$x_\text{b}$,]
+
+ 
 \framestructure[%
 number of storys=3,
 number of bays=2,
