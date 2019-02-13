@@ -22,20 +22,23 @@
 \begin{document}
 \begin{tikzpicture}
 \commonisolation[%
-  startX = 0cm,
-  startY = 0cm,
-  support width = 0.5cm,
-  support body = 11.5cm,
-  support height = 0.15cm,
-  support line thickness = 1.5pt,
-  number of isolators = 8,
-  isolator width = 0.3cm,
-  isolator thickness = 0.15cm,
-  isolator line thickness = 1.5pt,
-  foundation thickness = 0.5cm,
-  foundation side width = 1cm,]
+startX = 0cm,
+startY = 0cm,
+support width = 0.5cm,
+support body = 11.5cm,
+support height = 0.2cm,
+support line thickness = 1.0pt,
+number of isolators = 8,
+isolator width = 0.5cm,
+isolator thickness = 0.2cm,
+isolator line thickness = 1pt,
+foundation thickness = 0.3cm,
+foundation side width = 1.3cm,
+mass text for slab = $m_\text{b}$,
+text location for mass=right,
+show mass text=0,]
   
- \framestructure[%
+\framestructure[%
 number of storys=3,
 number of bays=2,
 story height=1cm,
@@ -76,5 +79,6 @@ show mass = 0,
 show dof=0,
 show axes=0,
 show piles=0,]
+
 \end{tikzpicture}
 \end{document}

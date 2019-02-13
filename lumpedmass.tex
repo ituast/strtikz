@@ -7,7 +7,7 @@
 	frame line thickness = 1pt,
 	support width = 0.3cm,
 	support height = 0.15cm,
-	support line thickness = 1.5pt,
+	support line thickness = 1.0pt,
 	show supports = 1,
 	isolator width = 0.3cm,
 	isolator thickness = 0.2cm,
@@ -21,6 +21,7 @@
 	foundation width=1cm,
 	x axis length=0.5cm,
 	y axis length=0.5cm,
+	show deflected shape = 1,
 	drift distance=0.4cm,
 	drift curve ratio x=0.65,
 	drift curve ratio y=0.65,
@@ -35,6 +36,7 @@
 	text for the story mass=$m_i$,
 	text for the base slab mass=$m_b$,
 	text for the story properties={$k_i,c_i$},
+	text location for mass and story properties=left,
 	story dof arrow tick = 6pt,
 	vertical dof ref line start ratio=0.6,
 	show superstructure dofs = 1,
@@ -60,6 +62,7 @@
 	foundation width/.store in=\foundationw,
 	x axis length/.store in=\axeslenX,
 	y axis length/.store in=\axeslenY,
+	show deflected shape/.store in=\showdeflectedshape,
 	drift distance/.store in=\driftdist,
 	drift curve ratio x/.store in=\driftcurveratiox,
 	drift curve ratio y/.store in=\driftcurveratioy,
@@ -74,6 +77,7 @@
 	text for the story mass/.store in=\storymasstext,
 	text for the base slab mass/.store in=\basemasstext,
 	text for the story properties/.store in=\storyproptext,
+	text location for mass and story properties/.store in=\massproploc,
 	story dof arrow tick/.store in=\storydofendtick,
 	vertical dof ref line start ratio/.store in=\vertreflineratio,
 	show superstructure dofs/.store in=\showsuperstructuredof,
@@ -87,7 +91,7 @@ real \supw, \suph, \isow, \isot, \foundt, \massrad;
 real \axissp, \framelinet, \baselinet, \isolinet;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
-int \showmass;
+int \showmass, \showdeflectedshape;
 real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
 real \driftdist, \driftcurve, \driftcurveratioy, \driftcurveratiox;
 real \arrlen, \arrwid;
@@ -95,6 +99,8 @@ int \showsuperstructuredof, \doftextstory, \doftextfloor;
 real \grdofarrstartx, \grdofarrstarty, \grdofarrendx, \grdofarrendy, \grdoftickboty, \grdofticktopy;
 real \vertrefineratio;
 int \showgrounddrift;
+real \tempmasslimit;
+int \starttickstatus;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \startx = \startx;
@@ -120,16 +126,11 @@ int \showgrounddrift;
 \foundationdrift = \foundationdrift;
 \arrlen = \arrlen;
 \arrwid = \arrwid;
-\doftextstory = \doftextstory;
 \storydofendtick = \storydofendtick;
 %End conversion, All values are now in pt units.
 \axissp = 0.2cm;
-%\framelinet = 1.0pt;
-%\baselinet = 1.5pt;
-%\isolinet = 3pt;
-%\foundt =1cm;
-\baywidth = 0;
-\nbays = 0;
+\baywidth = 0;  %Set for a lumped mass system
+\nbays = 0;  %Set for a lumped mass system
 \ncol = \nbays+1; %number of columns
 \nlev = \nstory+1; %number of levels
 if \nstory>1 then {\nlevmo = \nlev-1;} else {\nlevmo=2;};
@@ -184,11 +185,14 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 \driftcurvy = \driftcurveratioy*\storyheight;
 \driftcurvx = \driftcurveratiox*\driftdist;
 %%%%%%%DOFs%%%%%%%%%%
-\doftextstory = \doftextstory;
 \doftextfloor = \doftextstory+1;
 \vertrefstart = \vertreflineratio*\driftcurvy;
-\storydofshift = \vertrefstart;
-}
+\storydofshift = \vertreflineratio*\driftcurvy;
+%%%%%%%Check if foundation drift is very small such that start tick clashed with the mass%%%%%%%
+\tempmasslimit = 1.2*\massrad;
+if (\foundationdrift < \tempmasslimit) then {\starttickstatus=1;} else {\starttickstatus=0;};
+}%End tikzmath
+
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
 
 \tikzset{arrowbe/.style = {arrows={->[length=\arrlen, width=\arrwid]}}};
@@ -209,8 +213,8 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 }{}
 
 % Add text for mass and stiffness and damping
-\path (\x{1},\y{\useeval{\doftextstory+1}})node[xshift=\massrad-2pt, right, opaque]{\storymasstext} 
-++(0,-\storyheight/2)node[xshift=-2pt, right, opaque]{\storyproptext};
+\path (\x{1},\y{\doftextfloor})node[inner sep=2pt, outer sep=\massrad, \massproploc, opaque]{\storymasstext} 
+++(0,-\storyheight/2)node[inner sep=2pt, \massproploc, opaque]{\storyproptext};
 
 
 %%% Different types of supports
@@ -254,6 +258,7 @@ if equal(\showss,1) then {\Xaxesstartx = \x{\ncol}+\axissp+\supw/2;} else {\Xaxe
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 %%%%%%%%%%% Deflected Shape %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifthenelse{\showdeflectedshape=1}{
 \begin{scope}[xshift = \foundationdrift]
 
 \begin{scope}[xshift = \basedriftdist]
@@ -333,51 +338,71 @@ node[above=-2pt, xshift =-\baseslabw/4, midway]{\isodoftext}(0,-\baseslabh/2);
 \ifthenelse{\showsuperstructuredof=1}{
 \foreach \iii in {2,...,{\nlev}}{
 
+
+% Place the arrows and end ticks
 \ifthenelse{\iii=\nlev}{
 	\draw [arrowbe] (\x{1},\y{\iii}+\massrad+\storydofendtick) --
 	(\x{1}+\driftdist*\useeval{\iii-1},\y{\iii}+\massrad+\storydofendtick); %story DOF arrows
 	\draw (\x{1}+\driftdist*\useeval{\iii-1},\y{\iii}+\massrad+\storydofendtick/2) --
 	(\x{1}+\driftdist*\useeval{\iii-1},\y{\iii}+\massrad+\storydofendtick*1.5); %Story DOF end tick
-	}
-	{
+	}{
 	\draw [arrowbe] (\x{1},\y{\iii}+\storydofshift) -- (\x{1}+\driftdist*\useeval{\iii-1},\y{\iii}+\storydofshift); %story DOF arrows
 	\draw (\x{1}+\driftdist*\useeval{\iii-1},\y{\iii}+\storydofshift-\storydofendtick/2) --
 	(\x{1}+\driftdist*\useeval{\iii-1},\y{\iii}+\storydofshift+\storydofendtick/2); %Story DOF end tick
 	}
-	};
-	
-	\draw (0,\vertrefstart) -- (0, \y{\nlev}+\massrad+\storydofendtick*1.5);   %Vertical reference line for the DOFss
+
+% Place the start ticks
+\ifthenelse{\starttickstatus = 1}{   %Start tick for each story
+	\ifthenelse{\iii=\nlev}{
+		\draw (\x{1},\y{\iii}+\massrad+\storydofendtick/2) -- (\x{1},\y{\iii}+\massrad+\storydofendtick*1.5);
+	}{
+		\draw (\x{1},\y{\iii}+\storydofshift-\storydofendtick/2) --	(\x{1},\y{\iii}+\storydofshift+\storydofendtick/2);
+	}
+	}
+	{\draw (0,\vertrefstart) -- (0, \y{\nlev}+\massrad+\storydofendtick*1.5);}   %Start tick is a vertical reference line for the DOFs
+};
+
 }{}
 
 %%%%% SuperStructure DOF = 2
 
 \ifthenelse{\showsuperstructuredof=2}{
 
-	\ifthenelse{\doftextfloor=\nlev}{
+% Place the arrows and end ticks
+\ifthenelse{\doftextfloor=\nlev}{
 		\draw [arrowbe] (\x{1},\y{\doftextfloor}+\massrad+\storydofendtick) --
 		(\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\massrad+\storydofendtick); %story DOF arrows
 		\draw (\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\massrad+\storydofendtick/2) --
 		(\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\massrad+\storydofendtick*1.5); %Story DOF end tick
-		\draw (0,\vertrefstart) -- (0, \y{\doftextfloor}+\massrad+\storydofendtick*1.5);   %Vertical reference line for the DOFss
 	}
 	{
 		\draw [arrowbe] (\x{1},\y{\doftextfloor}+\storydofshift) -- (\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\storydofshift); %story DOF arrows
 		\draw (\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\storydofshift-\storydofendtick/2) --
 		(\x{1}+\driftdist*\doftextstory,\y{\doftextfloor}+\storydofshift+\storydofendtick/2); %Story DOF end tick
-		\draw (0,\vertrefstart) -- (0, \y{\doftextfloor}+\storydofshift+\storydofendtick/2);   %Vertical reference line for the DOFs
 	}
+
+% Place the start ticks
+\ifthenelse{\starttickstatus = 1}{
+	\ifthenelse{\doftextfloor=\nlev}
+		{\draw (\x{1},\y{\doftextfloor}+\massrad+\storydofendtick/2) -- (\x{1},\y{\doftextfloor}+\massrad+\storydofendtick*1.5);}
+		{\draw (\x{1},\y{\doftextfloor}+\storydofshift-\storydofendtick/2) -- (\x{1},\y{\doftextfloor}+\storydofshift+\storydofendtick/2);}
+	}{
+	\ifthenelse{\doftextfloor=\nlev}
+		{\draw (0,\vertrefstart) -- (0, \y{\doftextfloor}+\massrad+\storydofendtick*1.5);}
+		{\draw (0,\vertrefstart) -- (0, \y{\doftextfloor}+\storydofshift+\storydofendtick/2);}
+	}	
 }{}
 
 
 %%%%%%%%%%%%%%%%%% Place the DOF Text to the selected story
 
 \ifthenelse{\doftextstory=\nstory}{
-\path [line width=0] (\x{1},\y{\useeval{\doftextstory+1}}+\massrad+\storydofendtick) --
-node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval{\doftextstory+1}}+\massrad+\storydofendtick);   %DOF text
+\path [line width=0] (\x{1},\y{\doftextfloor}+\massrad+\storydofendtick) --
+node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor}+\massrad+\storydofendtick);   %DOF text
 }
 {
-\path [line width=0] (\x{1},\y{\useeval{\doftextstory+1}}+\storydofshift) --
-node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval{\doftextstory+1}}+\storydofshift);   %DOF text
+\path [line width=0] (\x{1},\y{\doftextfloor}+\storydofshift) --
+node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor}+\storydofshift);   %DOF text
 }
 
 \end{scope}
@@ -392,6 +417,10 @@ node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\useeval
 }{}
 
 \end{scope}
+}{}
+
+%%%%% End deflected shape
+
 
 %%%%%%%%%%%%%%%%  Ground DOF
 
@@ -412,4 +441,4 @@ node[above=-2pt, midway, xshift=1pt]{\grounddoftext}  (\grdofarrendx,\grdofarren
 
 
 \end{scope}
-}
+}  % End the macro

@@ -12,10 +12,13 @@
   isolator thickness = 0.2cm,
   isolator line thickness = 1.5pt,
   foundation thickness = 0.5cm,
-  foundation side width = 1cm,},
+  foundation side width = 1cm,
+  mass text for slab = $m_\text{b}$,
+  text location for mass=left,
+  show mass text=1,},
   startX/.store in = \startx,
   startY/.store in = \starty,
-  support width/.store in = \supportwidth,
+  support width/.store in = \supportsidewidth,
   support body/.store in = \supportbody,
   support height/.store in = \supportheight,
   support line thickness/.store in = \baselinet,
@@ -24,21 +27,25 @@
   isolator thickness/.store in = \isolationdepth,
   isolator line thickness/.store in = \isolinet,
   foundation thickness/.store in = \foundationdepth,
-  foundation side width/.store in = \foundsidew,}
+  foundation side width/.store in = \foundsidew,
+  mass text for slab/.store in = \masstextslab,
+  text location for mass/.store in=\masstextloc,
+  show mass text/.store in=\showmasstext,}
 
 \newcommand{\commonisolation}[1][]{
 \pgfkeys{/commonisolation, default, #1}
 \tikzmath{
 real \startx, \starty;
-int \numberofisolators, \kiso;
-real \supportwidth, \supportbody, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \xiso, \isospace;
+int \numberofisolators, \kiso, \showmasstext;
+real \supportsidewidth, \supportbody, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \xiso, \isospace;
 real \baselinet, \isolinet;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
+real \masstextoutersep, \masstextx, \masstexty;
 %Conversion all units to the unit pt
 \startx = \startx;
 \starty = \starty;
-\supportwidth = \supportwidth;
+\supportsidewidth = \supportsidewidth;
 \supportbody =  \supportbody;
 \supportheight = \supportheight;
 \baselinet = \baselinet;
@@ -48,8 +55,8 @@ real \foundboty, \foundtopy, \foundstartx, \foundendx;
 \foundationdepth = \foundationdepth;
 \foundsidew = \foundsidew;
 %End conversion, All values are now in pt units.
-\rigbasestartx = -\supportwidth;
-\rigbaseendx = \supportbody+\supportwidth;
+\rigbasestartx = -\supportsidewidth;
+\rigbaseendx = \supportbody+\supportsidewidth;
 \isoboty = -\supportheight-\baselinet/2-\isolationdepth;
 \isotopy = -\supportheight-\baselinet/2;
 \foundboty = -\supportheight-\baselinet-\isolationdepth-\foundationdepth;
@@ -57,10 +64,18 @@ real \foundboty, \foundtopy, \foundstartx, \foundendx;
 \foundstartx = -\foundsidew;
 \foundendx = +\supportbody+\foundsidew;
 %Some isolator properties
+if equal(\numberofisolators,1) then{
+\isospace = 0.0;
+\xiso{1} = (\supportbody)/2.0;
+}
+else {
 \isospace = (\supportbody)/(\numberofisolators-1);
-for \kiso in {1,...,{\numberofisolators}}{
-\xiso{\kiso} = (\kiso-1)*\isospace;
+for \kiso in {1,...,{\numberofisolators}}{\xiso{\kiso} = (\kiso-1)*\isospace;};
 };
+%%%% Mass text outer sep distance for mass, x and y coordinates;
+\masstextoutersep = \supportsidewidth+\supportbody/2;
+\masstextx = \supportbody/2;
+\masstexty = -\supportheight/2;
 }
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
 
@@ -74,7 +89,8 @@ for \kiso in {1,...,{\numberofisolators}}{
 (\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
 \draw [line width = \baselinet] (\foundstartx, \foundtopy) -- (\foundendx, \foundtopy);
 
-
+\ifthenelse{\showmasstext=1}{
+\node[inner sep=2pt, outer sep=\masstextoutersep, \masstextloc, opaque] at (\masstextx,\masstexty) {\masstextslab};}{}
 \end{scope}
 }
 

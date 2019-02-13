@@ -1,0 +1,104 @@
+\documentclass[]{standalone}
+\input{settings}
+
+
+\begin{document}
+\begin{tikzpicture}
+
+%%%%% Define Some Variables
+\tikzmath{
+int \nlumped, \ilumped, \nnnstory, \showdefl, \nstorydof;
+real \supbody, \xlumped, \spacelumped, \deflbase;
+\supbody = 6cm;
+\nlumped = 3;
+\spacelumped = (\supbody)/(\nlumped-1);
+for \ilumped in {1,...,{\nlumped}}{\xlumped{\ilumped} = (\ilumped-1)*\spacelumped;};  %\xlumped{\ilumped}=\xlumped{\ilumped}
+%Story numbers for each lumped mass system
+\nnnstory{1} = 2;
+\nnnstory{2} = 4;
+\nnnstory{3} = 3;
+%Whether to show deflected shape or nat
+\showdefl{1} = 0;
+\showdefl{2} = 1;
+\showdefl{3} = 0;
+%Deflected shape displacement wrt undeflected shape
+\deflbase{1} = 0cm;
+\deflbase{2} = 0.5cm;
+\deflbase{3} = 0cm;
+%At which floor to place the DOF notation
+\nstorydof{1} = 1;
+\nstorydof{2} = 3;
+\nstorydof{3} = 2;
+%Location where to place the mass and structure property text: left or right
+let \massstoryproploc{1} = right;
+let \massstoryproploc{2} = left;
+let \massstoryproploc{3} = right;
+}
+
+
+%%%% First place the common isolation
+\commonisolation[%
+startX = 0cm,
+startY = 0cm,
+support width = 0.5cm,
+support body = \supbody,
+support height = 0.2cm,
+support line thickness = 1.0pt,
+number of isolators = 1,
+isolator width = 0.5cm,
+isolator thickness = 0.2cm,
+isolator line thickness = 1pt,
+foundation thickness = 0.3cm,
+foundation side width = 1.3cm,]
+
+
+%Place the lumped mass systems one by one
+\foreach \ilumped in {1,...,{\nlumped}}
+{
+%\node at (\xlumped{\ilumped}pt, 0pt) {$\xlumped{1},\ilumped$};
+%\node at (0cm, 0cm) {$\ilumped$};
+\lumpedmass[number of storys=\nnnstory{\ilumped},
+story height=1cm,
+startX=\xlumped{\ilumped}pt,
+startY=0cm,
+frame line thickness = 1.2pt,
+support width = 0.3cm,
+support height = 0.2cm,
+support line thickness = 1.0pt,
+show supports = 0,
+isolator width = 0.5cm,
+isolator thickness = 0.2cm,
+isolator line thickness = 1pt,
+foundation thickness = 0.3cm,
+foundation width=1.3cm,
+mass radius = 5pt,
+show mass = 1,
+show axes = 0,
+base slab width=1.0cm,
+base slab height=0.4cm,
+x axis length=0.5cm,
+y axis length=0.5cm,
+show deflected shape = \showdefl{\ilumped},
+drift distance=0.5cm,
+drift curve ratio y=0.65,
+drift curve ratio x=0.2,
+base slab drift=0,
+foundation drift=\deflbase{\ilumped},
+arrow tip length=3pt,
+arrow tip width=2pt,
+story to place superstructure dof=\nstorydof{\ilumped},
+text for the superstructure dof=$x_i(t)$,
+text for the isolation dof=$x_\text{b}(t)$,
+text for the ground dof=$x_\text{g}(t)$,
+text for the story mass=$m_i$,
+text for the base slab mass=$m_\text{b}$,
+text for the story properties=$\mathbf{k}_i$,
+text location for mass and story properties=\massstoryproploc{\ilumped},
+story dof arrow tick = 5pt,
+vertical dof ref line start ratio=0.5,
+show superstructure dofs=2,
+show ground drift = 0,]
+}
+
+\end{tikzpicture}
+\end{document}
