@@ -27,10 +27,13 @@
 	drift curve ratio y=0.65,
 	base slab drift=1.1cm,
 	foundation drift=2cm,
+	rotation dof radius = 0.4cm,
+	rotation dof text position = 0.8,
 	arrow tip length=3pt,
 	arrow tip width=2pt,
 	story to place superstructure dof=2,
 	text for the superstructure dof=$x_i(t)$,
+	text for the superstructure rotation dof=$x_i(t)$,
 	text for the isolation dof=$x_b(t)$,
 	text for the ground dof=$x_g(t)$,
 	text for the story mass=$m_i$,
@@ -68,10 +71,13 @@
 	drift curve ratio y/.store in=\driftcurveratioy,
 	base slab drift/.store in=\basedriftdist,
 	foundation drift/.store in=\foundationdrift,
+	rotation dof radius/.store in=\rotdofradius,
+	rotation dof text position/.store in=\rotdoftextpos,
 	arrow tip length/.store in=\arrlen,
 	arrow tip width/.store in=\arrwid,
 	story to place superstructure dof/.store in=\doftextstory,
 	text for the superstructure dof/.store in=\doftext,
+	text for the superstructure rotation dof/.store in=\rotationdoftext,
 	text for the isolation dof/.store in=\isodoftext,
 	text for the ground dof/.store in=\grounddoftext,
 	text for the story mass/.store in=\storymasstext,
@@ -93,7 +99,7 @@ real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
 int \showmass, \showdeflectedshape;
 real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
-real \driftdist, \driftcurve, \driftcurveratioy, \driftcurveratiox;
+real \driftdist, \driftcurve, \driftcurveratioy, \driftcurveratiox, \rotdofradius;
 real \arrlen, \arrwid;
 int \showsuperstructuredof, \doftextstory, \doftextfloor;
 real \grdofarrstartx, \grdofarrstarty, \grdofarrendx, \grdofarrendy, \grdoftickboty, \grdofticktopy;
@@ -127,6 +133,7 @@ int \starttickstatus;
 \arrlen = \arrlen;
 \arrwid = \arrwid;
 \storydofendtick = \storydofendtick;
+\rotdofradius =\rotdofradius;
 %End conversion, All values are now in pt units.
 \axissp = 0.2cm;
 \baywidth = 0;  %Set for a lumped mass system
@@ -195,8 +202,8 @@ if (\foundationdrift < \tempmasslimit) then {\starttickstatus=1;} else {\startti
 
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
 
-\tikzset{arrowbe/.style = {arrows={->[length=\arrlen, width=\arrwid]}}};
-\tikzset{arrowben/.style = {arrows={<->[length=\arrlen, width=\arrwid]}}};
+\tikzset{arrowbe/.style = {arrows={->[length=\arrlen, width=\arrwid, flex=1, bend]}}};
+\tikzset{arrowben/.style = {arrows={<->[length=\arrlen, width=\arrwid, flex=1, bend]}}};
 
 
 %%%%%% Undeflected Shape%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -361,7 +368,6 @@ node[above=-2pt, xshift =-\baseslabw/4, midway]{\isodoftext}(0,-\baseslabh/2);
 	}
 	{\draw (0,\vertrefstart) -- (0, \y{\nlev}+\massrad+\storydofendtick*1.5);}   %Start tick is a vertical reference line for the DOFs
 };
-
 }{}
 
 %%%%% SuperStructure DOF = 2
@@ -396,6 +402,7 @@ node[above=-2pt, xshift =-\baseslabw/4, midway]{\isodoftext}(0,-\baseslabh/2);
 
 %%%%%%%%%%%%%%%%%% Place the DOF Text to the selected story
 
+% Lateral Displacement DOF
 \ifthenelse{\doftextstory=\nstory}{
 \path [line width=0] (\x{1},\y{\doftextfloor}+\massrad+\storydofendtick) --
 node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor}+\massrad+\storydofendtick);   %DOF text
@@ -404,6 +411,10 @@ node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftext
 \path [line width=0] (\x{1},\y{\doftextfloor}+\storydofshift) --
 node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor}+\storydofshift);   %DOF text
 }
+%Rotation DOF
+\draw [arrowbe] (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor})
+++(190:\rotdofradius) arc [start angle = 190, end angle=350, radius=\rotdofradius]
+node[anchor=north west, pos=\rotdoftextpos, inner sep=0pt, inner sep=0pt] at ++(0.0cm,-0.1cm) {\rotationdoftext};
 
 \end{scope}
 
