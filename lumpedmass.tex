@@ -43,6 +43,7 @@
 	story dof arrow tick = 6pt,
 	vertical dof ref line start ratio=0.6,
 	show superstructure dofs = 1,
+	show superstructure rotation dofs = 1,
 	show ground drift = 1,},
 	number of storys/.store in = \nstory,
 	story height/.store in = \storyheight,
@@ -87,6 +88,7 @@
 	story dof arrow tick/.store in=\storydofendtick,
 	vertical dof ref line start ratio/.store in=\vertreflineratio,
 	show superstructure dofs/.store in=\showsuperstructuredof,
+	show superstructure rotation dofs/.store in=\showsuperstructurerotationdof,
 	show ground drift/.store in=\showgrounddrift,}
 \newcommand{\lumpedmass}[1][]{
 \pgfkeys{/lumpedmass, default, #1}
@@ -412,9 +414,12 @@ node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftext
 node[above=-2pt, midway]{\doftext} (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor}+\storydofshift);   %DOF text
 }
 %Rotation DOF
+\ifthenelse{\showsuperstructurerotationdof=1}{
 \draw [arrowbe] (\x{1}+\driftdist*\doftextstory , \y{\doftextfloor})
 ++(190:\rotdofradius) arc [start angle = 190, end angle=350, radius=\rotdofradius]
-node[anchor=north west, pos=\rotdoftextpos, inner sep=0pt, inner sep=0pt] at ++(0.0cm,-0.1cm) {\rotationdoftext};
+node[anchor=north west, pos=\rotdoftextpos, inner sep=0pt, inner sep=0pt]
+at ++(0.0cm,-0.1cm) {\rotationdoftext};
+}{}
 
 \end{scope}
 
