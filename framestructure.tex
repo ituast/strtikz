@@ -16,6 +16,8 @@
   isolator width = 0.3cm,
   isolator thickness = 0.2cm,
   isolator line thickness = 1.5pt,
+  isolator shift = 0,
+  isolator shift distance = 0.2cm,
   foundation thickness = 0.5cm,
   foundation side width = 1cm,
   mass radius = 2pt,
@@ -65,6 +67,8 @@
   isolator width/.store in = \isolationwidth,
   isolator thickness/.store in = \isolationdepth,
   isolator line thickness/.store in = \isolinet,
+  isolator shift/.store in = \isoshiftyn,
+  isolator shift distance/.store in = \isoshift,
   foundation thickness/.store in = \foundationdepth,
   foundation side width/.store in = \foundsidew,
   mass radius/.store in = \massrad,
@@ -106,10 +110,10 @@
 \tikzmath{
 int \storynumber, \baynumber, \columnnumber, \levelnumber, \nlevmo, \ncolmo, \iii, \j, \pileind, \showsupports;
 real \storyheight, \baywidth, \startx, \starty, \xx, \y;
-int \numberofisolators, \kiso;
+int \numberofisolators, \kiso, \isoshiftyn;
 real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \massrad, \xiso, \isospace;
 real \axisseperation, \framelinet, \baselinet, \isolinet;
-real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
+real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy, \isoshift;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
 int \doflocfloor, \dofloch, \dofloccolumn, \showaxes, \showdof, \showmass, \showsupports;
 real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
@@ -131,6 +135,7 @@ real \piledepth, \pilesidespace, \pilespace, \pilecoordy, \pilecoordx, \pileline
 \supportheight = \supportheight;
 \isolationwidth = \isolationwidth;
 \isolationdepth = \isolationdepth;
+\isoshift=\isoshift;
 \foundationdepth = \foundationdepth;
 \framelinet = \framelinet;
 \baselinet = \baselinet;
@@ -185,9 +190,10 @@ for \j in {1,...,{\columnnumber}}{
 for \kiso in {1,...,{\numberofisolators}}{
 \xiso{\kiso} = (\kiso-1)*\isospace;
 };
-%for \kiso in {1,...,{\numberofisolators}}{
-%\xiso{\kiso} = 1.1;
-%};
+if equal(\isoshiftyn,1) then
+{\xiso{1}=\xiso{1}+\isoshift;
+\xiso{\numberofisolators}=\xiso{\numberofisolators}-\isoshift;}
+else {};
 %%%DOFs%%%%
 if greater(\doflocfloor,\storynumber) then {\doflocfloor=0;} else{};
 if greater(\dofloccolumn,\columnnumber) then {\dofloccolumn=1;} else{};
