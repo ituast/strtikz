@@ -254,6 +254,15 @@ if equal(\latloadtype,2) then {
 		(\structheight+\isomidy)-\latloadshift;
 	};
 } else {};
+if equal(\latloadtype,4) then {
+	\arrstartx{0}=-\latloadshift;
+	\y{0}=-\isomidy;
+	for \iarr in {1,...,{\levelnumber}}{
+		if equal(\iarr,1) then{\addtempy=\supportheight/2;} else {\addtempy=0;};
+		\arrstartx{\iarr}=-(\toparrlen-\basearrlen)*(\y{\iarr}+\isomidy-\addtempy)/
+		(\structheight+\isomidy)-\latloadshift-\basearrlen;
+	};
+} else {};
 }   %End tikzmath
 
 
@@ -290,6 +299,27 @@ if equal(\latloadtype,2) then {
 	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
 	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{0},\y{\levelnumber});
 }{;}
+
+\ifthenelse{\latloadtype=4}{
+	\foreach \iarr in {1,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\ifthenelse{\iarr=1}{
+			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+			(\arrstartx{\iarr},\y{\iarr}-\supportheight/2) --
+			node[anchor=east, pos=0, inner sep=1pt]{$F_{\text{b}}$}
+			(-\latloadshift,\y{\iarr}-\supportheight/2);
+		}{
+			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+			(\arrstartx{\iarr},\y{\iarr}) --
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+			(-\latloadshift,\y{\iarr});
+		}
+	}
+	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{1},\y{1}-\supportheight/2)
+	-- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{0},\y{\levelnumber});
+}{;}
+
 
 \ifthenelse{\latloadtype=3}{
 	\foreach \iarr in {2,...,{\levelnumber}}{
