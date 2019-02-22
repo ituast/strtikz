@@ -47,11 +47,15 @@
   x axis length = 0.5cm,
   y axis length = 0.5cm,
   show piles=1,
-  number of piles=5,
+  number of piles=3,
   pile depth=4cm,
   pile side space=0.5cm,
   pile diameter=0.5cm,
-  pile line thickness=1pt,},
+  pile line thickness=1pt,
+  lateral load shift=0.5cm,
+  lateral load type=2,
+  top arrow length=1.5cm,
+  base arrow length=0.75cm,},
   number of storys/.store in = \storynumber,
   number of bays/.store in = \baynumber,
   story height/.store in = \storyheight,
@@ -102,30 +106,42 @@
   pile depth/.store in=\piledepth,
   pile side space/.store in=\pilesidespace,
   pile diameter/.store in=\pilediameter,
-  pile line thickness/.store in=\pilelinethickness,  
-}
+  pile line thickness/.store in=\pilelinethickness,
+  lateral load shift/.store in=\latloadshift,
+  lateral load type/.store in=\latloadtype,
+  top arrow length/.store in=\toparrlen,
+  base arrow length/.store in=\basearrlen,}
 
 \newcommand{\framestructure}[1][]{
 \pgfkeys{/framestructure, default, #1}
 \tikzmath{
-int \storynumber, \baynumber, \columnnumber, \levelnumber, \nlevmo, \ncolmo, \iii, \j, \pileind, \showsupports;
+int \storynumber, \baynumber, \columnnumber, \levelnumber;
+int \nlevmo, \ncolmo, \iii, \j, \pileind, \showsupports;
 real \storyheight, \baywidth, \startx, \starty, \xx, \y;
 int \numberofisolators, \kiso, \isoshiftyn;
-real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \massrad, \xiso, \isospace;
+real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \isomidy;
+real \foundationdepth, \massrad, \xiso, \isospace;
 real \axisseperation, \framelinet, \baselinet, \isolinet;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy, \isoshift;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
-int \doflocfloor, \dofloch, \dofloccolumn, \showaxes, \showdof, \showmass, \showsupports;
+int \doflocfloor, \dofloch, \dofloccolumn;
+int \showaxes, \showdof, \showmass, \showsupports;
 real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
 real \dofxrotation, \dofyrotation, \dofrrotation;
 real \rotdofstartangle, \rotdofendangle;
 int \subfloors;
-real \basewallstartx, \basewallstarty, \basewallendx, \basewallendy, \buildingwidth, \basewalldepth;
+real \basewallstartx, \basewallstarty, \basewallendx, \basewallendy;
+real  \buildingwidth, \basewalldepth;
 real \leftsoildist, \rightsoildist, \leftsoildepth, \rightsoildepth;
-real \soilbelowfound, \leftcontrolx, \leftcontroly, \rightcontrolx, \rightcontroly;
+real \soilbelowfound, \leftcontrolx, \leftcontroly;
+real \rightcontrolx, \rightcontroly;
 real \rightsoilx, \rightsoily;
 real \axeslenX, \axeslenY;
-real \piledepth, \pilesidespace, \pilespace, \pilecoordy, \pilecoordx, \pilelinethickness;
+real \piledepth, \pilesidespace, \pilespace, \pilecoordy, \pilecoordx;
+real \pilelinethickness;
+real \latloadshift, \arrstartx, \toparrlen, \addtempy, \basearrlen;
+int \latloadtype, \iarr;
+int \substextnum;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -157,6 +173,9 @@ real \piledepth, \pilesidespace, \pilespace, \pilecoordy, \pilecoordx, \pileline
 \pilesidespace=\pilesidespace;
 \pilediameter=\pilediameter;
 \pilelinethickness=\pilelinethickness;
+\latloadshift=\latloadshift;
+\toparrlen=\toparrlen;
+\basearrlen=\basearrlen;
 %End conversion, All values are now in pt units.
 \columnnumber = \baynumber+1; %number of columns
 \levelnumber = \storynumber+1; %number of levels
@@ -176,6 +195,8 @@ for \j in {1,...,{\columnnumber}}{
 \foundtopy = -\supportheight-\baselinet-\isolationdepth;
 \foundstartx = \x1-\foundsidew;
 \foundendx = \x{\columnnumber}+\foundsidew;
+\structheight=\nstory*\storyheight;
+\isomidy = \supportheight+\isolinet+\isolationdepth/2-\baselinet;
 %%%Basement%%%%
 \basewallstartx=-\supportwidth;
 \buildingwidth=\baynumber*\baywidth;
@@ -207,46 +228,122 @@ if greater(\dofloccolumn,\columnnumber) then {\dofloccolumn=1;} else{};
 \Xaxesstarty = \y{1};
 \Yaxesstartx = \x{1};
 \Yaxesstarty = \y{\levelnumber}+\axisseperation;
-if equal(\showsupports,0) then {\Xaxesstartx = \x{\columnnumber}+\axisseperation;} else {\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth/2;};
-if equal(\showsupports,1) then {\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth/2;} else {\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth;};
+if equal(\showsupports,0) then
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation;} else
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth/2;};
+if equal(\showsupports,1) then
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth/2;} else
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth;};
 %%%%Piles%%%%
 \pilecoordy = -\supportheight;
 \pilespace = (2*\supportwidth+\buildingwidth-2*\pilesidespace)/(\numberofpiles-1);
 for \pileind in {1,...,{\numberofpiles}}{
 \pilecoordx{\pileind} = -\supportwidth+\pilesidespace+(\pileind-1)*\pilespace;
 };
-%%%%%%%%%%%%%%%%%%%%%%%%
-}
-\begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
+%%%%Lateral Loads%%%%
+if or(equal(\latloadtype,1), equal(\latloadtype,3)) then {
+for \iarr in {1,...,{\levelnumber}}{
+	\arrstartx{\iarr}=-\toparrlen*\y{\iarr}/\structheight-\latloadshift;};
+} else {};
+if equal(\latloadtype,2) then {
+	\arrstartx{0}=-\latloadshift;
+	\y{0}=-\isomidy;
+	for \iarr in {1,...,{\levelnumber}}{
+		if equal(\iarr,1) then{\addtempy=\supportheight/2;} else {\addtempy=0;};
+		\arrstartx{\iarr}=-\toparrlen*(\y{\iarr}+\isomidy-\addtempy)/
+		(\structheight+\isomidy)-\latloadshift;
+	};
+} else {};
+}   %End tikzmath
+
+
+\begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0];
+	% Drawing everything in pt units
+
+
+\ifthenelse{\latloadtype=1}{
+	\foreach \iarr in {2,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+		(\arrstartx{\iarr},\y{\iarr}) --
+		node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+		(-\latloadshift,\y{\iarr});}
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{1},\y{\levelnumber});
+}{;}
+
+\ifthenelse{\latloadtype=2}{
+	\foreach \iarr in {1,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\ifthenelse{\iarr=1}{
+			\draw[arrows={-[length=2pt, width=2pt]>}, line width=0.5pt]
+			(\arrstartx{\iarr},\y{\iarr}-\supportheight/2) --
+			node[anchor=east, pos=0, inner sep=1pt]{$F_{\text{b}}$}
+			(-\latloadshift,\y{\iarr}-\supportheight/2);
+		}{
+			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+			(\arrstartx{\iarr},\y{\iarr}) --
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+			(-\latloadshift,\y{\iarr});
+		}
+	}
+	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{0},\y{\levelnumber});
+}{;}
+
+\ifthenelse{\latloadtype=3}{
+	\foreach \iarr in {2,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+		(\arrstartx{\iarr},\y{\iarr}) --
+		node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+		(-\latloadshift,\y{\iarr});}
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{1},\y{\levelnumber});
+	\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+	(-\latloadshift-1cm,-\supportheight/2)--
+	node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\text{b}}$}
+	++(1cm,0);
+}{;}
+
+
+
 
 \ifthenelse{\showsupports=5}{
 
 \path[fill=lightgray] decorate[decoration={random steps, segment length=0.25cm}]
 {(-\leftsoildist,\basewalldepth) -- ++(0,-\leftsoildepth)
 ..controls++(0,-\leftcontroly) and ++(-\leftcontrolx,0)..(0,-\soilbelowfound)
- -- ++(\buildingwidth,0) ..controls ++(\rightcontrolx,0) and ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
+ -- ++(\buildingwidth,0) ..controls ++(\rightcontrolx,0) and
+ ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
  -- ++(0,\rightsoildepth)}
 -- cycle;
 
-\draw(-\leftsoildist,\basewalldepth) -- (\buildingwidth+\rightsoildist,\basewalldepth);
+\draw(-\leftsoildist,\basewalldepth) --
+(\buildingwidth+\rightsoildist,\basewalldepth);
 
-\path[fill=white](0,\basewalldepth) -- ++(\buildingwidth,0) -- ++(0,-\basewalldepth) -- ++(-\buildingwidth,0) -- cycle;
+\path[fill=white](0,\basewalldepth) -- ++(\buildingwidth,0) --
+++(0,-\basewalldepth) -- ++(-\buildingwidth,0) -- cycle;
 
 \ifthenelse{\showpiles=1}{
 \foreach \pileind in {1,...,{\numberofpiles}}
 {\pilesupport[x coordinate=\pilecoordx{\pileind}, y coordinate=\pilecoordy,
-pile depth=\piledepth, pile diameter=\pilediameter, pile line thickness=\pilelinethickness, fill color=gray,]}
+pile depth=\piledepth, pile diameter=\pilediameter,
+pile line thickness=\pilelinethickness, fill color=gray,]}
 }{}
 
-\filldraw[line width = \baselinet, fill=gray] (\basewallstartx,\basewallstarty) -- ++(\supportwidth,0) -- ++(0,-\basewalldepth)
--- ++(\buildingwidth,0) -- ++(0,\basewalldepth) -- ++(\supportwidth,0) -- ++(0,-\basewalldepth-\supportheight)
--- (\basewallstartx,-\supportheight) -- cycle;
+\filldraw[line width = \baselinet, fill=gray]
+(\basewallstartx,\basewallstarty) -- ++(\supportwidth,0) -- ++(0,-\basewalldepth)
+-- ++(\buildingwidth,0) -- ++(0,\basewalldepth) -- ++(\supportwidth,0) --
+++(0,-\basewalldepth-\supportheight) -- (\basewallstartx,-\supportheight) -- cycle;
 
 }{}
 
 
 %\draw (0,0)-- (0.5cm,2cm);
-\draw [line width = \framelinet] (\x{1},\y{1}) -- (\x{1}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{1});
+\draw [line width = \framelinet]
+(\x{1},\y{1}) -- (\x{1}, \y{\levelnumber}) --
+(\x{\columnnumber}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{1});
 \foreach \iii in {2,...,{\nlevmo}}
 {\draw [line width = \framelinet] (\x{1},\y{\iii}) -- (\x{\columnnumber},\y{\iii});}
 
@@ -279,8 +376,10 @@ pile depth=\piledepth, pile diameter=\pilediameter, pile line thickness=\pilelin
 \ifthenelse{\showsupports=1}{
 \foreach \j in {1,...,{\columnnumber}}
 {
-\fill [gray] (\x{\j},\y{1}) +({-\supportwidth/2},-\supportheight) rectangle +({\supportwidth/2},\y{1});
-\draw [line width = \baselinet] (\x{\j},\y{1}) +({-\supportwidth/2},\y{1}) -- +({\supportwidth/2},\y{1});
+\fill [gray] (\x{\j},\y{1}) +({-\supportwidth/2},-\supportheight)
+rectangle +({\supportwidth/2},\y{1});
+\draw [line width = \baselinet]
+(\x{\j},\y{1}) +({-\supportwidth/2},\y{1}) -- +({\supportwidth/2},\y{1});
 }
 }{}
 
@@ -291,15 +390,18 @@ pile depth=\piledepth, pile diameter=\pilediameter, pile line thickness=\pilelin
 
 \ifthenelse{\showsupports=3}{
 \foreach \j in {1,...,{\columnnumber}}
-{\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);}
+{\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) rectangle
+	(\rigbaseendx,-\supportheight);}
 }{}
 
 \ifthenelse{\showsupports=4}{
-\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);
+\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) rectangle
+(\rigbaseendx,-\supportheight);
 
 \foreach \j in {1,...,{\numberofisolators}}
 {\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
-(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle +(\isolationwidth/2,\isotopy);}
+(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
++(\isolationwidth/2,\isotopy);}
 
 \fill [fill=gray]
 (\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
@@ -313,10 +415,13 @@ pile depth=\piledepth, pile diameter=\pilediameter, pile line thickness=\pilelin
 
 \ifthenelse{\showdof=1}{
 \dofs[startx = \dofxx, starty = \dofyy, length x = \arrlen,  length y = \arrlen,
-  offset x= 0.0cm, offset y= 0.0cm, offset rotation xdir= 0cm, offset rotation ydir= 0cm,
-  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad, xstring = $i$, ystring = $i+1$, rstring = $i+2$, font size = \tiny,
+  offset x= 0.0cm, offset y= 0.0cm,
+  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = $i$, ystring = $i+1$, rstring = $i+2$, font size = \tiny,
   rotation=0, font rotation=0,
-  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation, font rotation for r = \dofrrotation,
+  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
   arrow size ratio=0.5,
   ]  
 }{}
