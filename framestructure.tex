@@ -306,7 +306,7 @@ if equal(\latloadtype,4) then {
 		\ifthenelse{\iarr=1}{
 			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
 			(\arrstartx{\iarr},\y{\iarr}-\supportheight/2) --
-			node[anchor=east, pos=0, inner sep=1pt]{$F_{\text{b}}$}
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\text{b}}$}
 			(-\latloadshift,\y{\iarr}-\supportheight/2);
 		}{
 			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
@@ -315,9 +315,9 @@ if equal(\latloadtype,4) then {
 			(-\latloadshift,\y{\iarr});
 		}
 	}
-	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{1},\y{1}-\supportheight/2)
+	\draw (\arrstartx{0},\isoboty) -- (\arrstartx{1},\y{1}-\supportheight/2)
 	-- (\arrstartx{\levelnumber},\y{\levelnumber});
-	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{0},\y{\levelnumber});
+	\draw (\arrstartx{0},\isoboty) -- (\arrstartx{0},\y{\levelnumber});
 }{;}
 
 
