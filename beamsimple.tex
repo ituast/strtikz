@@ -6,13 +6,21 @@
   endx = 3cm,
   endy = 3cm,
   length = 4cm,
-  line thickness = 2pt},
+  line thickness = 2pt,
+  support width = 0.5cm,
+  support line thickness = 2pt,
+  support width ratio = 1.8,
+  support depth ratio = 0.25,},
   startx/.store in =\startx,
   starty/.store in =\starty,
   endx/.store in =\endx,
   endy/.store in =\endy,
   line thickness/.store in =\linewidth,
   length/.store in =\length,
+  support width/.store in = \swidth,
+  support line thickness/.store in = \slthick,
+  support width ratio/.store in = \swratio,
+  support depth ratio/.store in = \sdratio,
 }
 
 
@@ -23,6 +31,8 @@
 int \i;
 real \startx, \starty, \endx, \endy;
 real \length, \linewidth;
+real \slthick, \swidth, \swratio, \sdratio;
+real \sswidth, \ssdepth;
 %Conversion all units to the unit pt
 \startx = \startx;
 \starty = \starty;
@@ -30,21 +40,29 @@ real \length, \linewidth;
 \endy = \endy;
 \linewidth = \linewidth;
 \length = \length;
+\swidth = \swidth;
+\slthick = \slthick;
+\swratio = \swratio;
+\sdratio = \sdratio;
+%
+\sswidth = \swratio*\swidth;
+\ssdepthpin = \sdratio*\sswidth+\slthick/2;
+\ssdepthroller = \sdratio*\sswidth;
 }
 \begin{scope}[x=1pt, y=1pt, xshift = \startx, yshift=\starty, rotate=0];    % Draw everything in pt units
-\draw [line width = \linewidth] (0,0) -- (\length,0);
+\draw [line width=\linewidth, line cap=round] (0,0) -- (\length,0);
 %ToDo: Need to adjust support dimensions according to the beam dimensions and line thickness
 \pinsupport[%
-	triangle width=0.5cm,
-	line width=1cm,
-	line depth=0.2cm,
-	line thickness=2pt,
+	triangle width=\swidth,
+	line width=\sswidth,
+	line depth=\ssdepthpin,
+	line thickness=\slthick,
 	radius ratio = 0]
 \rollersupport[%
-	triangle width=0.5cm,
-	line width=1cm,
-	line depth=0.2cm,
-	line thickness=2pt,
+	triangle width=\swidth,
+	line width=\sswidth,
+	line depth=\ssdepthroller,
+	line thickness=\slthick,
 	radius ratio = 0,
 	x value = \length]
 \end{scope}
