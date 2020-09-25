@@ -8,17 +8,17 @@
   support width = 0.5cm,
   support line thickness = 2pt,
   support width ratio = 1.8,
-  support depth ratio = 0.25,},
+  support depth ratio = 0.25,
+  support location ratio = 0.25},
   startx/.store in =\startx,
   starty/.store in =\starty,
-  endx/.store in =\endx,
-  endy/.store in =\endy,
   line thickness/.store in =\linewidth,
   length/.store in =\length,
   support width/.store in = \swidth,
   support line thickness/.store in = \slthick,
   support width ratio/.store in = \swratio,
   support depth ratio/.store in = \sdratio,
+  support location ratio/.store in = \slocratio,
 }
 
 
@@ -30,7 +30,7 @@ int \i;
 real \startx, \starty;
 real \length, \linewidth;
 real \pinsupx, \rolsupx,
-real \slthick, \swidth, \swratio, \sdratio;
+real \slthick, \swidth, \swratio, \sdratio, \slocratio;
 real \sswidth, \ssdepth;
 %Conversion all units to the unit pt
 \startx = \startx;
@@ -41,9 +41,10 @@ real \sswidth, \ssdepth;
 \slthick = \slthick;
 \swratio = \swratio;
 \sdratio = \sdratio;
+\slocratio = \slocratio;
 %
-\pinsupx = 0.25*\linewidth;
-\rolsupx = \length-0.25*\linewidth;
+\pinsupx = \slocratio*\linewidth;
+\rolsupx = \length-\slocratio*\linewidth;
 \sswidth = \swratio*\swidth;
 \ssdepthpin = \sdratio*\sswidth+\slthick/2;
 \ssdepthroller = \sdratio*\sswidth;
