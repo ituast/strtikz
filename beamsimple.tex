@@ -9,7 +9,8 @@
   support line thickness = 2pt,
   support width ratio = 1.8,
   support depth ratio = 0.25,
-  support location ratio = 0.25},
+  support location ratio = 0.25,
+  support type = 1,},
   startx/.store in =\startx,
   starty/.store in =\starty,
   line thickness/.store in =\linewidth,
@@ -19,6 +20,7 @@
   support width ratio/.store in = \swratio,
   support depth ratio/.store in = \sdratio,
   support location ratio/.store in = \slocratio,
+  support type/.store in = \suptype,
 }
 
 
@@ -26,10 +28,10 @@
 \pgfkeys{/beamsimple, default, #1}
 
 \tikzmath{
-int \i;
+int \i, \suptype;
 real \startx, \starty;
 real \length, \linewidth;
-real \pinsupx, \rolsupx,
+real \firstsupx, \secondsupx,
 real \slthick, \swidth, \swratio, \sdratio, \slocratio;
 real \sswidth, \ssdepth;
 %Conversion all units to the unit pt
@@ -43,8 +45,8 @@ real \sswidth, \ssdepth;
 \sdratio = \sdratio;
 \slocratio = \slocratio;
 %
-\pinsupx = \slocratio*\linewidth;
-\rolsupx = \length-\slocratio*\linewidth;
+\firstsupx = \slocratio*\linewidth;
+\secondsupx = \length-\slocratio*\linewidth;
 \sswidth = \swratio*\swidth;
 \ssdepthpin = \sdratio*\sswidth+\slthick/2;
 \ssdepthroller = \sdratio*\sswidth;
@@ -52,12 +54,47 @@ real \sswidth, \ssdepth;
 \begin{scope}[x=1pt, y=1pt, xshift = \startx, yshift=\starty, rotate=0];    % Draw everything in pt units
 \draw [line width=\linewidth, line cap=round] (0,0) -- (\length,0);
 %ToDo: Need to adjust support dimensions according to the beam dimensions and line thickness
+
+\ifthenelse{\suptype=1}
+{\pinsupport[%
+	triangle width=\swidth,
+	line width=\sswidth,
+	line depth=\ssdepthpin,
+	line thickness=\slthick,
+	x value = \firstsupx,
+	radius ratio = 0]
+\rollersupport[%
+	triangle width=\swidth,
+	line width=\sswidth,
+	line depth=\ssdepthroller,
+	line thickness=\slthick,
+	x value = \secondsupx,
+	radius ratio = 0,
+	]}{};
+
+\ifthenelse{\suptype=2}
+{\rollersupport[%
+	triangle width=\swidth,
+	line width=\sswidth,
+	line depth=\ssdepthroller,
+	line thickness=\slthick,
+	x value = \firstsupx,
+	radius ratio = 0]
 \pinsupport[%
 	triangle width=\swidth,
 	line width=\sswidth,
 	line depth=\ssdepthpin,
 	line thickness=\slthick,
-	x value = \pinsupx,
+	radius ratio = 0,
+	x value = \secondsupx]}{};
+	
+\ifthenelse{\suptype=0}
+{\rollersupport[%
+	triangle width=\swidth,
+	line width=\sswidth,
+	line depth=\ssdepthroller,
+	line thickness=\slthick,
+	x value = \firstsupx,
 	radius ratio = 0]
 \rollersupport[%
 	triangle width=\swidth,
@@ -65,6 +102,7 @@ real \sswidth, \ssdepth;
 	line depth=\ssdepthroller,
 	line thickness=\slthick,
 	radius ratio = 0,
-	x value = \rolsupx]
+	x value = \secondsupx]}{};
+
 \end{scope}
 }
