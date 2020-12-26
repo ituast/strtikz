@@ -56,7 +56,11 @@
   lateral load shift=0.5cm,
   lateral load type=2,
   top arrow length=1.5cm,
-  base arrow length=0.75cm,},
+  base arrow length=0.75cm,
+  show deflection = 0, 
+  interstory drift = 5pt,
+  defl parameter x = 0.2cm,
+  defl parameter y = 0.5cm,},
   number of storys/.store in = \storynumber,
   number of bays/.store in = \baynumber,
   story height/.store in = \storyheight,
@@ -112,7 +116,11 @@
   lateral load shift/.store in=\latloadshift,
   lateral load type/.store in=\latloadtype,
   top arrow length/.store in=\toparrlen,
-  base arrow length/.store in=\basearrlen,}
+  base arrow length/.store in=\basearrlen,
+  show deflection/.store in=\showdefl, 
+  interstory drift/.store in=\drift,
+  defl parameter x/.store in=\defparx,
+  defl parameter y/.store in=\defpary,}
 
 \newcommand{\framestructure}[1][]{
 \pgfkeys{/framestructure, default, #1}
@@ -133,7 +141,7 @@ real \dofxrotation, \dofyrotation, \dofrrotation;
 real \rotdofstartangle, \rotdofendangle;
 int \subfloors;
 real \basewallstartx, \basewallstarty, \basewallendx, \basewallendy;
-real  \buildingwidth, \basewalldepth;
+real \buildingwidth, \basewalldepth;
 real \leftsoildist, \rightsoildist, \leftsoildepth, \rightsoildepth;
 real \soilbelowfound, \leftcontrolx, \leftcontroly;
 real \rightcontrolx, \rightcontroly;
@@ -144,6 +152,9 @@ real \pilelinethickness;
 real \latloadshift, \arrstartx, \toparrlen, \addtempy, \basearrlen;
 int \latloadtype, \iarr, \showlatload;
 int \substextnum;
+int \showdefl;
+int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
+real \drift, \deflect, \defparx, \defpary;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -178,16 +189,24 @@ int \substextnum;
 \latloadshift=\latloadshift;
 \toparrlen=\toparrlen;
 \basearrlen=\basearrlen;
+\drift=\drift;
+\defparx = \defparx;
+\defpary = \defpary;
 %End conversion, All values are now in pt units.
 \columnnumber = \baynumber+1; %number of columns
 \levelnumber = \storynumber+1; %number of levels
 if \storynumber>1 then {\nlevmo = \levelnumber-1;} else {\nlevmo=2;};
 if \baynumber>1 then {\ncolmo = \columnnumber-1;} else {\ncolmo=2;};
+%% Undeflected shape coordinates
 for \iii in {1,...,{\levelnumber}}{
 \y{\iii} = (\iii-1)*\storyheight;
 for \j in {1,...,{\columnnumber}}{
 \x{\j} = (\j-1)*\baywidth;
 };
+};
+%% Deflected shape coordinates
+for \idefl in {1,...,{\levelnumber}}{
+	\deflect{\idefl} = (\idefl-1)*\drift;
 };
 \rigbasestartx = \x1-\supportwidth;
 \rigbaseendx = \x{\columnnumber}+\supportwidth;
@@ -379,6 +398,8 @@ cycle;
 
 
 %\draw (0,0)-- (0.5cm,2cm);
+%%% Draw Frame - Undeflected shape
+\ifthenelse{\showdefl=0}{
 \draw [line width = \framelinet]
 (\x{1},\y{1}) -- (\x{1}, \y{\levelnumber}) --
 (\x{\columnnumber}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{1});
@@ -387,7 +408,77 @@ cycle;
 (\x{\columnnumber},\y{\iii});}
 
 \foreach \j in {2,...,{\ncolmo}}
-{\draw [line width = \framelinet] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
+{\draw [line width = \framelinet, color=red] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
+}{}
+
+%%% Draw Frame - Undeflected shape but beams and columns are drawn seperately
+\ifthenelse{\showdefl=3}{
+	\foreach \istory in {1,...,{\storynumber}}
+	{
+		\foreach \icol in {1,...,{\columnnumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\icol},\y{\istory}) -- (\usevar\x{\icol}, \usevar\y{\istory+1});
+		}
+		\foreach \ibeam in {1,...,{\baynumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\ibeam}-\framelinet/2,\usevar\y{\istory+1}) -- (\usevar\x{\ibeam+1}+\framelinet/2, \usevar\y{\istory+1});
+		}
+	
+	}
+}{}
+
+
+%%% Draw Frame - Deflected shape
+\ifthenelse{\showdefl=4}{
+	\foreach \istory in {1,...,{\storynumber}}
+	{
+		\foreach \icol in {1,...,{\columnnumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\icol}+\deflect{\istory},\y{\istory}) -- (\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+		}
+		\foreach \ibeam in {1,...,{\baynumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\ibeam}-\framelinet/2+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}) --
+			(\usevar\x{\ibeam+1}+\framelinet/2+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+		}
+		
+	}
+}{}
+
+%%% Draw Frame - Deflected shape
+\ifthenelse{\showdefl=1}{
+	\foreach \istory in {1,...,{\storynumber}}
+	{
+		\ifthenelse{\istory=1}{
+		\foreach \icol in {1,...,{\columnnumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(0.0cm, 0.15cm) and +(-\defparx, -\defpary) ..
+			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+		}}
+		{
+		\foreach \icol in {1,...,{\columnnumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
+			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+		}}
+	
+	
+		\foreach \ibeam in {1,...,{\baynumber}}
+		{
+			\draw [line width = \framelinet]
+			(\x{\ibeam}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}) .. controls +(\defpary,-\defparx) and +(-\defpary, +\defparx) ..
+			(\usevar\x{\ibeam+1}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+		}
+		
+	}
+}{}
+
 
 
 \ifthenelse{\showmass=1}{
