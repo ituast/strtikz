@@ -58,9 +58,10 @@
   top arrow length=1.5cm,
   base arrow length=0.75cm,
   show deflection = 0, 
-  interstory drift = 5pt,
+  interstory drift = 0.2cm,
   defl parameter x = 0.2cm,
-  defl parameter y = 0.5cm,},
+  defl parameter y = 0.5cm,
+  defl parameter base = 0.15cm,},
   number of storys/.store in = \storynumber,
   number of bays/.store in = \baynumber,
   story height/.store in = \storyheight,
@@ -120,12 +121,13 @@
   show deflection/.store in=\showdefl, 
   interstory drift/.store in=\drift,
   defl parameter x/.store in=\defparx,
-  defl parameter y/.store in=\defpary,}
+  defl parameter y/.store in=\defpary,
+  defl parameter base/.store in=\defbase,}
 
 \newcommand{\framestructure}[1][]{
 \pgfkeys{/framestructure, default, #1}
 \tikzmath{
-int \storynumber, \baynumber, \columnnumber, \levelnumber;
+int \storynumber, \baynumber, \columnnumber, \levelnumber, \storyminone;
 int \nlevmo, \ncolmo, \iii, \j, \pileind, \showsupports;
 real \storyheight, \baywidth, \startx, \starty, \xx, \y;
 int \numberofisolators, \kiso, \isoshiftyn;
@@ -154,7 +156,7 @@ int \latloadtype, \iarr, \showlatload;
 int \substextnum;
 int \showdefl;
 int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
-real \drift, \deflect, \defparx, \defpary;
+real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase, \tempdim, \fixbeamx, \fixbeamy ;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -190,9 +192,11 @@ real \drift, \deflect, \defparx, \defpary;
 \toparrlen=\toparrlen;
 \basearrlen=\basearrlen;
 \drift=\drift;
-\defparx = \defparx;
-\defpary = \defpary;
+\defparx=\defparx;
+\defpary=\defpary;
+\defbase=\defbase;
 %End conversion, All values are now in pt units.
+\storyminone = \storynumber-1;
 \columnnumber = \baynumber+1; %number of columns
 \levelnumber = \storynumber+1; %number of levels
 if \storynumber>1 then {\nlevmo = \levelnumber-1;} else {\nlevmo=2;};
@@ -208,6 +212,11 @@ for \j in {1,...,{\columnnumber}}{
 for \idefl in {1,...,{\levelnumber}}{
 	\deflect{\idefl} = (\idefl-1)*\drift;
 };
+\tempdim = sqrt(\defparx*\defparx + \defpary*\defpary);
+\fixbeamx = \framelinet/2*\defpary/\tempdim;
+\fixbeamy = \framelinet/2*\defparx/\tempdim;
+\defparbeamx = \defparx / \storyheight * \baywidth;
+\defparbeamy = \defpary / \storyheight * \baywidth;
 \rigbasestartx = \x1-\supportwidth;
 \rigbaseendx = \x{\columnnumber}+\supportwidth;
 \isoboty = -\supportheight-\baselinet/2-\isolationdepth;
@@ -359,6 +368,15 @@ if equal(\latloadtype,4) then {
 	node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\text{b}}$}
 	++(1cm,0);
 }{;}
+
+\ifthenelse{\latloadtype=5}
+{
+	\foreach \istory in {2,...,{\levelnumber}}
+	{
+		\draw [arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+		(\x{1}+\deflect{\istory}-1cm,\y{\istory}) -- (\x{1}+\deflect{\istory}-0.1cm, \y{\istory});
+	}
+}{;}
 }{;}
 
 
@@ -431,52 +449,40 @@ cycle;
 
 
 %%% Draw Frame - Deflected shape
-\ifthenelse{\showdefl=4}{
-	\foreach \istory in {1,...,{\storynumber}}
-	{
-		\foreach \icol in {1,...,{\columnnumber}}
-		{
-			\draw [line width = \framelinet]
-			(\x{\icol}+\deflect{\istory},\y{\istory}) -- (\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
-		}
-		\foreach \ibeam in {1,...,{\baynumber}}
-		{
-			\draw [line width = \framelinet]
-			(\x{\ibeam}-\framelinet/2+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}) --
-			(\usevar\x{\ibeam+1}+\framelinet/2+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
-		}
-		
-	}
-}{}
-
-%%% Draw Frame - Deflected shape
 \ifthenelse{\showdefl=1}{
-	\foreach \istory in {1,...,{\storynumber}}
+	\foreach \icol in {1,...,{\columnnumber}}
 	{
-		\ifthenelse{\istory=1}{
-		\foreach \icol in {1,...,{\columnnumber}}
-		{
-			\draw [line width = \framelinet]
-			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(0.0cm, 0.15cm) and +(-\defparx, -\defpary) ..
-			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
-		}}
-		{
+		\draw [line width = \framelinet]
+		(\x{\icol}+\deflect{1},\y{1}) .. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
+		(\x{\icol}+\deflect{2}, \y{2});
+	}
+	\foreach \ibeam in {1,...,{\baynumber}}
+	{
+		\draw [line width = \framelinet]
+		(\x{\ibeam}-\fixbeamx+\deflect{2}, \y{2}+\fixbeamy) .. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
+		(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{2}, \y{2}-\fixbeamy);
+	}
+
+
+	\ifthenelse{\storynumber>1}{
+	\foreach \istory in {2,...,{\storynumber}}
+	{
 		\foreach \icol in {1,...,{\columnnumber}}
 		{
 			\draw [line width = \framelinet]
 			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
 			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
-		}}
-	
-	
+		}
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
 			\draw [line width = \framelinet]
-			(\x{\ibeam}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}) .. controls +(\defpary,-\defparx) and +(-\defpary, +\defparx) ..
-			(\usevar\x{\ibeam+1}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
-		}
-		
+			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
+			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
+			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
+		}	
 	}
+	}{}
+
 }{}
 
 
