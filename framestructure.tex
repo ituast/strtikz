@@ -374,7 +374,7 @@ if equal(\latloadtype,4) then {
 	\foreach \istory in {2,...,{\levelnumber}}
 	{
 		\draw [arrows={-[length=5pt, width=4pt]>}, line width=1pt]
-		(\x{1}+\deflect{\istory}-1cm,\y{\istory}) -- (\x{1}+\deflect{\istory}-0.1cm, \y{\istory});
+		(\x{1}+\deflect{\istory}-\toparrlen,\y{\istory}) -- (\x{1}+\deflect{\istory}-0.1cm, \y{\istory});
 	}
 }{;}
 }{;}
