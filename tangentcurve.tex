@@ -1,0 +1,7 @@
+\makeatletter
+\tikzset{pics/segment/.style args=
+	{angle #1 left #2 right #3}{
+		code={\draw[rotate=#1] (180:#2)--(0:#3);}}}
+\makeatother
+
+%https://tex.stackexchange.com/a/514500/96172

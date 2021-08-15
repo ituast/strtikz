@@ -1,0 +1,34 @@
+\makeatletter
+\tikzset{
+	use path for main/.code={%
+		\tikz@addmode{%
+			\expandafter\pgfsyssoftpath@setcurrentpath\csname tikz@intersect@path@name@#1\endcsname
+		}%
+	},
+	use path for actions/.code={%
+		\expandafter\def\expandafter\tikz@preactions\expandafter{\tikz@preactions\expandafter\let\expandafter\tikz@actions@path\csname tikz@intersect@path@name@#1\endcsname}%
+	},
+	use path/.style={%
+		use path for main=#1,
+		use path for actions=#1,
+	}
+}
+\makeatother
+
+%https://tex.stackexchange.com/a/26386/96172
+
+%\documentclass[tikz]{standalone}
+%\usetikzlibrary{intersections}
+%
+%\begin{document}
+%\begin{tikzpicture}
+%	
+%	\path[name path=mypath] (0,0) -- (5,5);
+%	
+%	\draw[use path=mypath]; % This works with the above macro
+%	
+%	%\path[mypath, draw]; % This does not work
+%
+%\end{tikzpicture}	
+%\end{document}
+
