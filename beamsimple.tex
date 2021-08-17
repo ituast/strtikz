@@ -10,7 +10,8 @@
   support width ratio = 1.8,
   support depth ratio = 0.25,
   support location ratio = 0.25,
-  support type = 1,},
+  support type = 1,
+  beam color = black,},
   startx/.store in =\startx,
   starty/.store in =\starty,
   line thickness/.store in =\linewidth,
@@ -21,6 +22,7 @@
   support depth ratio/.store in = \sdratio,
   support location ratio/.store in = \slocratio,
   support type/.store in = \suptype,
+  beam color/.store in = \bcolor,
 }
 
 
@@ -52,8 +54,6 @@ real \sswidth, \ssdepth;
 \ssdepthroller = \sdratio*\sswidth;
 }
 \begin{scope}[x=1pt, y=1pt, xshift = \startx, yshift=\starty, rotate=0];    % Draw everything in pt units
-\draw [line width=\linewidth, line cap=round] (0,0) -- (\length,0);
-%ToDo: Need to adjust support dimensions according to the beam dimensions and line thickness
 
 \ifthenelse{\suptype=1}
 {\pinsupport[%
@@ -103,6 +103,9 @@ real \sswidth, \ssdepth;
 	line thickness=\slthick,
 	radius ratio = 0,
 	x value = \secondsupx]}{};
+
+\draw [line width=\linewidth, line cap=round, \bcolor] (0,0) -- (\length,0);
+%ToDo: Need to adjust support dimensions according to the beam dimensions and line thickness
 
 \end{scope}
 }
