@@ -96,50 +96,51 @@ if \showstiff==0 then {\kpt={};\kst={};} else {};
 
 \ifthenelse{\myp=1}{
 \draw [very thin, dashed] (\dy, 0)--node[at start, below=-1]{\dyt}(\dy, \fy);
-\draw [very thin, dashed] (0, \fy)--node[at start, left=-2, yshift=0.0cm, fill=white]{\fyt}(\dy, \fy);
+\draw [very thin, dashed] (0, \fy)--node[at start, inner sep=2pt, outer sep=0pt, anchor=east, yshift=2pt]
+{\fyt}(\dy, \fy);
 }{}
 
 \ifthenelse{\mmp=1}{
-\draw [very thin, dashed] (\dm, 0)--node[at start, below=-1]{\dmt}(\dm, \fm);
-\draw [very thin, dashed] (0, \fm)--node[at start, left=-2]{\fmt}(\dm, \fm);
+\draw [very thin, dashed] (\dm, 0)--node[at start, inner sep=2pt, outer sep=0pt, anchor=north]{\dmt}(\dm, \fm);
+\draw [very thin, dashed] (0, \fm)--node[at start, inner sep=2pt, outer sep=0pt, anchor=east]{\fmt}(\dm, \fm);
 }{}
 
 \ifthenelse{\mode=1}{
-\draw [line width=\axislinet, arrowbe] (-\axsp,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width=\axislinet, arrowbe] (0,-\axsp) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width=\axislinet, arrowbe] (-\axsp,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width=\axislinet, arrowbe] (0,-\axsp) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width=\bilinet, draw=\linecolor, linearrow]
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm);
 }{}
 
 \ifthenelse{\mode=2}{
-\draw [line width = \axislinet, arrowbe] (-\axsp,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowbe] (0,-\axsp) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowbe] (-\axsp,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowbe] (0,-\axsp) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=black, linearrow]
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-\dy, -\fy);
 }{}
 
 
 \ifthenelse{\mode=3}{
-\draw [line width = \axislinet, arrowbe] (-\axsp,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowbe] (0,\lowlevel) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowbe] (-\axsp,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowbe] (0,\lowlevel) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=black, linearrow]
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-2*\dy, -2*\fy);
 }{}
 
 \ifthenelse{\mode=4}{
-\draw [line width = \axislinet, arrowben] (\dm- 2*\dy -\pyd -\axsp,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowben] (0,\fm -2*\fy -\pyf -\axsp) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowben] (\dm- 2*\dy -\pyd -\axsp,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowben] (0,\fm -2*\fy -\pyf -\axsp) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=black, linearrow] 
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-2*\dy, -2*\fy)
 -- node[above, midway]{\kst}++(-\pyd, -\pyf);
@@ -147,22 +148,22 @@ if \showstiff==0 then {\kpt={};\kst={};} else {};
 
 
 \ifthenelse{\mode=5}{
-\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=black, linearrow] 
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-2*\dy, -2*\fy)
 -- node[above, midway]{\kst}++(-2*\pyd, -2*\pyf);
 }{}
 
 \ifthenelse{\mode=6}{
-\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=black, linearrow] 
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-2*\dy, -2*\fy)
 -- node[above, midway]{\kst}++(-2*\pyd, -2*\pyf)
@@ -170,11 +171,11 @@ if \showstiff==0 then {\kpt={};\kst={};} else {};
 }{}
 
 \ifthenelse{\mode=7}{
-\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=black, linearrow] 
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-2*\dy, -2*\fy)
 -- node[above, midway]{\kst}++(-2*\pyd, -2*\pyf)
@@ -182,11 +183,11 @@ if \showstiff==0 then {\kpt={};\kst={};} else {};
 }{}
 
 \ifthenelse{\mode=8}{
-\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, below=-2pt]{\xlab}(\xmax,0);
-\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, left=-2pt]{\ylab}(0,\ymax);
+\draw [line width = \axislinet, arrowben] (-\xmax,0) -- node[at end, anchor=north]{\xlab}(\xmax,0);
+\draw [line width = \axislinet, arrowben] (0,-\ymax) -- node[at end, anchor=east]{\ylab}(0,\ymax);
 \path [line width = \bilinet, draw=\linecolor, linearrow] 
 (0,0)
--- node[right, midway, behind path, fill=white]{\kpt}(\dy,\fy)
+-- node[right, midway, behind path, inner sep=2pt, outer sep=0.5pt, anchor=west]{\kpt}(\dy,\fy)
 -- node[below, midway]{\kst}(\dm,\fm)
 -- node[left, midway]{\kpt}++(-2*\dy, -2*\fy)
 -- node[above, midway]{\kst}++(-2*\pyd, -2*\pyf)

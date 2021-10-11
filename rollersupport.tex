@@ -6,7 +6,8 @@
   line thickness = 2pt,
   radius ratio = 0.2,
   x value = 0,
-  y value = 0},
+  y value = 0,
+  show circle = 1,},
   triangle width/.store in = \triw,
   line width/.store in = \linew,
   line depth/.store in = \lined,
@@ -14,6 +15,7 @@
   radius ratio/.store in = \radratio,
   x value/.store in = \xvalue,
   y value/.store in = \yvalue,
+  show circle/.store in = \showcircle,
 }
 
 \newcommand{\rollersupport}[1][]{
@@ -39,7 +41,9 @@ real \rad;
 }
 \begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=0];    % Draw everything in pt units
 \draw [line join=bevel, line width=\linet] (0, 0) -- (-\triw/2, -\triw) -- (+\triw/2, -\triw) -- cycle;
-\filldraw [fill=white, line width=\linet] (0, 0) circle[radius=\rad];
+\ifthenelse{\showcircle=1}
+	{\filldraw [fill=white, line width = \linet] (0, 0) circle[radius=\rad];}
+	{;}
 \draw [line width=\linet] (-\linew/2, -\triw) -- (+\linew/2, -\triw);
 \draw [line width=\linet] (-\linew/2, -\triw-\lined) -- (+\linew/2, -\triw-\lined);
 \end{scope}

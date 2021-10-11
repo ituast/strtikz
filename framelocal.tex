@@ -59,19 +59,22 @@
   length property font size = \normalsize,
   rotation text startx = 1.5cm,
   rotation text = {$\theta$},
-  dof arrow size ratio=0.5,
+  dof arrow size ratio=1,
   place the length dimension = 1,  
-  place global axes =1,
-  place local axes =1,
-  place i dofs axes =1,
-  place j dofs axes =1,
+  place global axes=1,
+  place local axes=1,
+  place i dofs axes=1,
+  place j dofs axes=1,
+  place yz dofs only=1,
   place angle =1,
   joint i text = $i$,
   joint j text = $j$,
   local x axis text = $x$,
   local y axis text = $y$,
   global x axis text = $X$,
-  global y axis text = $Y$, },
+  global y axis text = $Y$,
+  arrow tip length=3pt,
+  arrow tip width=2pt,},
   startx/.store in =\startx,
   starty/.store in =\starty,
   dx/.store in =\deltaxdir,
@@ -132,17 +135,20 @@
   rotation text/.store in=\rotationtext,
   dof arrow size ratio/.store in = \dofarrowsiz,
   place the length dimension/.store in = \placelengthdim,
-  place global axes/.store in =\placeglobalaxes ,
-  place local axes/.store in =\placelocalaxes ,
-  place i dofs axes/.store in =\placeidofs ,
-  place j dofs axes/.store in =\placejdofs  ,
+  place global axes/.store in =\placeglobalaxes,
+  place local axes/.store in =\placelocalaxes,
+  place i dofs axes/.store in =\placeidofs,
+  place j dofs axes/.store in =\placejdofs,
+  place yz dofs only/.store in =\placeyzdofsonly,
   place angle/.store in =\placeangle,
   joint i text/.store in = \jointitext,
   joint j text/.store in = \jointjtext,
   local x axis text/.store in = \localxtext,
   local y axis text/.store in = \localytext,
   global x axis text/.store in = \globalxtext,
-  global y axis text/.store in = \globalytext, }
+  global y axis text/.store in = \globalytext,
+  arrow tip length/.store in=\arrlen,
+  arrow tip width/.store in=\arrwid,}
 
 \newcommand{\framelocal}[1][]{
 \pgfkeys{/framelocal, default, #1}
@@ -185,6 +191,8 @@ real \globalaxesfontsize, \globalaxesfontsize;
 \globalYstart=\globalYstart;
 \globalYend=\globalYend;
 \rotationanglex = \rotationanglex;
+\arrlen = \arrlen;
+\arrwid = \arrwid;
 %End conversion, All values are now in pt units
 \rotationangle = atan2(\deltaydir, \deltaxdir);
 \lengthofelement = veclen(\deltaxdir, \deltaydir);
@@ -193,51 +201,85 @@ real \globalaxesfontsize, \globalaxesfontsize;
 \endoffsetx = \endoffsetx;
 \endoffsety = \endoffsety;
 \rotationdofradius = \rotationdofratio*\lengthdofs;
+if equal(\placeyzdofsonly,1) then {\localxstartoffset=\localxlength/5; \idofnodaloffsety=0;} else {};
 \localxstart = \localxstartoffset + \lengthofelement;
 \localystart = \localystartoffset;
 \lengthdimspace = \lengthdimspaceratio * \lengthdimoffset;
 \lengthlabelrotation = \rotationangle + \lengthlabelrotation;
 \propertyrotation = \propertyrotation + \rotationangle;
 }
+
+
+%Settings for arrows
+\tikzset{arrowbe/.style = {arrows={->[length=\arrlen, scale=\dofarrowsiz, width=\arrwid, flex=1, bend]}}};
+
+
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=\rotationangle];    % Draw everything in pt units
+
+%Draw the frame element
 \path [line width = \linethickness, draw=black, postaction={on each segment={mid arrow=black}}]
 (0,0)      node[inner sep=\jointinnersep, outer sep=0, anchor=\rotationangle+\startjointangle]{\jointtextfontsize \jointitext} --
 (\lengthofelement,0)  node[inner sep=\jointinnersep, outer sep=0, anchor=\rotationangle+\endjointangle]{\jointtextfontsize \jointjtext}
 node[midway, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \propertiestext};
 
+%Place the dots at the ends of the frame element
 \fill [black](0,0) circle[radius=\dotradius];
 \fill [black](\lengthofelement,0) circle[radius=\dotradius];
 
+%Place the local axes
 \ifthenelse{\placelocalaxes=1}{
-\draw [->] (\localxstart,0) -- node[at end, inner sep=1pt, outer sep = 0, anchor=\rotationangle+180]{\localaxesfontsize \localxtext}(\localxlength+\localxstart,0);
-\draw [->] (0,\localystart) -- node[at end, inner sep=1pt, outer sep = 0, anchor=\rotationangle-90]{\localaxesfontsize \localytext}(0, \localystart+\localylength);
+\draw [->] (\localxstart,0) -- node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle+180]{\localaxesfontsize \localxtext}(\localxlength+\localxstart,0);
+\draw [->] (0,\localystart) -- node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle-90]{\localaxesfontsize \localytext}(0, \localystart+\localylength);
 }{}
 
+%Place the DOFs on the ith joint
 \ifthenelse{\placeidofs=1}{
-\dofs[startx = \startoffsetx, starty = \startoffsety, length x = \lengthdofs,  length y = \lengthdofs,
+
+%Place only y and z dofs only
+\ifthenelse{\placeyzdofsonly=1}
+{\dofsyz[startx = \startoffsetx, starty = \startoffsety, length x = \lengthdofs,  length y = \lengthdofs,
   offset x= \idofnodaloffsetx, offset y= \idofnodaloffsety,
   offset rotation xdir = \irotnodaloffsetx, offset rotation ydir = \irotnodaloffsety,
   start angle = \irotdofstartangle, end angle = \irotdofendangle,   
   radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext, rstring = \inoderdoftext, font size = \doffontsize,
-  rotation=0, font rotation=\rotationangle,  arrow size ratio=\dofarrowsiz,]
+  rotation=0, font rotation=\rotationangle,  arrow size ratio=\dofarrowsiz,]}
+%Place on x y and z dofs
+{\dofs[startx = \startoffsetx, starty = \startoffsety, length x = \lengthdofs,  length y = \lengthdofs,
+  offset x= \idofnodaloffsetx, offset y= \idofnodaloffsety,
+  offset rotation xdir = \irotnodaloffsetx, offset rotation ydir = \irotnodaloffsety,
+  start angle = \irotdofstartangle, end angle = \irotdofendangle,   
+  radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext, rstring = \inoderdoftext, font size = \doffontsize,
+  rotation=0, font rotation=\rotationangle,  arrow size ratio=\dofarrowsiz,]}
 }{}  
-  
+
+%Place the DOFs on the jth joint  
 \ifthenelse{\placejdofs=1}{
-\dofs[startx = \lengthofelement+\endoffsetx, starty = \endoffsety, length x = \lengthdofs,  length y = \lengthdofs,
+
+%Place only y and z dofs only
+\ifthenelse{\placeyzdofsonly=1}
+{\dofsyz[startx = \lengthofelement+\endoffsetx, starty = \endoffsety, length x = \lengthdofs,  length y = \lengthdofs,
   offset x= \jdofnodaloffsetx, offset y= \jdofnodaloffsety,
   offset rotation xdir = \jrotnodaloffsetx, offset rotation ydir = \jrotnodaloffsety,
   start angle = \jrotdofstartangle, end angle = \jrotdofendangle,   
   radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext, rstring = \jnoderdoftext, font size = \doffontsize,
-  rotation=0, font rotation=\rotationangle,   arrow size ratio=\dofarrowsiz,]
+  rotation=0, font rotation=\rotationangle,   arrow size ratio=\dofarrowsiz,]}
+%Place on x y and z dofs
+{\dofs[startx = \lengthofelement+\endoffsetx, starty = \endoffsety, length x = \lengthdofs,  length y = \lengthdofs,
+  offset x= \jdofnodaloffsetx, offset y= \jdofnodaloffsety,
+  offset rotation xdir = \jrotnodaloffsetx, offset rotation ydir = \jrotnodaloffsety,
+  start angle = \jrotdofstartangle, end angle = \jrotdofendangle,   
+  radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext, rstring = \jnoderdoftext, font size = \doffontsize,
+  rotation=0, font rotation=\rotationangle,   arrow size ratio=\dofarrowsiz,]}
 }{}
 
+
+%Place the length dimension line
 \ifthenelse{\placelengthdim=1}{
 \dimline[line style={line width = \lengthdimlinethick},
          extension start length={\lengthdimspace pt}, extension start style={black, line width=0.15pt},
          extension end length={\lengthdimspace pt}, extension end style={black, line width=0.15pt}]
          {(0 , \lengthdimoffset)}{(\lengthofelement , \lengthdimoffset)}{\lengthpropfontsize \lengthtext}{\lengthlabelrotation}{\lengthlabeltextinnersep};
 }{}
-
 
 %\path [line width = \linethickness, draw=black, postaction={on each segment={mid arrow=black}}]
 %(0,0)node[left=-0.05cm]{\small $i$} -- (\deltaxdir,\deltaxdir)node[right=-0.1cm]{\small $j$};
@@ -252,6 +294,8 @@ node[midway, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \proper
 
 \end{scope}
 
+
+%Place the global axes
 \ifthenelse{\placeglobalaxes=1}{
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; 
 \draw [->] (\globalXstart,0) -- node[at end, inner sep=1pt, outer sep = 0, right]{\globalaxesfontsize \globalxtext}(\globalXend,0);
@@ -259,8 +303,10 @@ node[midway, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \proper
 }{}
 
 
+%Place the angle
 \ifthenelse{\placeangle=1}{
-\draw [arrows={->[]}](\rotationanglex,0) arc [start angle=0, end angle=\rotationangle, radius=\rotationanglex]
+\draw [arrowbe](\rotationanglex,0)
+arc [start angle=0, end angle=\rotationangle, radius=\rotationanglex]
 node[midway,inner sep=1pt, outer sep = 0, anchor=180+\rotationangle/2]{\globalaxesfontsize \rotationtext};
 \end{scope}
 }{}

@@ -21,14 +21,27 @@
 
 \begin{document}
 \begin{tikzpicture}
-\pinsupport[%
-	triangle width=0.5cm,
-	line width=1cm,
-	line depth=0.2cm,
-	line thickness=2pt,
-	radius ratio = 0.2,
-    x value = 0,
-    y value = 0,
-    show circle = 0]
+\framestructure[%
+number of storys=5,
+number of bays=3,
+story height=1cm,
+bay width=2cm,
+startX=0cm,
+startY=0cm,
+frame line thickness = 1.5pt,
+foundation side width = 0.75cm,
+support width = 0.5cm,
+support height = 0.2cm,
+support line thickness = 1.0pt,
+number of isolators = 4,
+isolator width = 0.4cm,
+isolator thickness = 0.2cm,
+isolator line thickness = 1.5pt,
+foundation thickness = 0.3cm,
+show supports = 4,
+show mass = 0,
+show dof=0,
+show axes=0,
+show piles=0,]
 \end{tikzpicture}
 \end{document}

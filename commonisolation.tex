@@ -1,0 +1,131 @@
+\pgfkeys{
+ /commonisolation/.is family, /commonisolation,
+  default/.style = {
+  startX = 0cm,
+  startY = 0cm,
+  support width = 1cm,
+  support body = 5cm,
+  support height = 0.15cm,
+  support line thickness = 1.5pt,
+  number of isolators = 4,
+  isolator width = 0.3cm,
+  isolator thickness = 0.2cm,
+  isolator line thickness = 1.5pt,
+  isolator drift=1cm,
+  show isolation drift=0,
+  isolator number to show drift=1,
+  foundation thickness = 0.5cm,
+  foundation side width = 1cm,
+  mass text for slab = $m_\text{b}$,
+  text location for mass=left,
+  show mass text=1,
+  arrow tip length=3pt,
+  arrow tip width=2pt,
+  isolation drift text=$x_\text{b}$,},
+  startX/.store in = \startx,
+  startY/.store in = \starty,
+  support width/.store in = \supportsidewidth,
+  support body/.store in = \supportbody,
+  support height/.store in = \supportheight,
+  support line thickness/.store in = \baselinet,
+  number of isolators/.store in = \numberofisolators,
+  isolator width/.store in = \isolationwidth,
+  isolator thickness/.store in = \isolationdepth,
+  isolator line thickness/.store in = \isolinet,
+  isolator drift/.store in = \isolationdrift,
+  show isolation drift/.store in = \showisodrift,
+  isolator number to show drift/.store in = \isonumberdrift,
+  foundation thickness/.store in = \foundationdepth,
+  foundation side width/.store in = \foundsidew,
+  mass text for slab/.store in = \masstextslab,
+  text location for mass/.store in=\masstextloc,
+  show mass text/.store in=\showmasstext,
+  arrow tip length/.store in=\arrlen,
+  arrow tip width/.store in=\arrwid,
+  isolation drift text/.store in=\isodrifttext,
+}
+
+\newcommand{\commonisolation}[1][]{
+\pgfkeys{/commonisolation, default, #1}
+\tikzmath{
+real \startx, \starty;
+int \numberofisolators, \kiso, \showmasstext, \isonumberdrift;
+real \supportsidewidth, \supportbody, \supportheight, \isolationwidth, \isolationdepth, \foundationdepth, \xiso, \isospace;
+real \baselinet, \isolinet;
+real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy;
+real \foundboty, \foundtopy, \foundstartx, \foundendx;
+real \masstextoutersep, \masstextx, \masstexty;
+real \isolationdrift, \isofounddrift, \arrlen, \arrwid;
+%Conversion all units to the unit pt
+\startx = \startx;
+\starty = \starty;
+\supportsidewidth = \supportsidewidth;
+\supportbody =  \supportbody;
+\supportheight = \supportheight;
+\baselinet = \baselinet;
+\isolationwidth = \isolationwidth;
+\isolationdepth = \isolationdepth;
+\isolinet = \isolinet;
+\foundationdepth = \foundationdepth;
+\foundsidew = \foundsidew;
+\isolationdrift=\isolationdrift;
+%End conversion, All values are now in pt units.
+\rigbasestartx = -\supportsidewidth;
+\rigbaseendx = \supportbody+\supportsidewidth;
+\isoboty = -\supportheight-\baselinet/2-\isolationdepth;
+\isotopy = -\supportheight-\baselinet/2;
+if equal(\showisodrift,1) then {\isofounddrift=\isolationdrift;} else {\isofounddrift=0;};
+\foundboty = -\supportheight-\baselinet-\isolationdepth-\foundationdepth;
+\foundtopy = -\supportheight-\baselinet-\isolationdepth;
+\foundstartx = -\foundsidew-\isofounddrift;
+\foundendx = +\supportbody+\foundsidew-\isofounddrift;
+%Some isolator properties
+if equal(\numberofisolators,1) then{
+\isospace = 0.0;
+\xiso{1} = (\supportbody)/2.0;
+}
+else {
+\isospace = (\supportbody)/(\numberofisolators-1);
+for \kiso in {1,...,{\numberofisolators}}{\xiso{\kiso} = (\kiso-1)*\isospace;};
+};
+%%%% Mass text outer sep distance for mass, x and y coordinates;
+\masstextoutersep = \supportsidewidth+\supportbody/2;
+\masstextx = \supportbody/2;
+\masstexty = -\supportheight/2;
+}
+\begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; % Drawing everything in pt units
+\tikzset{arrowbe/.style = {arrows={->[length=\arrlen, width=\arrwid]}}};
+\tikzset{arrowben/.style = {arrows={<->[length=\arrlen, width=\arrwid]}}};
+
+%%%%% Rigid Base
+\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);
+
+%%%% Foundation
+\fill [fill=gray]
+(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
+\draw [line width = \baselinet] (\foundstartx, \foundtopy) -- (\foundendx, \foundtopy);
+
+\ifthenelse{\showmasstext=1}{
+\node[inner sep=2pt, outer sep=\masstextoutersep, \masstextloc, opaque] at (\masstextx,\masstexty) {\masstextslab};}{}
+
+%%%% Isolators
+\foreach \j in {1,...,{\numberofisolators}}
+{\ifthenelse{\showisodrift=1}{\filldraw [fill = white!80!black, draw=black, line width=\isolinet, line join=bevel]
+(\xiso{\j}-\isolationdrift-\isolationwidth/2,\isoboty) -- ++(\isolationwidth,0)
+-- ++(\isolationdrift,\isolationdepth) -- ++(-\isolationwidth,0) -- cycle;
+\ifthenelse{\j=\isonumberdrift}{
+\draw (\xiso{\j}-\isolationdrift,\isoboty+2pt) -- ++(0,-\foundationdepth-10pt);
+\draw (\xiso{\j},\isotopy+2pt) -- ++(0,-\isolationdepth-\foundationdepth-10pt);
+\draw [arrowbe] (\xiso{\j}-\isolationdrift,\isoboty-\foundationdepth-6pt) --
+node[inner sep=2pt, anchor=north, midway]{\isodrifttext}  ++(\isolationdrift,0);}{}
+} %%% If deflected shapes of isolators to be shown
+{\filldraw [fill = white!20!black, draw=black, line width=\isolinet, line join=bevel]
+(\xiso{\j},0) +(-\isolationwidth/2,\isoboty) rectangle +(\isolationwidth/2,\isotopy);} %%% If undeflected shapes of isolators to be shown.
+}
+
+
+
+
+\end{scope}
+}
+
