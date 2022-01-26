@@ -1,0 +1,35 @@
+\documentclass[]{standalone}
+\usepackage{mathptmx}
+%\renewcommand{\familydefault}{\rmdefault}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.14}
+\usepackage{titling, graphicx}
+\usepackage{tikz}
+\usepackage{upgreek}
+\usepackage{amsmath,amsthm}
+\usepackage{strtikz}
+\usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard,math,fit}
+\usetikzlibrary{calc,intersections,through,backgrounds}
+\usetikzlibrary{decorations.pathmorphing, decorations.markings,decorations.pathreplacing}
+
+
+\begin{document}
+	\begin{tikzpicture}
+		\spiral{center={(3,0)}, name=defaultspiral};
+		\node[above=0.6cm,align=center] at (defaultspiralstart) {This\\is the\\default spiral!};
+		\spiral{center={(5,0)}, clockwise, name=clockwisespiral};
+		\node[below=0.6cm,align=center] at (clockwisespiralstart) {This\\is a\\clockwise spiral!};
+		\spiral[blue, dashed]{start angle=45, end angle=90, start radius=1, end radius=2, revolutions=4, clockwise, name=sp1} node[at start]{At center};
+		\spiral[red, shift={(180:3.5)}]{end angle=45, end radius= 1, name=sp2} node[above left]{A custom spiral};
+		\foreach \sp in {defaultspiral,clockwisespiral,sp1,sp2}{
+			\fill[red!80!black] (\sp end) circle (1pt);
+			\fill[green!80!black] (\sp start) circle (1pt);
+		}
+	\end{tikzpicture}
+\end{document}
