@@ -16,7 +16,7 @@
 \usepackage{strtikz}
 \usepackage{tikz-dimline}
 \usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard,math,fit}
-\usetikzlibrary{calc,intersections,through,backgrounds}
+\usetikzlibrary{bending, calc,intersections,through,backgrounds}
 \usetikzlibrary{decorations.pathmorphing, decorations.markings,decorations.pathreplacing}
 
 
@@ -83,11 +83,11 @@
   rotation text = {$\theta$},
   dof arrow size ratio=0.5,
   place the length dimension = 0,  
-  place global axes =1,
-  place local axes =1,
-  place i dofs axes =1,
-  place j dofs axes =1,
-  place angle =1,
+  place global axes = 0,
+  place local axes = 1,
+  place i dofs axes = 0,
+  place j dofs axes = 0,
+  place angle = 0,
   joint i text = $i$,
   joint j text = $j$,
   local x axis text = $x$,

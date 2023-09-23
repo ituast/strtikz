@@ -21,20 +21,18 @@
 
 \begin{document}
 \begin{tikzpicture}
-\springs[startx = 2cm,
-starty = 3cm,
-start rigid length = 1cm,
-end rigid length = 1.5cm,
-rigid bar length = 1cm,
-rigid end offset ratio = 0.2,
-spring length = 2cm,
-spring zigzag segment length = 0.2cm,
-rotational spring diameter = 0.0004cm,
-rotational spring cycle number = 4,
-horizontal spring pre length = 0.3cm,
-horizontal spring end length = 0.3cm,
-vertical spring pre length ratio = 0.5,
-vertical spring tick ratio = 0.5]
-\draw (0,0) -- (1cm,1cm);
+\rollersupportround[x value = 0,
+y value = 0,
+support width = 0.2cm,
+support height = 0.3cm,
+line width = 1.5pt,
+pin radius = 1pt,
+show pin = 1,
+base width = 0.8cm,
+base height = 0.2cm,
+base gray height = 0.2cm,
+base circle line width = 1.0pt,
+base circle location ratio = 0.15,
+show circles = 1,]
 \end{tikzpicture}
 \end{document}

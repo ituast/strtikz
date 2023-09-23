@@ -1,0 +1,14 @@
+\tikzset{%
+	from end of path/.style={
+		insert path={
+			\pgfextra{%
+				\expandafter\pgfprocesspathextractpoints%
+				\csname tikz@intersect@path@name@#1\endcsname%
+				\pgfpointlastonpath%
+				\pgfgetlastxy\lastx\lasty
+			}
+			(\lastx,\lasty)
+}}}
+
+
+%https://tex.stackexchange.com/questions/256883/telling-tikz-to-continue-the-previously-drawn-path-with-a-line-to-operation

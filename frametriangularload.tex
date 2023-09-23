@@ -1,26 +1,32 @@
 \pgfkeys{
- /framedistributedload/.is family, /framedistributedload,
+ /frametriangularload/.is family, /frametriangularload,
   default/.style={
   startx = 0cm,
   starty = 0cm,
   endx = 5cm,
   endy = 5cm,
   number of arrows = 10,
-  height of arrows = 0.5cm,
+  print first arrow = 1,
+  height of arrows left= 0.5cm,
+  height of arrows right= 0.5cm,
   space = 0.1cm,
   start ratio = 0.02,
   end ratio = 0.02,
-  load text = $\SI{10}{\kilo\newton/\meter}$},
+  right load text = $\SI{10}{\kilo\newton/\meter}$,
+  left load text = $\SI{10}{\kilo\newton/\meter}$},
   startx/.store in = \loadstartcoordx,
   starty/.store in = \loadstartcoordy,
   endx/.store in = \loadendcoordx,
   endy/.store in = \loadendcoordy,
   number of arrows/.store in = \loadarrownumber,
-  height of arrows/.store in = \loadarrowheight,
+  print first arrow/.store in = \printfirstarrow,
+  height of arrows left/.store in = \loadarrowheightleft,
+  height of arrows right/.store in = \loadarrowheightright,
   space/.store in = \loadarrowspace,
   start ratio/.store in = \loadstartratio,
   end ratio/.store in = \loadendratio,
-  load text/.store in = \loadtext,
+  right load text/.store in = \rightloadtext,
+  left load text/.store in = \leftloadtext,
 }
 
 %\loadstartcoordx: starting coordinate x
@@ -28,25 +34,29 @@
 %\loadendcoordx: end coordinate x
 %\loadendcoordy: end coordinate y
 %\loadarrownumber: number of arrows
-%\loadarrowheight: height of arrows
+%\loadarrowheightleft: height of arrows on the left hand side
+%\loadarrowheightright: height of arrows on the right hand side
 %\loadarrowspace: distance of arrows from the frame
 %\loadstartratio: start(first) arrow start ratio
 %\loadendratio: end (last) arrow start ratio
-\newcommand{\framedistributedload}[1][]{
-\pgfkeys{/framedistributedload, default, #1}
+\newcommand{\frametriangularload}[1][]{
+\pgfkeys{/frametriangularload, default, #1}
 \tikzmath{
 real \loadstartcoordx, \loadstartcoordy, \loadendcoordx, \loadendcoordy;
 real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf, \loaddxa, \loaddya, \loadaaa, \loadbbb;
 real \loadxvalue, \loadyvalue;
-real \loadwxvalue, \loadwyvalue, \loadarrowheight, \loadstartratio, \loadendratio, \lenf;
-int \loadarrownumber, \loadarrownumbermo, \i, \j;
-real \rnarr;
+real \loadwxvalue, \loadwyvalue, \loadarrowheightleft, \loadarrowheightright,
+real \loadstartratio, \loadendratio, \lenf;
+int \loadarrownumber, \loadarrownumbermo, \i, \j, \printfirstarrows;
+real \rnarr, \loadarrowheight, \ldangle;
+real \dah, \totalangle, \totallength;
 %Conversion all units to the unit pt
 \loadstartcoordx = \loadstartcoordx;
 \loadstartcoordy = \loadstartcoordy;
 \loadendcoordx = \loadendcoordx;
 \loadendcoordy = \loadendcoordy;
-\loadarrowheight = \loadarrowheight;
+\loadarrowheightleft = \loadarrowheightleft;
+\loadarrowheightright = \loadarrowheightright;
 \loadarrowspace = \loadarrowspace;
 %End conversion, All values are now in pt units.
  \loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
@@ -56,6 +66,10 @@ real \rnarr;
  \loaddxa = \loaddxf*(1-(\loadstartratio+\loadendratio)); %dx for the start and end of arrow
  \loaddya = \loaddyf*(1-(\loadstartratio+\loadendratio)); %dy for the start and end of arrow
  \lena = veclen(\loaddxa, \loaddya);
+ \dah = \loadarrowheightright-\loadarrowheightleft;
+ \ldangle = atan2(\dah,\lena);
+ \totalangle = \loadangle + \ldangle;
+ \totallength = veclen(\lena, \dah);
  \rnarr = \loadarrownumber;
  \loadwxvalue = (\loaddxa)/(\rnarr-1); %dx for the single arrow
  \loadwyvalue = (\loaddya)/(\rnarr-1); %dx for the single arrow
@@ -66,29 +80,25 @@ real \rnarr;
  for \i in {2,...,{\loadarrownumber-1}}{
  \loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
  \loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
+ \loadarrowheight{\i} = \loadarrowheightleft + (\dah)/(\rnarr-1)*(\i-1);
  };
  \loadarrownumbermo = \loadarrownumber-1;
- \loc = ifthenelse(\loadarrowheight>0,"above","below");
+ \loc = ifthenelse(\loadarrowheightleft>0,"above","below");
 % print {$\loaddxf$};
 }
 \begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
-\foreach \i in {2,...,\loadarrownumbermo}{
-\draw [<-, line width=0.5] (\loadxvalue{\i}, \loadyvalue{\i}) ++(90+\loadangle:\loadarrowspace) -- ++(90+\loadangle:\loadarrowheight);}
-\draw [<->, line width=0.5] (\loadxvalue{1},\loadyvalue{1}) ++(90+\loadangle:\loadarrowspace)--
-++(90+\loadangle:\loadarrowheight) -- node[\loc,midway,sloped]{\loadtext}
-++(\loadangle:\lena)-- ++(-90+\loadangle:\loadarrowheight);
+	\foreach \i in {2,...,\loadarrownumbermo}{
+		\draw [<-, line width=0.5] (\loadxvalue{\i}, \loadyvalue{\i})
+			++(90+\loadangle:\loadarrowspace) --
+			++(90+\loadangle:\loadarrowheight{\i});}
+	
+	\ifthenelse{\printfirstarrow=0}{\def \thearrow {->} } {\def \thearrow {<->}};
+		
+	\draw [\thearrow, line width=0.5] (\loadxvalue{1},\loadyvalue{1}) 
+		++(90+\loadangle:\loadarrowspace)-- node[\loc,at end, above]{\leftloadtext}
+		++(90+\loadangle:\loadarrowheightleft) --node[\loc,at end, above]{\rightloadtext}
+		++(\totalangle:\totallength)-- ++(-90+\loadangle:\loadarrowheightright);
 \end{scope}
 }
 
-%\begin{tikzpicture}
-%\draw [line width=1](0 cm, 0 cm) -- (5 cm, 5 cm);
-%\framedistributedload[startx = 0cm, starty = 0cm,
-%endx = 5cm, endy = 5cm,
-%number of arrows = 10,
-%height of arrows = 0.5cm,
-%space = 0.1cm,
-%start ratio = 0.02,
-%end ratio = 0.02,
-%load text = $\SI{10}{\kilo\newton/\meter}$]
-%\end{tikzpicture}
 

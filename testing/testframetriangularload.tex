@@ -17,24 +17,30 @@
 \usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard}
 \usetikzlibrary{math,fit}
 \usetikzlibrary{calc,intersections,through,backgrounds,decorations.pathmorphing}
+%\usetikzlibrary{fpu}
+%\usepackage{pgfmath}
 
 
 \begin{document}
+
+
 \begin{tikzpicture}
-\springs[startx = 2cm,
-starty = 3cm,
-start rigid length = 1cm,
-end rigid length = 1.5cm,
-rigid bar length = 1cm,
-rigid end offset ratio = 0.2,
-spring length = 2cm,
-spring zigzag segment length = 0.2cm,
-rotational spring diameter = 0.0004cm,
-rotational spring cycle number = 4,
-horizontal spring pre length = 0.3cm,
-horizontal spring end length = 0.3cm,
-vertical spring pre length ratio = 0.5,
-vertical spring tick ratio = 0.5]
-\draw (0,0) -- (1cm,1cm);
+\draw [line width=1](0, 0) -- (2.5in, 1in);
+\frametriangularload[startx = 0cm,
+starty = 0cm,
+endx = 2.5in,
+endy = 1in,
+number of arrows = 10,
+print first arrow = 1,
+height of arrows left= 0.5cm,
+height of arrows right= 2.cm,
+space = 0.0cm,
+start ratio = 0.025,
+end ratio = 0.025,
+right load text = $\SI{10}{\kilo\newton/\meter}$,
+left load text = $ $]
+%$\SI{10}{\kilo\newton/\meter}$
 \end{tikzpicture}
+
+
 \end{document}

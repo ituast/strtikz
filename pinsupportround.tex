@@ -1,0 +1,71 @@
+\pgfkeys{
+ /pinsupportround/.is family, /pinsupportround,
+  default/.style = {x value = 0,
+  y value = 0,
+  support width = 0.2cm,
+  support height = 0.3cm,
+  line width = 1.5pt,
+  pin radius = 1.5pt,
+  show pin = 0,
+  base width = 0.8cm,
+  base height = 0.2cm,
+  base gray height = 0.2cm,},
+  x value/.store in = \xvalue,
+  y value/.store in = \yvalue,
+  support width/.store in = \supwidth,
+  support height/.store in = \supheight,
+  line width/.store in = \linewidth,
+  pin radius/.store in = \pinradius,
+  show pin/.store in = \showpin,
+  base width/.store in = \basewidth,
+  base height/.store in = \baseheight,
+  base gray height/.store in = \basegrayheight,
+}
+
+\newcommand{\pinsupportround}[1][]{
+\pgfkeys{/pinsupportround, default, #1}
+\tikzmath{
+real \xvalue, \yvalue, \supwidth, \supheight, \linewidth, \pinradius;
+real \basewidth, \baseheight, \basegrayheight;
+int \showpin;
+%Conversion all units to the unit pt
+\xvalue = \xvalue;
+\yvalue = \yvalue;
+\supwidth  = \supwidth;
+\supheight  = \supheight;
+\linewidth = \linewidth;
+\pinradius = \pinradius;
+\basewidth = \basewidth;
+\baseheight = \baseheight;
+\basegrayheight = \basegrayheight;
+%All units are converted to pt
+\wfsx = -\supwidth/2 -\linewidth*1.02; %white fill start x
+\wfsy = -\supheight; %white fill start x
+\wfex = \supwidth/2 + \linewidth*1.02; %white fill end x
+\wfey = -\supheight-\supwidth/2-\linewidth; %white fill end x
+%
+\gfsx = -\basewidth/2; %gray fill start x
+\gfex = \basewidth/2; %gray fill end x
+\gfsy = -\supheight; %gray fill start y
+\gfey = -\supheight-\basegrayheight; %gray fill end y
+%
+\flsx = -\basewidth/2; % first line start x
+\flex = \basewidth/2; % first line end x
+\flsy = -\supheight; % first line start y
+\fley = -\supheight; % first line end y
+%
+}
+
+\begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=0];    % Draw everything in pt units
+
+	\draw [line width=\linewidth, double distance=\supwidth, line cap=round] (0,-\supheight) -- (0,0);
+	
+	\ifthenelse {\showpin = 1}{\fill (0,0) circle (\pinradius);}{};
+	
+	\fill [white] (\wfsx, \wfsy) rectangle (\wfex, \wfey);
+	
+	\fill [gray] (\gfsx, \gfsy) rectangle (\gfex, \gfey);
+	\draw [line width=\linewidth] (\flsx, \flsy) -- (\flex, \fley);
+
+\end{scope}
+}

@@ -1,0 +1,59 @@
+\pgfkeys{
+ /rollersupportcircle/.is family, /rollersupportcircle,
+  default/.style = {x value = 0,
+  y value = 0,
+  line width = 1.5pt,
+  base width = 0.6cm,
+  base height = 0.2cm,
+  circle radius = 3pt,
+  circle line width = 1.0pt,},
+  x value/.store in = \xvalue,
+  y value/.store in = \yvalue,
+  support width/.store in = \supwidth,
+  line width/.store in = \linewidth,
+  base width/.store in = \basewidth,
+  base height/.store in = \baseheight,
+  circle radius/.store in = \circrad,
+  circle line width/.store in = \circlinewidth,
+}
+
+\newcommand{\rollersupportcircle}[1][]{
+\pgfkeys{/rollersupportcircle, default, #1}
+\tikzmath{
+real \xvalue, \yvalue, \linewidth, \circrad;
+real \basewidth, \baseheight, \circlinewidth, \circlocrat;
+int \showcircles;
+%Conversion all units to the unit pt
+\xvalue = \xvalue;
+\yvalue = \yvalue;
+\linewidth = \linewidth;
+\basewidth = \basewidth;
+\baseheight = \baseheight;
+\circlinewidth = \circlinewidth;
+\circrad = \circrad;
+%All units are converted to pt
+%
+\gfsx = -\basewidth/2; %gray fill start x
+\gfex = \basewidth/2; %gray fill end x
+\gfsy = -2*\circrad - \circlinewidth*4/3; %gray fill start y
+\gfey = -2*\circrad - \circlinewidth*4/3 -\baseheight ; %gray fill end y
+%
+\flsx = -\basewidth/2; % first line start x
+\flex = \basewidth/2; % first line end x
+\flsy = -2*\circrad - \circlinewidth*4/3; % first line start y
+\fley = \flsy; % first line end y
+%
+\mccx = 0; %middle circle center x
+\mccy = -\circrad - \circlinewidth/3*2; %middle circle center y
+%
+}
+
+\begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=0];    % Draw everything in pt units
+	
+	\draw [line width=\circlinewidth] (\mccx, \mccy) circle (\circrad);
+	
+	\fill [gray] (\gfsx, \gfsy) rectangle (\gfex, \gfey);
+	\draw [line width=\linewidth] (\flsx, \flsy) -- (\flex, \fley);
+
+\end{scope}
+}
