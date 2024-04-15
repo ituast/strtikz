@@ -65,7 +65,7 @@
   place local axes=1,
   place i dofs axes=1,
   place j dofs axes=1,
-  place yz dofs only=1,
+  place yz dofs only=0,
   place angle =1,
   joint i text = $i$,
   joint j text = $j$,
@@ -300,6 +300,7 @@ node[midway, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \proper
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; 
 \draw [->] (\globalXstart,0) -- node[at end, inner sep=1pt, outer sep = 0, right]{\globalaxesfontsize \globalxtext}(\globalXend,0);
 \draw [->] (0,\globalYstart) -- node[at end, inner sep=1pt, outer sep = 0, above]{\globalaxesfontsize \globalytext}(0,\globalYend);
+\end{scope}
 }{}
 
 
