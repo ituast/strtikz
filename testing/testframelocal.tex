@@ -31,7 +31,7 @@
   start dof offset y = 0.0cm,
   end dof offset x = 0.0cm,
   end dof offset y = 0.0cm,
-  dof arrow size = 0.6cm,
+  dof size = 0.6cm,
   rotation dof ratio = 0.8,  
   i rotation dof start angle=150,
   i rotation dof end angle=300,  
@@ -81,20 +81,26 @@
   length property font size = \normalsize,
   rotation text startx = 1.75cm,
   rotation text = {$\theta$},
-  dof arrow size ratio=0.5,
+  rotation arrow ratio = 0.75,
   place the length dimension = 0,  
   place global axes = 1,
   place local axes = 1,
   place i dofs axes = 1,
   place j dofs axes = 1,
   place yz dofs only=0,
-  place angle = 0,
+  place angle = 1,
   joint i text = $i$,
   joint j text = $j$,
   local x axis text = $x$,
   local y axis text = $y$,
   global x axis text = $X$,
-  global y axis text = $Y$,]
+  global y axis text = $Y$,
+  arrow size ratio=1,
+arrow tip length=6pt,
+arrow tip width=3pt,
+dof arrow size ratio=1,
+dof arrow tip length=2pt,
+dof arrow tip width=2pt,]
 %\draw (0,0) -- (1cm,1cm);
 \end{tikzpicture}
 \end{document}
