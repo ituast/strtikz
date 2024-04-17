@@ -7,7 +7,9 @@
   bay width = 2cm,
   startX = 0cm,
   startY = 0cm,
-  frame line thickness = 1pt,
+  line thickness = 1.5pt,
+  beam line thickness = 1.5pt,
+  column line thickness = 1.5pt,
   support width = 0.3cm,
   support height = 0.15cm,
   support line thickness = 1.5pt,
@@ -68,7 +70,9 @@
   bay width/.store in = \baywidth,
   startX/.store in = \startx,
   startY/.store in = \starty,
-  frame line thickness/.store in = \framelinet,
+  line thickness/.store in = \linet,
+  beam line thickness/.store in = \beamframelinet,
+  column line thickness/.store in = \colframelinet,
   support width/.store in = \supportwidth,
   support height/.store in = \supportheight,
   support line thickness/.store in = \baselinet,
@@ -133,7 +137,8 @@ real \storyheight, \baywidth, \startx, \starty, \xx, \y;
 int \numberofisolators, \kiso, \isoshiftyn;
 real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \isomidy;
 real \foundationdepth, \massrad, \xiso, \isospace;
-real \axisseperation, \framelinet, \baselinet, \isolinet;
+real \axisseperation, \linet, \baselinet, \isolinet;
+real \beamframelinet, \colframelinet;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy, \isoshift;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
 int \doflocfloor, \dofloch, \dofloccolumn;
@@ -156,7 +161,8 @@ int \latloadtype, \iarr, \showlatload;
 int \substextnum;
 int \showdefl;
 int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
-real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase, \tempdim, \fixbeamx, \fixbeamy ;
+real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase;
+real \tempdim, \fixbeamx, \fixbeamy;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -168,7 +174,9 @@ real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase,
 \isolationdepth = \isolationdepth;
 \isoshift=\isoshift;
 \foundationdepth = \foundationdepth;
-\framelinet = \framelinet;
+\linet = \linet;
+\beamframelinet = \beamframelinet;
+\colframelinet = \colframelinet;
 \baselinet = \baselinet;
 \isolinet = \isolinet;
 \massrad = \massrad;
@@ -213,8 +221,8 @@ for \idefl in {1,...,{\levelnumber}}{
 	\deflect{\idefl} = (\idefl-1)*\drift;
 };
 \tempdim = sqrt(\defparx*\defparx + \defpary*\defpary);
-\fixbeamx = \framelinet/2*\defpary/\tempdim;
-\fixbeamy = \framelinet/2*\defparx/\tempdim;
+\fixbeamx = \colframelinet/2*\defpary/\tempdim;
+\fixbeamy = \colframelinet/2*\defparx/\tempdim;
 \defparbeamx = \defparx / \storyheight * \baywidth;
 \defparbeamy = \defpary / \storyheight * \baywidth;
 \rigbasestartx = \x1-\supportwidth;
@@ -421,15 +429,21 @@ cycle;
 %\draw (0,0)-- (0.5cm,2cm);
 %%% Draw Frame - Undeflected shape
 \ifthenelse{\showdefl=0}{
-\draw [line width = \framelinet]
-(\x{1},\y{1}) -- (\x{1}, \y{\levelnumber}) --
+
+\draw [line width = \colframelinet]
+(\x{1},\y{1}) -- (\x{1}, \y{\levelnumber});
+\draw [line width = \beamframelinet]
+(\x{1}-\colframelinet/2, \y{\levelnumber}) -- (\x{\columnnumber}+\colframelinet/2, \y{\levelnumber});
+\draw [line width = \colframelinet]
 (\x{\columnnumber}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{1});
+ 
+
 \foreach \iii in {2,...,{\nlevmo}}
-{\draw [line width = \framelinet] (\x{1},\y{\iii}) -- 
+{\draw [line width = \beamframelinet] (\x{1},\y{\iii}) -- 
 (\x{\columnnumber},\y{\iii});}
 
 \foreach \j in {2,...,{\ncolmo}}
-{\draw [line width = \framelinet] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
+{\draw [line width = \colframelinet] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
 }{}
 
 %%% Draw Frame - Undeflected shape but beams and columns are drawn seperately
@@ -438,13 +452,13 @@ cycle;
 	{
 		\foreach \icol in {1,...,{\columnnumber}}
 		{
-			\draw [line width = \framelinet]
+			\draw [line width = \colframelinet]
 			(\x{\icol},\y{\istory}) -- (\usevar\x{\icol}, \usevar\y{\istory+1});
 		}
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
-			\draw [line width = \framelinet]
-			(\x{\ibeam}-\framelinet/2,\usevar\y{\istory+1}) -- (\usevar\x{\ibeam+1}+\framelinet/2, \usevar\y{\istory+1});
+			\draw [line width = \beamframelinet]
+			(\x{\ibeam}-\colframelinet/2,\usevar\y{\istory+1}) -- (\usevar\x{\ibeam+1}+\colframelinet/2, \usevar\y{\istory+1});
 		}
 	
 	}
@@ -455,35 +469,55 @@ cycle;
 \ifthenelse{\showdefl=1}{
 	\foreach \icol in {1,...,{\columnnumber}}
 	{
-		\draw [line width = \framelinet]
+		\draw [line width = \colframelinet]
 		(\x{\icol}+\deflect{1},\y{1}) .. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
 		(\x{\icol}+\deflect{2}, \y{2});
 	}
 	\foreach \ibeam in {1,...,{\baynumber}}
 	{
-		\draw [line width = \framelinet]
+		\draw [line width = \beamframelinet]
 		(\x{\ibeam}-\fixbeamx+\deflect{2}, \y{2}+\fixbeamy) .. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
 		(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{2}, \y{2}-\fixbeamy);
 	}
 
 
 	\ifthenelse{\storynumber>1}{
-	\foreach \istory in {2,...,{\storynumber}}
+	\foreach \istory in {2,...,{\storyminone}}
 	{
 		\foreach \icol in {1,...,{\columnnumber}}
 		{
-			\draw [line width = \framelinet]
+			\draw [line width = \colframelinet]
 			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
 			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
 		}
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
-			\draw [line width = \framelinet]
+			\draw [line width = \beamframelinet]
 			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
 			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
 			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
-		}	
+		}
 	}
+	
+	\foreach \istory in {\storynumber}
+	{
+		\foreach \icol in {1,...,{\columnnumber}}
+		{
+			\draw [line width = \colframelinet]
+			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
+			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, +\usevar\y{\istory+1});
+		}
+		
+		\foreach \ibeam in {1,...,{\baynumber}}
+		{
+			\draw [line width = \beamframelinet]
+			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
+			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
+			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
+		}
+	}	
+	
+	
 	}{}
 
 }{}
@@ -572,4 +606,3 @@ rectangle
 
 \end{scope}
 }
-
