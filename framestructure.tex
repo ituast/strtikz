@@ -24,6 +24,9 @@
   foundation side width = 1cm,
   mass radius = 2pt,
   show mass = 1,
+  dof xstring = $x$,
+  dof ystring = $y$,  
+  dof rstring = $\theta$,
   dof floor = 1,
   dof column = 2,
   arrow length ratio = 0.4,
@@ -34,6 +37,9 @@
   rotation dof start angle = 120,
   rotation dof end angle = 280,
   show dof = 1,
+  show dofx = 1,
+  show dofy = 1,
+  show dofr = 1,
   show axes = 1,
   subfloor number=2,
   left soil distance = 2cm,
@@ -71,8 +77,8 @@
   startX/.store in = \startx,
   startY/.store in = \starty,
   line thickness/.store in = \linet,
-  beam line thickness/.store in = \beamframelinet,
-  column line thickness/.store in = \colframelinet,
+  beam line thickness/.store in = \beamlinet/2,
+  column line thickness/.store in = \collinet/2,
   support width/.store in = \supportwidth,
   support height/.store in = \supportheight,
   support line thickness/.store in = \baselinet,
@@ -88,6 +94,9 @@
   mass radius/.store in = \massrad,
   show mass/.store in = \showmass,
   dof floor/.store in = \doflocfloor,
+  dof xstring/.store in = \dofxstr,
+  dof ystring/.store in = \dofystr,
+  dof rstring/.store in = \dofrstr,
   dof column/.store in = \dofloccolumn,
   arrow length ratio/.store in = \arrowlenratio,
   dof offset ratio/.store in = \dofoffsetratio,
@@ -97,6 +106,9 @@
   rotation dof start angle/.store in = \rotdofstartangle,
   rotation dof end angle/.store in = \rotdofendangle,
   show dof/.store in = \showdof,
+  show dofx/.store in = \shodofx,
+  show dofy/.store in = \shodofy,
+  show dofr/.store in = \shodofr,
   show axes/.store in = \showaxes,
   subfloor number/.store in=\subfloors,
   left soil distance/.store in = \leftsoildist,
@@ -138,7 +150,7 @@ int \numberofisolators, \kiso, \isoshiftyn;
 real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \isomidy;
 real \foundationdepth, \massrad, \xiso, \isospace;
 real \axisseperation, \linet, \baselinet, \isolinet;
-real \beamframelinet, \colframelinet;
+real \beamlinet/2, \collinet/2;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy, \isoshift;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
 int \doflocfloor, \dofloch, \dofloccolumn;
@@ -175,8 +187,8 @@ real \tempdim, \fixbeamx, \fixbeamy;
 \isoshift=\isoshift;
 \foundationdepth = \foundationdepth;
 \linet = \linet;
-\beamframelinet = \beamframelinet;
-\colframelinet = \colframelinet;
+\beamlinet/2 = \beamlinet/2;
+\collinet/2 = \collinet/2;
 \baselinet = \baselinet;
 \isolinet = \isolinet;
 \massrad = \massrad;
@@ -221,8 +233,8 @@ for \idefl in {1,...,{\levelnumber}}{
 	\deflect{\idefl} = (\idefl-1)*\drift;
 };
 \tempdim = sqrt(\defparx*\defparx + \defpary*\defpary);
-\fixbeamx = \colframelinet/2*\defpary/\tempdim;
-\fixbeamy = \colframelinet/2*\defparx/\tempdim;
+\fixbeamx = \collinet/2/2*\defpary/\tempdim;
+\fixbeamy = \collinet/2/2*\defparx/\tempdim;
 \defparbeamx = \defparx / \storyheight * \baywidth;
 \defparbeamy = \defpary / \storyheight * \baywidth;
 \rigbasestartx = \x1-\supportwidth;
@@ -430,20 +442,20 @@ cycle;
 %%% Draw Frame - Undeflected shape
 \ifthenelse{\showdefl=0}{
 
-\draw [line width = \colframelinet]
+\draw [line width = \collinet/2]
 (\x{1},\y{1}) -- (\x{1}, \y{\levelnumber});
-\draw [line width = \beamframelinet]
-(\x{1}-\colframelinet/2, \y{\levelnumber}) -- (\x{\columnnumber}+\colframelinet/2, \y{\levelnumber});
-\draw [line width = \colframelinet]
+\draw [line width = \beamlinet/2]
+(\x{1}-\collinet/2/2, \y{\levelnumber}) -- (\x{\columnnumber}+\collinet/2/2, \y{\levelnumber});
+\draw [line width = \collinet/2]
 (\x{\columnnumber}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{1});
  
 
 \foreach \iii in {2,...,{\nlevmo}}
-{\draw [line width = \beamframelinet] (\x{1},\y{\iii}) -- 
+{\draw [line width = \beamlinet/2] (\x{1},\y{\iii}) -- 
 (\x{\columnnumber},\y{\iii});}
 
 \foreach \j in {2,...,{\ncolmo}}
-{\draw [line width = \colframelinet] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
+{\draw [line width = \collinet/2] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
 }{}
 
 %%% Draw Frame - Undeflected shape but beams and columns are drawn seperately
@@ -452,13 +464,13 @@ cycle;
 	{
 		\foreach \icol in {1,...,{\columnnumber}}
 		{
-			\draw [line width = \colframelinet]
+			\draw [line width = \collinet/2]
 			(\x{\icol},\y{\istory}) -- (\usevar\x{\icol}, \usevar\y{\istory+1});
 		}
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
-			\draw [line width = \beamframelinet]
-			(\x{\ibeam}-\colframelinet/2,\usevar\y{\istory+1}) -- (\usevar\x{\ibeam+1}+\colframelinet/2, \usevar\y{\istory+1});
+			\draw [line width = \beamlinet/2]
+			(\x{\ibeam}-\collinet/2/2,\usevar\y{\istory+1}) -- (\usevar\x{\ibeam+1}+\collinet/2/2, \usevar\y{\istory+1});
 		}
 	
 	}
@@ -469,13 +481,13 @@ cycle;
 \ifthenelse{\showdefl=1}{
 	\foreach \icol in {1,...,{\columnnumber}}
 	{
-		\draw [line width = \colframelinet]
+		\draw [line width = \collinet/2]
 		(\x{\icol}+\deflect{1},\y{1}) .. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
 		(\x{\icol}+\deflect{2}, \y{2});
 	}
 	\foreach \ibeam in {1,...,{\baynumber}}
 	{
-		\draw [line width = \beamframelinet]
+		\draw [line width = \beamlinet/2]
 		(\x{\ibeam}-\fixbeamx+\deflect{2}, \y{2}+\fixbeamy) .. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
 		(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{2}, \y{2}-\fixbeamy);
 	}
@@ -486,13 +498,13 @@ cycle;
 	{
 		\foreach \icol in {1,...,{\columnnumber}}
 		{
-			\draw [line width = \colframelinet]
+			\draw [line width = \collinet/2]
 			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
 			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
 		}
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
-			\draw [line width = \beamframelinet]
+			\draw [line width = \beamlinet/2]
 			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
 			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
 			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
@@ -503,14 +515,14 @@ cycle;
 	{
 		\foreach \icol in {1,...,{\columnnumber}}
 		{
-			\draw [line width = \colframelinet]
+			\draw [line width = \collinet/2]
 			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
 			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, +\usevar\y{\istory+1});
 		}
 		
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
-			\draw [line width = \beamframelinet]
+			\draw [line width = \beamlinet/2]
 			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
 			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
 			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
@@ -542,6 +554,7 @@ cycle;
 	}}
 }
 }{}
+
 
 \ifthenelse{\showsupports=0}{
 }{}
@@ -595,14 +608,68 @@ rectangle
   offset rotation xdir= 0cm, offset rotation ydir= 0cm,
   start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
   \arrrad,
-  xstring = $i$, ystring = $i+1$, rstring = $i+2$, font size = \tiny,
+  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
   rotation=0, font rotation=0,
   font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  arrow size ratio=0.5,
+  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
   ]  
 }{}
 
+\ifthenelse{\showdof=2}{
+\ifthenelse{\showsupports=5}{
+	\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+	{\foreach \j in {1,...,{\columnnumber}}{
+
+\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+  offset x= 0.0cm, offset y= 0.0cm,
+  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
+  \arrrad,
+  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+  rotation=0, font rotation=0,
+  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
+  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  ]  
+
+	}}
+	\foreach \iii in {2,...,\useeval{\subfloors+1}}
+	{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+	
+\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+  offset x= 0.0cm, offset y= 0.0cm,
+  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
+  \arrrad,
+  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+  rotation=0, font rotation=0,
+  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
+  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  ] 	
+	
+	}}
+}
+{
+	\foreach \iii in {2,...,{\levelnumber}}
+	{\foreach \j in {1,...,{\columnnumber}}{
+	
+\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+  offset x= 0.0cm, offset y= 0.0cm,
+  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
+  \arrrad,
+  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+  rotation=0, font rotation=0,
+  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
+  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  ] 	
+	
+	}}
+}
+}{}
 
 \end{scope}
 }

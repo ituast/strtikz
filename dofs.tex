@@ -15,6 +15,9 @@
   xstring = $x$,
   ystring = $y$,  
   rstring = $z$,
+  show dofx = 1,
+  show dofy = 1,
+  show dofr = 1,
   font size = \normalsize,
   rotation = 0,
   font rotation = 0,
@@ -38,6 +41,9 @@
   xstring/.store in = \xdoftext,
   ystring/.store in = \ydoftext,
   rstring/.store in = \rotdoftext,
+  show dofx/.store in = \showdofx,
+  show dofy/.store in = \showdofy,
+  show dofr/.store in = \showdofr,
   font size/.store in = \doftextsize,
   rotation/.store in = \rotationdofcenter,
   font rotation/.store in = \fontrotation,
@@ -81,23 +87,55 @@ if \fontrotationr==0 then {\fontrotationr=\fontrotation;} else {\fontrotationr=\
 %Settings for arrows
 \tikzset{arrowdof/.style={arrows={-
 >[length=\dofarrlen, width=\dofarrwid, scale=\dofarrowsizeratio, flex=1, bend]}}};
+%\tikzset{reversearrowdof/.style={arrows={
+%[length=\dofarrlen, width=\dofarrwid, scale=\dofarrowsizeratio, flex=1, bend]<-}}};
 
 
-\begin{scope}[x=1pt, y=1pt, xshift=\startdofx, yshift=\startdofy, rotate=\rotationdofcenter]; % Drawing everything in pt units
+% Drawing everything in pt units
+\begin{scope}[x=1pt, y=1pt, xshift=\startdofx, yshift=\startdofy, rotate=\rotationdofcenter]; 
 
 %Draw x DOF
+\ifthenelse{\showdofx=1}{
 \draw [arrowdof] (\offsetdofx,\offsetdofy) 
--- node[at end, inner sep=1pt, outer sep=0pt, anchor=180+\fontrotationx]{\doftextsize \xdoftext} ++(\lengthdofx,0);
+-- node[at end, inner sep=1pt, outer sep=0pt, anchor=180+\fontrotationx]{\doftextsize \xdoftext}
+++(\lengthdofx,0);
+}{;};
+
+\ifthenelse{\showdofx=-1}{
+\draw [arrowdof] (\offsetdofx,\offsetdofy) 
+-- node[at end, inner sep=1pt, outer sep=0pt, anchor=180+\fontrotationx]{\doftextsize \xdoftext}
+++(-\lengthdofx,0);
+}{;};
 
 %Draw y DOF
+\ifthenelse{\showdofy=1}{
 \draw [arrowdof] (\offsetdofx,\offsetdofy) 
--- node[at end, inner sep=1pt, outer sep=0pt, anchor=270+\fontrotationy]{\doftextsize \ydoftext} ++(0,\lengthdofy);
+-- node[at end, inner sep=1pt, outer sep=0pt, anchor=270+\fontrotationy]{\doftextsize \ydoftext}
+++(0,\lengthdofy);
+}{;};
+
+\ifthenelse{\showdofy=-1}{
+\draw [arrowdof] (\offsetdofx,\offsetdofy) 
+-- node[at end, inner sep=1pt, outer sep=0pt, anchor=270+\fontrotationy]{\doftextsize \ydoftext}
+++(0,-\lengthdofy);
+}{;};
 
 %Draw z DOF
 %\draw [arrowdof] (\offsetcenter,0) -- node[at end, inner sep=1pt, outer sep=0pt, anchor=180+\rotationdofcenter]{\doftextsize \xdoftext} ++(\lengthdofx,0);
 %\draw [arrowdof] (0, \offsetcenter) -- node[at end, inner sep=1pt, outer sep=0pt, anchor=270+\rotationdofcenter]{\doftextsize \ydoftext}++(0,\lengthdofy);
+\ifthenelse{\showdofr=1}{
 \draw [arrowdof] (\rotdofstartang:\rotdofradius) ++(\offsetrotx,\offsetroty)
 arc [start angle=\rotdofstartang, end angle=\rotdofendang, radius=\rotdofradius]
-node[at end, inner sep=1pt, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90]{\doftextsize \rotdoftext};
+node[at end, inner sep=1pt, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90]
+{\doftextsize \rotdoftext};
+}{;};
+
+\ifthenelse{\showdofr=-1}{
+\draw [arrowdof] (\rotdofendang:\rotdofradius) ++(\offsetrotx,\offsetroty)
+arc [start angle=\rotdofendang, end angle=\rotdofstartang, radius=\rotdofradius]
+node[at end, inner sep=1pt, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90]
+{\doftextsize \rotdoftext};
+}{;};
+
 \end{scope}
 }
