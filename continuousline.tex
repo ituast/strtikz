@@ -7,6 +7,7 @@
   endy = 5cm,
   sign radius = 0.2cm,
   sign curvature ratio = 0.4,
+  sign bump ratio = 2,
   sign location ratio = 0.5,
   line thickness = 2pt,
   line color = black,},
@@ -16,9 +17,10 @@
   endy/.store in =\endy,
   sign radius/.store in =\signrad,
   sign curvature ratio/.store in =\signcurvratio,
+  sign bump ratio/.store in =\signbumpratio,
   sign location ratio/.store in =\signlocratio,
-  line thickness/.store in = \linewidth,
-  line color/.store in = \lcolor,
+  line thickness/.store in =\linewid,
+  line color/.store in =\lcolor,
 }
 
 
@@ -27,7 +29,7 @@
 
 \tikzmath{
 real \startx, \starty, \endx, \endy;
-real \linewidth;
+real \linewid;
 real \signrad, \signcurvratio, \signlocratio;
 real \linelength, \halflen, \signlena, \signlenb;
 real \lenx, \leny;
@@ -38,13 +40,13 @@ real \gam, \alp, \bet, \curvang, \curvlen;
 \starty = \starty;
 \endx = \endx;
 \endy = \endy;
-\linewidth = \linewidth;
+\linewid = \linewid;
 \signrad = \signrad;
 %
-\lenx = \endx - \startx;
-\leny = \endy - \starty;
-\alp = atan(\leny/(\lenx));
-\linelength = \lenx/(cos(\alp));
+\lenx = (\endx - \startx);
+\leny = (\endy - \starty);
+\linelength = veclen(\lenx, \leny);
+\alp = atan2(\leny,\lenx);
 \halflen = \linelength*\signlocratio;
 \signlena = \halflen - 2*\signrad;
 \signlenb = \halflen + 2*\signrad;
@@ -60,24 +62,18 @@ real \gam, \alp, \bet, \curvang, \curvlen;
 \curvang{3} = \curvang{2}+180;
 \curvang{4} = \curvang{1}+180;
 \curvlen = \signrad/(cos(\gam));
+\newcurvlen=\signbumpratio*\curvlen;
 }
 
 
 \begin{scope}[x=1pt, y=1pt];    % Draw everything in pt units
-%\draw (\startx,\starty) -- (\endx,\endy);
-\node at (-1,-1cm) []{\lenx};
-\node at (-1,-2cm) []{\leny};
-\node at (-1,-3cm) []{\alp};
-\node at (-1,-4cm) []{\linelength};
-\node at (-1,-5cm) []{\curvlen};
-\node at (-1,-6cm) []{\curvang{1}};
-\node at (-1,-7cm) []{\curvang{2}};
 
-\draw (\startx,\starty) -- (\midx{1}, \midy{1})
-.. controls ++(\curvang{1}:2*\curvlen) and ++(\curvang{2}:2*\curvlen) ..
+\draw[line width=\linewid, \lcolor] (\startx,\starty) -- (\midx{1}, \midy{1})
+.. controls ++(\curvang{1}:\newcurvlen) and ++(\curvang{2}:\newcurvlen) ..
 (\midx{2}, \midy{2})
-.. controls ++(\curvang{3}:2*\curvlen) and ++(\curvang{4}:2*\curvlen) ..
+.. controls ++(\curvang{3}:\newcurvlen) and ++(\curvang{4}:\newcurvlen) ..
 (\midx{3}, \midy{3}) -- (\endx,\endy);
+
 
 \end{scope}
 }
