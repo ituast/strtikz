@@ -407,7 +407,7 @@ if equal(\latloadtype,4) then {
 %%%% Different Support Types
 \ifthenelse{\showsupports=5}{
 
-\path[fill=lightgray] decorate[decoration={random steps, segment length=0.25cm}]
+\path[fill=brown!75!white] decorate[decoration={random steps, segment length=0.25cm}]
 {(-\leftsoildist,\basewalldepth) -- ++(0,-\leftsoildepth)
 ..controls++(0,-\leftcontroly) and ++(-\leftcontrolx,0)..(0,-\soilbelowfound)
  -- ++(\buildingwidth,0) ..controls ++(\rightcontrolx,0) and
@@ -428,7 +428,7 @@ pile depth=\piledepth, pile diameter=\pilediameter,
 pile line thickness=\pilelinethickness, fill color=gray,]}
 }{}
 
-\filldraw[line width = \baselinet, fill=gray]
+\filldraw[line width = \baselinet, fill=gray!65]
 (\basewallstartx,\basewallstarty) -- ++(\supportwidth,0) -- 
 ++(0,-\basewalldepth)
 -- ++(\buildingwidth,0) -- ++(0,\basewalldepth) -- ++(\supportwidth,0) --
