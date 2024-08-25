@@ -13,7 +13,15 @@
   start ratio = 0.02,
   end ratio = 0.02,
   right load text = $\SI{10}{\kilo\newton/\meter}$,
-  left load text = $\SI{10}{\kilo\newton/\meter}$},
+  left load text = $\SI{10}{\kilo\newton/\meter}$,
+  right text shiftx=0pt,
+  right text shifty=0pt,
+  left text shiftx=0pt,
+  left text shifty=0pt,
+  arrow length=5pt,
+  arrow width=3pt,
+  arrow scale=1,
+  arrow line thickness=1pt},
   startx/.store in = \loadstartcoordx,
   starty/.store in = \loadstartcoordy,
   endx/.store in = \loadendcoordx,
@@ -27,8 +35,14 @@
   end ratio/.store in = \loadendratio,
   right load text/.store in = \rightloadtext,
   left load text/.store in = \leftloadtext,
-}
-
+  right text shiftx/.store in = \righttextshiftx,
+  right text shifty/.store in = \righttextshifty,
+  left text shiftx/.store in = \lefttextshiftx,
+  left text shifty/.store in = \lefttextshifty,
+  arrow length/.store in = \arrlen,
+  arrow width/.store in = \arrwid,
+  arrow scale/.store in = \arrscale,
+  arrow line thickness/.store in = \arrlinethk,}
 %\loadstartcoordx: starting coordinate x
 %\loadstartcoordy: starting coordinate y
 %\loadendcoordx: end coordinate x
@@ -43,13 +57,16 @@
 \pgfkeys{/frametriangularload, default, #1}
 \tikzmath{
 real \loadstartcoordx, \loadstartcoordy, \loadendcoordx, \loadendcoordy;
-real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf, \loaddxa, \loaddya, \loadaaa, \loadbbb;
+real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf;
+real \loaddxa, \loaddya, \loadaaa, \loadbbb;
 real \loadxvalue, \loadyvalue;
 real \loadwxvalue, \loadwyvalue, \loadarrowheightleft, \loadarrowheightright,
 real \loadstartratio, \loadendratio, \lenf;
 int \loadarrownumber, \loadarrownumbermo, \i, \j, \printfirstarrows;
 real \rnarr, \loadarrowheight, \ldangle;
 real \dah, \totalangle, \totallength;
+real \arrlen, \arrwid, \arrscale, \arrlinethk;
+real \righttextshiftx, \righttextshifty, \lefttextshiftx, \lefttextshiftx,,
 %Conversion all units to the unit pt
 \loadstartcoordx = \loadstartcoordx;
 \loadstartcoordy = \loadstartcoordy;
@@ -58,46 +75,71 @@ real \dah, \totalangle, \totallength;
 \loadarrowheightleft = \loadarrowheightleft;
 \loadarrowheightright = \loadarrowheightright;
 \loadarrowspace = \loadarrowspace;
+\arrlen=\arrlen;
+\arrwid=\arrwid;
+\arrlinethk=\arrlinethk;
+\righttextshiftx=\righttextshiftx;
+\righttextshifty=\righttextshifty;
+\lefttextshiftx=\lefttextshiftx;
+\lefttextshifty=\lefttextshifty;
 %End conversion, All values are now in pt units.
- \loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
- \loaddyf = (\loadendcoordy-\loadstartcoordy); %dy for the whole frame
- \lenf = veclen(\loaddxf, \loaddyf);
- \loadangle = atan2(\loaddyf,\loaddxf);
- \loaddxa = \loaddxf*(1-(\loadstartratio+\loadendratio)); %dx for the start and end of arrow
- \loaddya = \loaddyf*(1-(\loadstartratio+\loadendratio)); %dy for the start and end of arrow
- \lena = veclen(\loaddxa, \loaddya);
- \dah = \loadarrowheightright-\loadarrowheightleft;
- \ldangle = atan2(\dah,\lena);
- \totalangle = \loadangle + \ldangle;
- \totallength = veclen(\lena, \dah);
- \rnarr = \loadarrownumber;
- \loadwxvalue = (\loaddxa)/(\rnarr-1); %dx for the single arrow
- \loadwyvalue = (\loaddya)/(\rnarr-1); %dx for the single arrow
- \loadxvalue{1} = \loadstartcoordx + \loaddxf*(\loadstartratio);
- \loadyvalue{1} = \loadstartcoordy + \loaddyf*(\loadstartratio);
- \loadxvalue{\loadarrownumber} = \loadendcoordx - \loaddxf*(\loadendratio);
- \loadyvalue{\loadarrownumber} = \loadendcoordy - \loaddyf*(\loadendratio);
- for \i in {2,...,{\loadarrownumber-1}}{
- \loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
- \loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
- \loadarrowheight{\i} = \loadarrowheightleft + (\dah)/(\rnarr-1)*(\i-1);
- };
- \loadarrownumbermo = \loadarrownumber-1;
- \loc = ifthenelse(\loadarrowheightleft>0,"above","below");
+\loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
+\loaddyf = (\loadendcoordy-\loadstartcoordy); %dy for the whole frame
+\lenf = veclen(\loaddxf, \loaddyf);
+\loadangle = atan2(\loaddyf,\loaddxf);
+\loaddxa = \loaddxf*(1-(\loadstartratio+\loadendratio)); %dx for the start and end of arrow
+\loaddya = \loaddyf*(1-(\loadstartratio+\loadendratio)); %dy for the start and end of arrow
+\lena = veclen(\loaddxa, \loaddya);
+\dah = \loadarrowheightright-\loadarrowheightleft;
+\ldangle = atan2(\dah,\lena);
+\totalangle = \loadangle + \ldangle;
+\totallength = veclen(\lena, \dah);
+\rnarr = \loadarrownumber;
+\loadwxvalue = (\loaddxa)/(\rnarr-1); %dx for the single arrow
+\loadwyvalue = (\loaddya)/(\rnarr-1); %dx for the single arrow
+\loadxvalue{1} = \loadstartcoordx + \loaddxf*(\loadstartratio);
+\loadyvalue{1} = \loadstartcoordy + \loaddyf*(\loadstartratio);
+\loadxvalue{\loadarrownumber} = \loadendcoordx - \loaddxf*(\loadendratio);
+\loadyvalue{\loadarrownumber} = \loadendcoordy - \loaddyf*(\loadendratio);
+for \i in {2,...,{\loadarrownumber-1}}{
+\loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
+\loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
+\loadarrowheight{\i} = \loadarrowheightleft + (\dah)/(\rnarr-1)*(\i-1);
+};
+\loadarrownumbermo = \loadarrownumber-1;
+\loc = ifthenelse(\loadarrowheightleft>=0,"above","below");
 % print {$\loaddxf$};
 }
+\tikzset{
+forcearr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-}  }
+};
+
+\tikzset{
+arrforce/.style={
+arrows={->[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
+};
+
+\tikzset{
+forcearrarr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
+>[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
+};
+
 \begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
-	\foreach \i in {2,...,\loadarrownumbermo}{
-		\draw [<-, line width=0.5] (\loadxvalue{\i}, \loadyvalue{\i})
-			++(90+\loadangle:\loadarrowspace) --
-			++(90+\loadangle:\loadarrowheight{\i});}
-	
-	\ifthenelse{\printfirstarrow=0}{\def \thearrow {->} } {\def \thearrow {<->}};
-		
-	\draw [\thearrow, line width=0.5] (\loadxvalue{1},\loadyvalue{1}) 
-		++(90+\loadangle:\loadarrowspace)-- node[\loc,at end, above]{\leftloadtext}
-		++(90+\loadangle:\loadarrowheightleft) --node[\loc,at end, above]{\rightloadtext}
-		++(\totalangle:\totallength)-- ++(-90+\loadangle:\loadarrowheightright);
+\foreach \i in {2,...,\loadarrownumbermo}{
+\draw [forcearr, line width=\arrlinethk] (\loadxvalue{\i}, \loadyvalue{\i})
+++(90+\loadangle:\loadarrowspace) --
+++(90+\loadangle:\loadarrowheight{\i});}
+
+\ifthenelse{\printfirstarrow=0}{\def \thearrow {arrforce} } {\def \thearrow {forcearrarr}};
+
+\draw [\thearrow, line width=\arrlinethk] (\loadxvalue{1},\loadyvalue{1}) 
+++(90+\loadangle:\loadarrowspace)--
+node[\loc, at end, xshift=\lefttextshiftx, yshift=\lefttextshifty]{\leftloadtext}
+++(90+\loadangle:\loadarrowheightleft) --
+node[\loc, at end, xshift=\righttextshiftx, yshift=\righttextshifty]{\rightloadtext}
+++(\totalangle:\totallength)-- ++(-90+\loadangle:\loadarrowheightright);
 \end{scope}
 }
 
