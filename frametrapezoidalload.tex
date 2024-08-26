@@ -19,6 +19,7 @@
   mid load text = $\SI{10}{\kilo\newton/\meter}$,
   left load text = $\SI{20}{\kilo\newton/\meter}$,
   right load text = $\SI{10}{\kilo\newton/\meter}$,
+  text color = black,
   mid text shiftx=0pt,
   mid text shifty=0pt,
   left text shiftx=0pt,
@@ -28,7 +29,8 @@
   arrow length=5pt,
   arrow width=3pt,
   arrow scale=1,
-  arrow line thickness=1pt},
+  arrow line thickness=1pt
+  arrow color = black},
   startx/.store in = \loadstartcoordx,
   starty/.store in = \loadstartcoordy,
   endx/.store in = \loadendcoordx,
@@ -47,6 +49,7 @@
   mid load text/.store in = \midloadtext,
   left load text/.store in = \leftloadtext,
   right load text/.store in = \rightloadtext,
+  text color/.store in = \textcolor,
   mid text shiftx/.store in = \midtextshiftx,
   mid text shifty/.store in = \midtextshifty,
   left text shiftx/.store in = \lefttextshiftx,
@@ -56,7 +59,8 @@
   arrow length/.store in = \arrlen,
   arrow width/.store in = \arrwid,
   arrow scale/.store in = \arrscale,
-  arrow line thickness/.store in = \arrlinethk,}
+  arrow line thickness/.store in = \arrlinethk,
+  arrow color/.store in = \arrcolor,}
 %\loadstartcoordx: starting coordinate x
 %\loadstartcoordy: starting coordinate y
 %\loadendcoordx: end coordinate x
@@ -201,7 +205,8 @@ arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
 
 \begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
 \foreach \i in {2,...,\loadarrownumbermo}{
-\draw [forcearr, line width=\arrlinethk] (\loadxvalue{\i}, \loadyvalue{\i})
+\draw [forcearr, line width=\arrlinethk, \arrcolor]
+(\loadxvalue{\i}, \loadyvalue{\i})
 ++(90+\loadangle:\loadarrowspace) --
 ++(90+\loadangle:\loadarrowheight{\i});}
 
@@ -214,15 +219,15 @@ arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
 };
 
 
-\draw [\thearrow, line width=\arrlinethk]
+\draw [\thearrow, line width=\arrlinethk, \arrcolor]
 (\loadxvalue{1},\loadyvalue{1}) 
 ++(90+\loadangle:\loadarrowspace)--
-node[\loc, at end, xshift=\lefttextshiftx, yshift=\lefttextshifty]{\leftloadtext}
+node[\loc, at end, xshift=\lefttextshiftx, yshift=\lefttextshifty, \textcolor]{\leftloadtext}
 ++(90+\loadangle:\loadarrowheightleft) --
 ++(\totalangleleft:\totallengthleft)--
-node[\loc, xshift=\midtextshiftx, yshift=\midtextshifty]{\midloadtext}
+node[\loc, xshift=\midtextshiftx, yshift=\midtextshifty, \textcolor]{\midloadtext}
 ++(\loadangle:\lenamid) --
-node[\loc, at end, xshift=\righttextshiftx, yshift=\righttextshifty]{\rightloadtext}
+node[\loc, at end, xshift=\righttextshiftx, yshift=\righttextshifty, \textcolor]{\rightloadtext}
 ++(-\ldangleright+\loadangle:\totallengthright)--
 ++(-90+\loadangle:\loadarrowheightright);
 \end{scope}
