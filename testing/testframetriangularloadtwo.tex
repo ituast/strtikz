@@ -1,0 +1,65 @@
+\documentclass[]{standalone}
+%\usepackage{mathptmx}
+%\renewcommand{\familydefault}{\rmdefault}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.14}
+\usepackage{titling, graphicx}
+\usepackage{tikz}
+\usepackage{upgreek}
+\usepackage{amsmath,amsthm}
+\usepackage{strtikz}
+\usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard}
+\usetikzlibrary{bending, math,fit, patterns, patterns.meta}
+\usetikzlibrary{calc,intersections,through,backgrounds,decorations.pathmorphing}
+%\usetikzlibrary{fpu}
+%\usepackage{pgfmath}
+
+
+\begin{document}
+
+
+\begin{tikzpicture}
+\draw [line width=1](0, 0) -- ++(10cm,5cm);
+\frametrapezoidalload[startx = 0cm,
+starty = 0cm,
+endx = 10cm,
+endy = 5cm,
+number of arrows = 19,
+print first arrow = 1,
+print last arrow = 1,
+height of arrows left= 0.5cm,
+height of arrows mid = 3cm,
+height of arrows right= 1cm,
+mid ratio left = 0.3,
+mid ratio right = 0.5,
+space = 0.05cm,
+start ratio = 0.02,
+end ratio = 0.02,
+mid load text = $\SI{20}{\kilo\newton/\meter}$,
+left load text = $\SI{10}{\kilo\pascal}$,
+right load text = $10kN$,
+mid text shiftx=0pt,
+mid text shifty=-2pt,
+left text shiftx=-10pt,
+left text shifty=5pt,
+right text shiftx=-10pt,
+right text shifty=5pt,
+arrow length=5pt,
+arrow width=3pt,
+arrow scale=1,
+arrow line thickness=1pt]
+%$\SI{10}{\kilo\newton/\meter}$
+
+
+\end{tikzpicture}
+
+
+
+
+\end{document}

@@ -1,0 +1,229 @@
+\pgfkeys{
+ /frametriangularloadtwo/.is family, /frametriangularloadtwo,
+  default/.style={
+  startx = 0cm,
+  starty = 0cm,
+  endx = 5cm,
+  endy = 5cm,
+  number of arrows = 10,
+  print first arrow = 1,
+  print last arrow = 1,
+  height of arrows left= 0.5cm,
+  height of arrows mid = 1cm,
+  height of arrows right= 0.5cm,
+  mid ratio left = 0.4,
+  mid ratio right = 0.3,
+  space = 0.1cm,
+  start ratio = 0.02,
+  end ratio = 0.02,
+  mid load text = $\SI{10}{\kilo\newton/\meter}$,
+  left load text = $\SI{20}{\kilo\newton/\meter}$,
+  right load text = $\SI{10}{\kilo\newton/\meter}$,
+  mid text shiftx=0pt,
+  mid text shifty=0pt,
+  left text shiftx=0pt,
+  left text shifty=0pt,
+  right text shiftx=0pt,
+  right text shifty=0pt,
+  arrow length=5pt,
+  arrow width=3pt,
+  arrow scale=1,
+  arrow line thickness=1pt},
+  startx/.store in = \loadstartcoordx,
+  starty/.store in = \loadstartcoordy,
+  endx/.store in = \loadendcoordx,
+  endy/.store in = \loadendcoordy,
+  number of arrows/.store in = \loadarrownumber,
+  print first arrow/.store in = \printfirstarrow,
+  print last arrow/.store in = \printlastarrow,
+  height of arrows left/.store in = \loadarrowheightleft,
+  height of arrows mid/.store in = \loadarrowheightmid,
+  height of arrows right/.store in = \loadarrowheightright,
+  mid ratio left/.store in = \midratioleft,
+  mid ratio right/.store in = \midratioright,
+  space/.store in = \loadarrowspace,
+  start ratio/.store in = \loadstartratio,
+  end ratio/.store in = \loadendratio,
+  mid load text/.store in = \midloadtext,
+  left load text/.store in = \leftloadtext,
+  right load text/.store in = \rightloadtext,
+  mid text shiftx/.store in = \midtextshiftx,
+  mid text shifty/.store in = \midtextshifty,
+  left text shiftx/.store in = \lefttextshiftx,
+  left text shifty/.store in = \lefttextshifty,
+  right text shiftx/.store in = \righttextshiftx,
+  right text shifty/.store in = \righttextshifty,
+  arrow length/.store in = \arrlen,
+  arrow width/.store in = \arrwid,
+  arrow scale/.store in = \arrscale,
+  arrow line thickness/.store in = \arrlinethk,}
+%\loadstartcoordx: starting coordinate x
+%\loadstartcoordy: starting coordinate y
+%\loadendcoordx: end coordinate x
+%\loadendcoordy: end coordinate y
+%\loadarrownumber: number of arrows
+%\loadarrowheightleft: height of arrows on the left hand side
+%\loadarrowheightright: height of arrows on the right hand side
+%\loadarrowspace: distance of arrows from the frame
+%\loadstartratio: start(first) arrow start ratio
+%\loadendratio: end (last) arrow start ratio
+\newcommand{\frametriangularloadtwo}[1][]{
+\pgfkeys{/frametriangularloadtwo, default, #1}
+\tikzmath{
+real \loadstartcoordx, \loadstartcoordy, \loadendcoordx, \loadendcoordy;
+real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf;
+real \loaddxa, \loaddya, \loadaaa, \loadbbb;
+real \loadxvalue, \loadyvalue;
+real \loadwxvalue, \loadwyvalue;
+real \loadarrowheightleft, \loadarrowheightright, \loadarrowheightmid;
+real \midpointratio;
+real \loadstartratio, \loadendratio, \lenf;
+int \loadarrownumber, \loadarrownumbermo, \i, \j, \printfirstarrows, \leftendarrno;
+real \loadarrowheight, \ldangleleft, \ldangleright;
+real \dahleft, \dahright, \totalangleleft, \totallengthleft, \totallengthright;
+real \arrlen, \arrwid, \arrscale, \arrlinethk;
+real \midtextshiftx, \midtextshifty, \lefttextshiftx, \lefttextshiftx, \righttextshiftx, \righttextshiftx,
+%Conversion all units to the unit pt
+\loadstartcoordx = \loadstartcoordx;
+\loadstartcoordy = \loadstartcoordy;
+\loadendcoordx = \loadendcoordx;
+\loadendcoordy = \loadendcoordy;
+\loadarrowheightleft = \loadarrowheightleft;
+\loadarrowheightmid = \loadarrowheightmid;
+\loadarrowheightright = \loadarrowheightright;
+\loadarrowspace = \loadarrowspace;
+\arrlen=\arrlen;
+\arrwid=\arrwid;
+\arrlinethk=\arrlinethk;
+\midtextshiftx=\midtextshiftx;
+\midtextshifty=\midtextshifty;
+\lefttextshiftx=\lefttextshiftx;
+\lefttextshifty=\lefttextshifty;
+\righttextshiftx=\righttextshiftx;
+\righttextshifty=\righttextshifty;
+%End conversion, All values are now in pt units.
+%% Force application line
+\loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
+\loaddyf = (\loadendcoordy-\loadstartcoordy); %dy for the whole frame
+\lenf = veclen(\loaddxf, \loaddyf);
+\loadangle = atan2(\loaddyf,\loaddxf);
+\loaddxfleft = \loaddxf*\midratioleft;
+\loaddyfleft = \loaddyf*\midratioleft;
+\lenfleft = \lenf*\midratioleft;
+\loaddxfright = \loaddxf*\midratioright;
+\loaddyfright = \loaddyf*\midratioright;
+\lenfright = \lenf*\midratioright;
+%% Start of arrows
+\arrforceratio= 1-(\loadstartratio+\loadendratio);
+\loaddxa = \loaddxf*(\arrforceratio); %dx for the start and end of arrow
+\loaddya = \loaddyf*(\arrforceratio); %dy for the start and end of arrow
+\lena = veclen(\loaddxa, \loaddya);
+\loaddxaleft = \loaddxf*(\midratioleft-\loadstartratio); %dx for the start and end of arrow
+\loaddyaleft = \loaddyf*(\midratioleft-\loadstartratio); %dy for the start and end of arrow
+\lenaleft = \lenf*(\midratioleft-\loadstartratio);
+\loaddxaright = \loaddxf*(\midratioright-\loadendratio)); %dx for the start and end of arrow
+\loaddyaright = \loaddyf*(\midratioright-\loadendratio)); %dy for the start and end of arrow
+\lenaright = \lenf*(\midratioright-\loadendratio);
+\lenamid = \lena-\lenaleft-\lenaright;
+%%%
+\dahleft = \loadarrowheightmid-\loadarrowheightleft;
+\dahright = \loadarrowheightmid-\loadarrowheightright;
+%%%
+\ldangleleft = atan2(\dahleft,\lenaleft);
+\ldangleright = atan2(\dahright,\lenaright);
+\totalangleleft = \loadangle + \ldangleleft;
+\totalangleright = \loadangle + \ldangleright;
+%%%
+\totallengthleft = veclen(\lenaleft, \dahleft); %%length of inclined surface
+\totallengthright = veclen(\lenaright, \dahright); %%length of inclined surface
+%%
+\loadwxvalue = (\loaddxa)/(\loadarrownumber-1); %dx for the single arrow
+\loadwyvalue = (\loaddya)/(\loadarrownumber-1); %dx for the single arrow
+\loadxvalue{1} = \loadstartcoordx + \loaddxf*(\loadstartratio);
+\loadyvalue{1} = \loadstartcoordy + \loaddyf*(\loadstartratio);
+\loadxvalue{\loadarrownumber} = \loadxvalue{1} + \loaddxa;
+\loadyvalue{\loadarrownumber} = \loadyvalue{1} + \loaddya;
+%%
+\loadarrownumbermo = \loadarrownumber-1;
+%%
+\arrlenratioleft = (\midratioleft-\loadstartratio) / (\arrforceratio);
+\arrlenratioright = (\midratioright-\loadendratio) / (\arrforceratio);
+\leftstartarrno=2;
+\leftendarrno = int((\loadarrownumber-1)*\arrlenratioleft)+1;
+%\rightstartarrno = int(\leftendarrno + 1);
+\rightstartarrno = \loadarrownumber-int((\loadarrownumber-1)*\arrlenratioright);
+\rightendarrno=\loadarrownumbermo;
+%%
+\leftendarrratio=(\leftendarrno-1)*\loadwxvalue/\loaddxaleft;
+\rightstartarrratio=(\loadarrownumber-\rightstartarrno)*\loadwxvalue/\loaddxaright;
+\leftendarrdist=\leftendarrratio*\lenaleft;
+\dahleftend=\leftendarrratio*\dahleft;
+\rightstartarrdist=\rightstartarrratio*\lenaright;
+\dahrightstart=\rightstartarrratio*\dahright;
+%% Left Region
+for \i in {2,...,{\leftendarrno}}{
+\loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
+\loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
+\loadarrowheight{\i} = \loadarrowheightleft + (\dahleftend)/(\leftendarrno-1)*(\i-1);
+};
+%% Mid Region
+for \i in {{\leftendarrno+1},...,{\rightstartarrno-1}}{
+	\loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
+	\loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
+	\loadarrowheight{\i} = \loadarrowheightmid;
+};
+%% Right Region
+for \i in {{\rightendarrno},...,{\rightstartarrno}}{
+\loadxvalue{\i} = \loadxvalue{\loadarrownumber} - (\loadarrownumber - (\i))*\loadwxvalue;
+\loadyvalue{\i} = \loadyvalue{\loadarrownumber} - (\loadarrownumber - (\i))*\loadwyvalue;
+\loadarrowheight{\i} = \loadarrowheightright + (\dahrightstart)/(\loadarrownumber-\rightstartarrno)*(\loadarrownumber - (\i));
+};
+\loc = ifthenelse(\loadarrowheightleft>=0,"above","below");
+% print {$\loaddxf$};
+}
+
+
+\tikzset{
+forcearr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-}  }
+};
+
+\tikzset{
+arrforce/.style={
+arrows={->[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
+};
+
+\tikzset{
+forcearrarr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
+>[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
+};
+
+\begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
+\foreach \i in {2,...,\loadarrownumbermo}{
+\draw [forcearr, line width=\arrlinethk] (\loadxvalue{\i}, \loadyvalue{\i})
+++(90+\loadangle:\loadarrowspace) --
+++(90+\loadangle:\loadarrowheight{\i});}
+
+\ifthenelse{\printfirstarrow=0}
+{
+	\ifthenelse{\printlastarrow=0}{\def \thearrow {}}{\def \thearrow {arrforce}};
+}
+{
+	\ifthenelse{\printlastarrow=0}{\def \thearrow {forcearr}}{\def \thearrow {forcearrarr}};
+};
+
+
+\draw [\thearrow, line width=\arrlinethk]
+(\loadxvalue{1},\loadyvalue{1}) 
+++(90+\loadangle:\loadarrowspace)--
+node[\loc, at end, xshift=\lefttextshiftx, yshift=\lefttextshifty]{\leftloadtext}
+++(90+\loadangle:\loadarrowheightleft) --
+++(\totalangleleft:\totallengthleft)--
+node[\loc, xshift=\midtextshiftx, yshift=\midtextshifty]{\midloadtext}
+++(\loadangle:\lenamid) --
+node[\loc, at end, xshift=\righttextshiftx, yshift=\righttextshifty]{\rightloadtext}
+++(-\ldangleright+\loadangle:\totallengthright)--
+++(-90+\loadangle:\loadarrowheightright);
+\end{scope}
+}

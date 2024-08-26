@@ -49,7 +49,8 @@ arrow line thickness/.store in = \arrlinethk,
 \pgfkeys{/framedistributedload, default, #1}
 \tikzmath{
 real \loadstartcoordx, \loadstartcoordy, \loadendcoordx, \loadendcoordy;
-real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf, \loaddxa, \loaddya, \loadaaa, \loadbbb;
+real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf;
+real \loaddxa, \loaddya, \loadaaa, \loadbbb;
 real \loadxvalue, \loadyvalue;
 real \loadwxvalue, \loadwyvalue, \loadarrowheight, \loadstartratio, \loadendratio, \lenf;
 int \loadarrownumber, \loadarrownumbermo, \i, \j;
@@ -69,43 +70,43 @@ real \textshiftx, \textshifty;
 \textshiftx=\textshiftx;
 \textshifty=\textshifty;
 %End conversion, All values are now in pt units.
- \loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
- \loaddyf = (\loadendcoordy-\loadstartcoordy); %dy for the whole frame
- \lenf = veclen(\loaddxf, \loaddyf);
- \loadangle = atan2(\loaddyf,\loaddxf);
- \loaddxa = \loaddxf*(1-(\loadstartratio+\loadendratio)); %dx for the start and end of arrow
- \loaddya = \loaddyf*(1-(\loadstartratio+\loadendratio)); %dy for the start and end of arrow
- \lena = veclen(\loaddxa, \loaddya);
- \rnarr = \loadarrownumber;
- \loadwxvalue = (\loaddxa)/(\rnarr-1); %dx for the single arrow
- \loadwyvalue = (\loaddya)/(\rnarr-1); %dx for the single arrow
- \loadxvalue{1} = \loadstartcoordx + \loaddxf*(\loadstartratio);
- \loadyvalue{1} = \loadstartcoordy + \loaddyf*(\loadstartratio);
- \loadxvalue{\loadarrownumber} = \loadendcoordx - \loaddxf*(\loadendratio);
- \loadyvalue{\loadarrownumber} = \loadendcoordy - \loaddyf*(\loadendratio);
- for \i in {2,...,{\loadarrownumber-1}}{
- \loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
- \loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
- };
- \loadarrownumbermo = \loadarrownumber-1;
- \loc = ifthenelse(\loadarrowheight>=0,"above","below");
+\loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
+\loaddyf = (\loadendcoordy-\loadstartcoordy); %dy for the whole frame
+\lenf = veclen(\loaddxf, \loaddyf);
+\loadangle = atan2(\loaddyf,\loaddxf);
+\loaddxa = \loaddxf*(1-(\loadstartratio+\loadendratio)); %dx for the start and end of arrow
+\loaddya = \loaddyf*(1-(\loadstartratio+\loadendratio)); %dy for the start and end of arrow
+\lena = veclen(\loaddxa, \loaddya);
+\rnarr = \loadarrownumber;
+\loadwxvalue = (\loaddxa)/(\rnarr-1); %dx for the single arrow
+\loadwyvalue = (\loaddya)/(\rnarr-1); %dx for the single arrow
+\loadxvalue{1} = \loadstartcoordx + \loaddxf*(\loadstartratio);
+\loadyvalue{1} = \loadstartcoordy + \loaddyf*(\loadstartratio);
+\loadxvalue{\loadarrownumber} = \loadendcoordx - \loaddxf*(\loadendratio);
+\loadyvalue{\loadarrownumber} = \loadendcoordy - \loaddyf*(\loadendratio);
+for \i in {2,...,{\loadarrownumber-1}}{
+\loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
+\loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
+};
+\loadarrownumbermo = \loadarrownumber-1;
+\loc = ifthenelse(\loadarrowheight>=0,"above","below");
 % print {$\loaddxf$};
 }
 
 \tikzset{
-	forcearr/.style={
-		arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-}  }
+forcearr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-}  }
 };
 
 \tikzset{
-	arrforce/.style={
-		arrows={->[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
+arrforce/.style={
+arrows={->[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
 };
 
 \tikzset{
-	forcearrarr/.style={
-		arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
-			>[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
+forcearrarr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
+>[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}  }
 };
 
 \begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
