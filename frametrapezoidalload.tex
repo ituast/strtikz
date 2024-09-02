@@ -20,6 +20,7 @@ end ratio = 0.02,
 mid load text = $\SI{10}{\kilo\newton/\meter}$,
 left load text = $\SI{20}{\kilo\newton/\meter}$,
 right load text = $\SI{10}{\kilo\newton/\meter}$,
+text aligning = sloped,
 text color = black,
 mid text shiftx=0pt,
 mid text shifty=0pt,
@@ -63,6 +64,7 @@ end ratio/.store in = \loadendratio,
 mid load text/.store in = \midloadtext,
 left load text/.store in = \leftloadtext,
 right load text/.store in = \rightloadtext,
+text aligning/.store in =\textalign,
 text color/.store in = \textcolor,
 mid text shiftx/.store in = \midtextshiftx,
 mid text shifty/.store in = \midtextshifty,
@@ -297,7 +299,7 @@ arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
 node[\loc, at end, xshift=\lefttextshiftx, yshift=\lefttextshifty, \textcolor]{\leftloadtext}
 ++(\loadnewang:\loadarrowlenleftnew) --
 ++(\totalangleleftnew:\totallengthleftnew)--
-node[\loc, xshift=\midtextshiftx, yshift=\midtextshifty, \textcolor]{\midloadtext}
+node[\loc, xshift=\midtextshiftx, yshift=\midtextshifty, \textcolor, rotate=\loadangle]{\midloadtext}
 ++(\loadangle:\lenamid) --
 node[\loc, at end, xshift=\righttextshiftx, yshift=\righttextshifty, \textcolor]{\rightloadtext}
 ++(\totalanglerightnew:\totallengthrightnew)--
