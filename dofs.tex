@@ -19,11 +19,18 @@
   show dofy = 1,
   show dofr = 1,
   font size = \normalsize,
+  font scale = 0.5,
   rotation = 0,
   font rotation = 0,
   font rotation for x = 0,
   font rotation for y = 0,
   font rotation for r = 0,
+  dofx position=1,
+  dofy position=1,
+  dofr position=1,
+  dofx inner sep=1pt,
+  dofy inner sep=1pt,
+  dofr inner sep=1pt,
   dof arrow size ratio=1,
   dof arrow tip length=4pt,
   dof arrow tip width=2pt,},
@@ -45,11 +52,18 @@
   show dofy/.store in = \showdofy,
   show dofr/.store in = \showdofr,
   font size/.store in = \doftextsize,
+  font scale/.store in = \doftextscale,
   rotation/.store in = \rotationdofcenter,
   font rotation/.store in = \fontrotation,
   font rotation for x/.store in = \fontrotationx,
   font rotation for y/.store in = \fontrotationy,
-  font rotation for r/.store in = \fontrotationr,      
+  font rotation for r/.store in = \fontrotationr,
+  dofx position/.store in = \dofpositionx,
+  dofy position/.store in = \dofpositiony,
+  dofr position/.store in = \dofpositionr,
+  dofx inner sep/.store in = \dofinsepx,
+  dofy inner sep/.store in = \dofinsepy,
+  dofr inner sep/.store in = \dofinsepr,
   dof arrow size ratio/.store in = \dofarrowsizeratio,  
   dof arrow tip length/.store in = \dofarrlen,
   dof arrow tip width/.store in = \dofarrwid,}
@@ -97,27 +111,27 @@ if \fontrotationr==0 then {\fontrotationr=\fontrotation;} else {\fontrotationr=\
 %Draw x DOF
 \ifthenelse{\showdofx=1}{
 \draw [arrowdof] (\offsetdofx,\offsetdofy) 
--- node[at end, inner sep=1pt, outer sep=0pt, anchor=180+\fontrotationx]{\doftextsize \xdoftext}
-++(\lengthdofx,0);
+-- node[at end, inner sep=\dofinsepx, outer sep=0pt, anchor=180+\fontrotationx, pos=\dofpositionx, scale=\doftextscale]
+{\doftextsize \xdoftext} ++(\lengthdofx,0);
 }{;};
 
 \ifthenelse{\showdofx=-1}{
 \draw [arrowdof] (\offsetdofx,\offsetdofy) 
--- node[at end, inner sep=1pt, outer sep=0pt, anchor=180+\fontrotationx]{\doftextsize \xdoftext}
-++(-\lengthdofx,0);
+-- node[at end, inner sep=\dofinsepx, outer sep=0pt, anchor=180+\fontrotationx, pos=\dofpositionx, scale=\doftextscale]
+{\doftextsize \xdoftext} ++(-\lengthdofx,0);
 }{;};
 
 %Draw y DOF
 \ifthenelse{\showdofy=1}{
 \draw [arrowdof] (\offsetdofx,\offsetdofy) 
--- node[at end, inner sep=1pt, outer sep=0pt, anchor=270+\fontrotationy]{\doftextsize \ydoftext}
-++(0,\lengthdofy);
+-- node[at end, inner sep=\dofinsepy, outer sep=0pt, anchor=270+\fontrotationy, pos=\dofpositiony, scale=\doftextscale]
+{\doftextsize \ydoftext} ++(0,\lengthdofy);
 }{;};
 
 \ifthenelse{\showdofy=-1}{
 \draw [arrowdof] (\offsetdofx,\offsetdofy) 
--- node[at end, inner sep=1pt, outer sep=0pt, anchor=270+\fontrotationy]{\doftextsize \ydoftext}
-++(0,-\lengthdofy);
+-- node[at end, inner sep=\dofinsepy, outer sep=0pt, anchor=270+\fontrotationy, pos=\dofpositiony, scale=\doftextscale]
+{\doftextsize \ydoftext} ++(0,-\lengthdofy);
 }{;};
 
 %Draw z DOF
@@ -126,14 +140,14 @@ if \fontrotationr==0 then {\fontrotationr=\fontrotation;} else {\fontrotationr=\
 \ifthenelse{\showdofr=1}{
 \draw [arrowdof] (\rotdofstartang:\rotdofradius) ++(\offsetrotx,\offsetroty)
 arc [start angle=\rotdofstartang, end angle=\rotdofendang, radius=\rotdofradius]
-node[at end, inner sep=1pt, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90]
+node[at end, inner sep=\dofinsepr, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90, pos=\dofpositionr, scale=\doftextscale]
 {\doftextsize \rotdoftext};
 }{;};
 
 \ifthenelse{\showdofr=-1}{
 \draw [arrowdof] (\rotdofendang:\rotdofradius) ++(\offsetrotx,\offsetroty)
 arc [start angle=\rotdofendang, end angle=\rotdofstartang, radius=\rotdofradius]
-node[at end, inner sep=1pt, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90]
+node[at end, inner sep=\dofinsepr, outer sep=0pt, anchor=\rotdofendang+\fontrotationr-90, pos=\dofpositionr, scale=\doftextscale]
 {\doftextsize \rotdoftext};
 }{;};
 

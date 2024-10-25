@@ -10,6 +10,8 @@ start dof offset y = 0cm,
 end dof offset x = 0cm,
 end dof offset y = 0cm,
 dof size = 1cm,
+i dofs rotation=0,
+j dofs rotation=0,
 rotation dof ratio = 0.8,
 i rotation dof start angle=110,
 i rotation dof end angle=260,
@@ -23,12 +25,20 @@ j dof nodal offset x = 0.1cm,
 j dof nodal offset y = 0.1cm,
 j rot nodal offset x = 0.1cm,
 j rot nodal offset y = 0.1cm,
-i node x dof text = $1'$,
-i node y dof text = $2'$,
-i node r dof text = $3'$,
-j node x dof text = $4'$,
-j node y dof text = $5'$,
-j node r dof text = $6'$,
+i node x dof text=$1'$,
+i node y dof text=$2'$,
+i node r dof text=$3'$,
+j node x dof text=$4'$,
+j node y dof text=$5'$,
+j node r dof text=$6'$,
+i node x dof text rotation=0,
+i node y dof text rotation=0,
+i node r dof text rotation=0,
+j node x dof text rotation=0,
+j node y dof text rotation=0,
+j node r dof text rotation=0,
+i node dof text rotation=0,
+j node dof text rotation=0,
 global X axis start=0.2cm,
 global X axis end=3cm,
 global Y axis start=0.4cm,
@@ -50,7 +60,8 @@ beam opacity=1,
 dashed opacity=1,
 gray level=1,
 dashed thickness=1pt,
-joint text inner sep = 2pt,
+joint i text inner sep = 2pt,
+joint j text inner sep = 2pt,
 joint text font size = \small,
 start joint angle = 0,
 end joint angle = 0,
@@ -96,6 +107,8 @@ start dof offset y/.store in = \startoffsety,
 end dof offset x/.store in = \endoffsetx,
 end dof offset y/.store in = \endoffsety,
 dof size/.store in = \lengthdofs,
+i dofs rotation/.store in=\dofsroti,
+j dofs rotation/.store in=\dofsrotj,
 rotation dof ratio/.store in = \rotationdofratio,
 i rotation dof start angle/.store in = \irotdofstartangle,
 i rotation dof end angle/.store in = \irotdofendangle,
@@ -115,6 +128,14 @@ i node r dof text/.store in = \inoderdoftext,
 j node x dof text/.store in = \jnodexdoftext,
 j node y dof text/.store in = \jnodeydoftext,
 j node r dof text/.store in = \jnoderdoftext,
+i node x dof text rotation/.store in = \inodexdoftextrot,
+i node y dof text rotation/.store in = \inodeydoftextrot,
+i node r dof text rotation/.store in = \inoderdoftextrot,
+j node x dof text rotation/.store in = \jnodexdoftextrot,
+j node y dof text rotation/.store in = \jnodeydoftextrot,
+j node r dof text rotation/.store in = \jnoderdoftextrot,
+i node dof text rotation/.store in = \inodedoftextrot,
+j node dof text rotation/.store in = \jnodedoftextrot,
 global X axis start/.store in =\globalXstart,
 global X axis end/.store in =\globalXend,
 global Y axis start/.store in =\globalYstart,
@@ -136,7 +157,8 @@ dashed opacity/.store in = \dashedopa,
 gray level/.store in = \graylevel,
 dashed thickness/.store in = \dashedthk,
 dot radius/.store in = \dotradius,
-joint text inner sep/.store in = \jointinnersep,
+joint i text inner sep/.store in = \jointinnersepi,
+joint j text inner sep/.store in = \jointinnersepj,
 joint text font size/.store in = \jointtextfontsize,
 start joint angle/.store in =\startjointangle,
 end joint angle/.store in =\endjointangle,
@@ -180,7 +202,7 @@ dof arrow tip width/.store in = \dofarrtipwid,}
 \tikzmath{
 real \startx, \starty, \deltaxdir, \deltaydir, \dofnodaloffset, \lengthdofsr;
 real \rotationangle, \lengthofelement, \startglobalx, \startglobaly;
-real \dotradius, \jointinnersep, \lengthdimoffset, \lengthdimspace, \lengthdimspaceratio;
+real \dotradius, \jointinnersepi, \jointinnersepj, \lengthdimoffset, \lengthdimspace, \lengthdimspaceratio;
 real \startoffsetx, \startoffsety, \endoffsetx, \endoffsety;
 real \localxstartoffset, \localystartoffset, \localxlength, \localylength;
 real \startjointangle, \endjointangle;
@@ -199,7 +221,8 @@ int \showdeep;
 \deltaxdir = \deltaxdir;
 \deltaydir = \deltaydir;
 \dotradius=\dotradius;
-\jointinnersep = \jointinnersep;
+\jointinnersepi = \jointinnersepi;
+\jointinnersepj = \jointinnersepj;
 \lengthdimoffset = \lengthdimoffset;
 \lengthdofs = \lengthdofs;
 \localxlength = \localxlength;
@@ -232,14 +255,18 @@ int \showdeep;
 \endoffsetx = \endoffsetx;
 \endoffsety = \endoffsety;
 \rotationdofradius = \rotationdofratio*\lengthdofs;
-if equal(\placeyzdofsonly,1) then {\localxstartoffset=\localxlength/5; \idofnodaloffsety=0;} else {};
+if equal(\placeyzdofsonly,1) then {
+\localxstart = \localxstartoffset + \lengthofelement + \jdofnodaloffsetx;
+%\idofnodaloffsety=0;
+}
+else {\localxstart = \localxstartoffset + \lengthofelement + \lengthdofs + \jdofnodaloffsetx;};
 if equal(\showdeep,1) then {
-\jointinnersep=\jointinnersep+\beamdepth/2 + \linethickness;
+\jointinnersepi=\jointinnersepi+\beamdepth/2 + \linethickness;
+\jointinnersepj=\jointinnersepj+\beamdepth/2 + \linethickness;
 \startoffsety=\startoffsety+\beamdepth/2 + \linethickness;
 \irotnodaloffsety=\irotnodaloffsety - \beamdepth/2 - \linethickness;
 %\jrotnodaloffsety=\jrotnodaloffsety - \beamdepth/2 -\linethickness;
 } else {};
-\localxstart = \localxstartoffset + \lengthofelement;
 \localystart = \localystartoffset;
 \lengthdimspace = \lengthdimspaceratio * \lengthdimoffset;
 \lengthlabelrotation = \rotationangle + \lengthlabelrotation;
@@ -266,16 +293,16 @@ if equal(\showdeep,1) then {
 \draw [line width = \dashedthk, dashed, opacity=\dashedopa] (0,0) -- (\lengthofelement,0);
 
 \path [] (0,0)
-node[inner sep=\jointinnersep, outer sep=0, anchor=\rotationangle+\startjointangle]{\jointtextfontsize \jointitext} -- (\lengthofelement,0)
-node[inner sep=\jointinnersep, outer sep=0, anchor=\rotationangle+\endjointangle]{\jointtextfontsize \jointjtext}
+node[inner sep=\jointinnersepi, outer sep=0, anchor=\rotationangle+\startjointangle]{\jointtextfontsize \jointitext} -- (\lengthofelement,0)
+node[inner sep=\jointinnersepj, outer sep=0, anchor=\rotationangle+\endjointangle]{\jointtextfontsize \jointjtext}
 node[midway, inner sep=\halfbeamtotaldepth+1pt, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \propertiestext};
 }{
 
 % Using Line
 
 \path [line width = \linethickness, draw=black, postaction={on each segment={mid arrow=black}}] (0,0)
-node[inner sep=\jointinnersep, outer sep=0, anchor=\rotationangle+\startjointangle]{\jointtextfontsize \jointitext} -- (\lengthofelement,0)
-node[inner sep=\jointinnersep, outer sep=0, anchor=\rotationangle+\endjointangle]{\jointtextfontsize \jointjtext}
+node[inner sep=\jointinnersepi, outer sep=0, anchor=\rotationangle+\startjointangle]{\jointtextfontsize \jointitext} -- (\lengthofelement,0)
+node[inner sep=\jointinnersepj, outer sep=0, anchor=\rotationangle+\endjointangle]{\jointtextfontsize \jointjtext}
 node[midway, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \propertiestext};
 }
 
@@ -296,21 +323,33 @@ node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle-90]{\localaxesfon
 
 %Place only y and z dofs only
 \ifthenelse{\placeyzdofsonly=1}
-{\dofsyz[startx = \startoffsetx, starty = \startoffsety, length x = \lengthdofs,length y = \lengthdofs,
+{\dofsyz[startx = \startoffsetx, starty = \startoffsety,
+length x = \lengthdofs,length y = \lengthdofs,
 offset x= \idofnodaloffsetx, offset y= \idofnodaloffsety,
 offset rotation xdir = \irotnodaloffsetx, offset rotation ydir = \irotnodaloffsety,
 start angle = \irotdofstartangle, end angle = \irotdofendangle, 
-radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext, rstring = \inoderdoftext, font size = \doffontsize,
-rotation=0, font rotation=\rotationangle,
-dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof arrow tip width=\dofarrtipwid]}
+radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext,
+rstring = \inoderdoftext, font size = \doffontsize,
+rotation=\dofsroti, font rotation=\rotationangle+\inodedoftextrot,
+font rotation for y = \inodeydoftextrot+\rotationangle,
+font rotation for r = \inoderdoftextrot+\rotationangle,
+dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen,
+dof arrow tip width=\dofarrtipwid]}
+%
 %Place x y and z dofs
-{\dofs[startx = \startoffsetx, starty = \startoffsety, length x = \lengthdofs,length y = \lengthdofs,
+{\dofs[startx = \startoffsetx, starty = \startoffsety,
+length x = \lengthdofs,length y = \lengthdofs,
 offset x= \idofnodaloffsetx, offset y= \idofnodaloffsety,
 offset rotation xdir = \irotnodaloffsetx, offset rotation ydir = \irotnodaloffsety,
 start angle = \irotdofstartangle, end angle = \irotdofendangle, 
-radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext, rstring = \inoderdoftext, font size = \doffontsize,
-rotation=0, font rotation=\rotationangle,
-dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof arrow tip width=\dofarrtipwid]}
+radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext,
+rstring = \inoderdoftext, font size = \doffontsize,
+rotation=\dofsroti, font rotation=\rotationangle+\inodedoftextrot,
+font rotation for x = \inodexdoftextrot+\rotationangle,
+font rotation for y = \inodeydoftextrot+\rotationangle,
+font rotation for r = \inoderdoftextrot+\rotationangle,
+dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen,
+dof arrow tip width=\dofarrtipwid]}
 }{}
 
 %Place the DOFs on the jth joint
@@ -318,20 +357,30 @@ dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof a
 
 %Place only y and z dofs only
 \ifthenelse{\placeyzdofsonly=1}
-{\dofsyz[startx = \lengthofelement+\endoffsetx, starty = \endoffsety, length x = \lengthdofs,length y = \lengthdofs,
+{\dofsyz[startx = \lengthofelement+\endoffsetx, starty = \endoffsety,
+length x = \lengthdofs,length y = \lengthdofs,
 offset x= \jdofnodaloffsetx, offset y= \jdofnodaloffsety,
 offset rotation xdir = \jrotnodaloffsetx, offset rotation ydir = \jrotnodaloffsety,
 start angle = \jrotdofstartangle, end angle = \jrotdofendangle, 
-radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext, rstring = \jnoderdoftext, font size = \doffontsize,
-rotation=0, font rotation=\rotationangle,
+radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext,
+rstring = \jnoderdoftext, font size = \doffontsize,
+rotation=\dofsrotj, font rotation=\rotationangle+\inodedoftextrot,
+font rotation for y = \inodeydoftextrot+\rotationangle,
+font rotation for r = \inoderdoftextrot+\rotationangle,
 dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof arrow tip width=\dofarrtipwid]}
-%Place on x y and z dofs
-{\dofs[startx = \lengthofelement+\endoffsetx, starty = \endoffsety, length x = \lengthdofs,length y = \lengthdofs,
+%
+%Place x y and z dofs
+{\dofs[startx = \lengthofelement+\endoffsetx, starty = \endoffsety,
+length x = \lengthdofs,length y = \lengthdofs,
 offset x= \jdofnodaloffsetx, offset y= \jdofnodaloffsety,
 offset rotation xdir = \jrotnodaloffsetx, offset rotation ydir = \jrotnodaloffsety,
 start angle = \jrotdofstartangle, end angle = \jrotdofendangle, 
-radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext, rstring = \jnoderdoftext, font size = \doffontsize,
-rotation=0, font rotation=\rotationangle,
+radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext,
+rstring = \jnoderdoftext, font size = \doffontsize,
+rotation=\dofsrotj, font rotation=\rotationangle+\jnodedoftextrot,
+font rotation for x = \jnodexdoftextrot+\rotationangle,
+font rotation for y = \jnodeydoftextrot+\rotationangle,
+font rotation for r = \jnoderdoftextrot+\rotationangle,
 dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof arrow tip width=\dofarrtipwid]}
 }{}
 

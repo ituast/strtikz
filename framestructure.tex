@@ -30,6 +30,7 @@
   dof floor = 1,
   dof column = 2,
   arrow length ratio = 0.4,
+  rot arrow length ratio = 0.4,
   dof x rotation = 0,
   dof y rotation = 0,
   dof r rotation = 0,
@@ -40,6 +41,18 @@
   show dofx = 1,
   show dofy = 1,
   show dofr = 1,
+  dofx pos = 1,
+  dofy pos = 1,
+  dofr pos = 1,
+  dofx in sep=1pt,
+  dofy in sep=1pt,
+  dofr in sep=1pt,
+  dof offset x= 0.1cm,
+  dof offset y= 0.1cm,
+  dof offset rot x= 0.1cm,
+  dof offset rot y= 0.1cm, 
+  dof arrow ratio=0.75,
+  dof text ratio=0.5,
   show axes = 1,
   subfloor number=2,
   left soil distance = 2cm,
@@ -99,6 +112,7 @@
   dof rstring/.store in = \dofrstr,
   dof column/.store in = \dofloccolumn,
   arrow length ratio/.store in = \arrowlenratio,
+  rot arrow length ratio/.store in = \rotarrowlenratio,
   dof offset ratio/.store in = \dofoffsetratio,
   dof x rotation/.store in = \dofxrotation,
   dof y rotation/.store in = \dofyrotation,
@@ -109,6 +123,18 @@
   show dofx/.store in = \shodofx,
   show dofy/.store in = \shodofy,
   show dofr/.store in = \shodofr,
+  dofx pos/.store in = \dofposx,
+  dofy pos/.store in = \dofposy,
+  dofr pos/.store in = \dofposr,
+  dofx in sep/.store in = \dofinnersepx,
+  dofy in sep/.store in = \dofinnersepy,
+  dofr in sep/.store in = \dofinnersepr,
+  dof offset x/.store in = \dofoffsetx,
+  dof offset y/.store in = \dofoffsety,
+  dof offset rot x/.store in = \dofrotoffsetx,  
+  dof offset rot y/.store in = \dofrotoffsety,
+  dof arrow ratio/.store in = \dofarrowratio,
+  dof text ratio/.store in = \doftextratio,
   show axes/.store in = \showaxes,
   subfloor number/.store in=\subfloors,
   left soil distance/.store in = \leftsoildist,
@@ -175,6 +201,7 @@ int \showdefl;
 int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
 real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase;
 real \tempdim, \fixbeamx, \fixbeamy;
+int \dofcounterx, \dofcountery, \dofcounterz;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -216,6 +243,7 @@ real \tempdim, \fixbeamx, \fixbeamy;
 \defpary=\defpary;
 \defbase=\defbase;
 %End conversion, All values are now in pt units.
+\dofcounter=0;
 \storyminone = \storynumber-1;
 \columnnumber = \baynumber+1; %number of columns
 \levelnumber = \storynumber+1; %number of levels
@@ -273,7 +301,8 @@ if greater(\dofloccolumn,\columnnumber) then {\dofloccolumn=1;} else{};
 \dofxx = \x{\dofloccolumn}+\dofoffsetratio*\minlen+\deflect{\dofloch};
 \dofyy = \y{\dofloch}+\dofoffsetratio*\minlen;
 \arrlen = \arrowlenratio*\minlen;
-\arrrad = \arrlen*0.8;
+\arrrad = \rotarrowlenratio*\minlen;
+%\arrrad = \arrlen*0.8;
 %%%%%Axes%%%%%
 \Xaxesstarty = \y{1};
 \Yaxesstartx = \x{1};
@@ -460,20 +489,14 @@ cycle;
 
 %%% Draw Frame - Undeflected shape but beams and columns are drawn seperately
 \ifthenelse{\showdefl=3}{
-	\foreach \istory in {1,...,{\storynumber}}
-	{
-		\foreach \icol in {1,...,{\columnnumber}}
-		{
+	\foreach \istory in {1,...,{\storynumber}}{
+		\foreach \icol in {1,...,{\columnnumber}}{
 			\draw [line width = \collinet/2]
-			(\x{\icol},\y{\istory}) -- (\usevar\x{\icol}, \usevar\y{\istory+1});
-		}
-		\foreach \ibeam in {1,...,{\baynumber}}
-		{
+			(\x{\icol},\y{\istory}) -- (\usevar\x{\icol}, \usevar\y{\istory+1});}
+		\foreach \ibeam in {1,...,{\baynumber}}		{
 			\draw [line width = \beamlinet/2]
-			(\x{\ibeam}-\collinet/2/2,\usevar\y{\istory+1}) -- (\usevar\x{\ibeam+1}+\collinet/2/2, \usevar\y{\istory+1});
-		}
-	
-	}
+			(\x{\ibeam}-\collinet/2/2,\usevar\y{\istory+1}) --
+			(\usevar\x{\ibeam+1}+\collinet/2/2, \usevar\y{\istory+1});}}
 }{}
 
 
@@ -494,6 +517,7 @@ cycle;
 
 
 	\ifthenelse{\storynumber>1}{
+	\ifthenelse{\storynumber>2}{
 	\foreach \istory in {2,...,{\storyminone}}
 	{
 		\foreach \icol in {1,...,{\columnnumber}}
@@ -510,6 +534,7 @@ cycle;
 			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
 		}
 	}
+	}{}
 	
 	\foreach \istory in {\storynumber}
 	{
@@ -604,70 +629,103 @@ rectangle
 
 \ifthenelse{\showdof=1}{
 \dofs[startx = \dofxx, starty = \dofyy, length x = \arrlen,  length y = \arrlen,
-  offset x= 0.0cm, offset y= 0.0cm,
-  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
-  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
-  \arrrad,
-  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr,
+  font size = \normalsize, font scale = \doftextratio,
   rotation=0, font rotation=0,
-  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ]  
 }{}
 
 \ifthenelse{\showdof=2}{
 \ifthenelse{\showsupports=5}{
-	\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
-	{\foreach \j in {1,...,{\columnnumber}}{
+\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+{\foreach \j in {1,...,{\columnnumber}}{
+
+\tikzmath{
+	\dofcounterx=(\iii-2)*\columnnumber*3+ (\j-1)*3 + 1;
+	\dofcountery=\dofcounterx+1;
+	\dofcounterz=\dofcounterx+2;
+}
 
 \dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
-  offset x= 0.0cm, offset y= 0.0cm,
-  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
-  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
-  \arrrad,
-  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
+  font size = \normalsize, font scale = \doftextratio,
   rotation=0, font rotation=0,
-  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ]  
 
-	}}
-	\foreach \iii in {2,...,\useeval{\subfloors+1}}
-	{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-	
-\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
-  offset x= 0.0cm, offset y= 0.0cm,
-  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
-  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
-  \arrrad,
-  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+}}
+
+\foreach \iii in {2,...,\useeval{\subfloors+1}}
+{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+		
+\tikzmath{
+	\dofcounterx=(\iii-2)*\columnnumber*3+ (\j-1)*3 + 1;
+	\dofcountery=\dofcounterx+1;
+	\dofcounterz=\dofcounterx+2;
+}
+
+
+\dofs[startx = \x{\j} +\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
+  font size = \normalsize, font scale = \doftextratio,
   rotation=0, font rotation=0,
-  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ] 	
 	
-	}}
+}}
 }
 {
-	\foreach \iii in {2,...,{\levelnumber}}
-	{\foreach \j in {1,...,{\columnnumber}}{
-	
+\foreach \iii in {2,...,{\levelnumber}}
+{\foreach \j in {1,...,{\columnnumber}}{
+
+\tikzmath{
+	\dofcounterx=(\iii-2)*\columnnumber*3+ (\j-1)*3 + 1;
+	\dofcountery=\dofcounterx+1;
+	\dofcounterz=\dofcounterx+2;
+}
+
+
 \dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
-  offset x= 0.0cm, offset y= 0.0cm,
-  offset rotation xdir= 0cm, offset rotation ydir= 0cm,
-  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = 
-  \arrrad,
-  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr, font size = \tiny,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
+  font size = \normalsize, font scale = \doftextratio,
   rotation=0, font rotation=0,
-  font rotation for x = \dofxrotation, font rotation for y = \dofyrotation,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=1, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ] 	
 	
-	}}
+}}
 }
 }{}
 
