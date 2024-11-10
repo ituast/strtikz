@@ -1,0 +1,42 @@
+\pgfkeys{
+ /fixedsupport/.is family, /fixedsupport,
+  default/.style = {support width = 0.5cm,
+  support depth = 0.2cm,
+  line thickness = 1pt,
+  x value = 0,
+  y value = 0,
+  rotation = 0,
+  shade color=gray,},
+  support width/.store in = \supwid,
+  support depth/.store in = \supdep,
+  line thickness/.store in = \linethk,
+  x value/.store in = \xvalue,
+  y value/.store in = \yvalue,
+  rotation/.store in = \rotat,
+  shade color/.store in = \shadecol,
+}
+
+\newcommand{\fixedsupport}[1][]{
+\pgfkeys{/fixedsupport, default, #1}
+\tikzmath{
+real \supwid, \supdep, \linethk, \xvalue, \yvalue, \rotat;
+%Conversion all units to the unit pt
+\supwid=\supwid;
+\supdep=\supdep;
+\linethk=\linethk;
+\xvalue=\xvalue;
+\yvalue=\yvalue;
+\rotat=\rotat;
+%%
+\halfwid=\supwid/2;
+\halfdep=\supdep/2;
+}
+\begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=\rotat];
+% Draw everything in pt units
+
+\fill[fill=\shadecol] (-\halfwid,-\supdep) rectangle ++(\supwid,\supdep);
+
+\draw[line width=\linethk] (-\halfwid,0) -- ++(\supwid,0);
+
+\end{scope}
+}
