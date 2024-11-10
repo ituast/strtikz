@@ -51,7 +51,8 @@ local y axis shift=0,
 local y axis length=1cm,
 global axes font size=\normalsize,
 local axes font size=\normalsize,
-dof font size = \scriptsize,
+dof font size = \normalsize,
+dof font scale = 1,
 dot radius = 2pt,
 line thickness = 1.5pt,
 show deep beam=1,
@@ -80,10 +81,16 @@ rotation text startx = 1.5cm,
 rotation text = {$\theta$},
 rotation arrow ratio = 1,
 place the length dimension = 1,
-place global axes=1,
-place local axes=1,
-place i dofs axes=1,
-place j dofs axes=1,
+place global X axis=1,
+place global Y axis=1,
+place local x axes=1,
+place local y axes=1,
+place i dofs x axis=1,
+place i dofs y axis=1,
+place i dofs z axis=1,
+place j dofs x axis=1,
+place j dofs y axis=1,
+place j dofs z axis=1,
 place yz dofs only=0,
 place angle = 1,
 joint i text = $i$,
@@ -149,6 +156,7 @@ local y axis length/.store in =\localylength,
 global axes font size/.store in = \globalaxesfontsize,
 local axes font size/.store in = \localaxesfontsize,
 dof font size/.store in = \doffontsize,
+dof font scale/.store in = \doffontscale,
 line thickness/.store in = \linethickness,
 show deep beam/.store in = \showdeep,
 beam depth/.store in = \beamdepth,
@@ -177,10 +185,16 @@ rotation text startx/.store in= \rotationanglex,
 rotation text/.store in = \rotationtext,
 rotation arrow ratio/.store in = \rotationarrowratio,
 place the length dimension/.store in = \placelengthdim,
-place global axes/.store in = \placeglobalaxes,
-place local axes/.store in = \placelocalaxes,
-place i dofs axes/.store in =\placeidofs,
-place j dofs axes/.store in = \placejdofs,
+place global X axis/.store in = \placeglobalaxesX,
+place global Y axis/.store in = \placeglobalaxesY,
+place local x axes/.store in = \placelocalxaxes,
+place local y axes/.store in = \placelocalyaxes,
+place i dofs x axis/.store in =\placeidofx,
+place i dofs y axis/.store in =\placeidofy,
+place i dofs z axis/.store in =\placeidofz,
+place j dofs x axis/.store in =\placejdofx,
+place j dofs y axis/.store in =\placejdofy,
+place j dofs z axis/.store in =\placejdofz,
 place yz dofs only/.store in = \placeyzdofsonly,
 place angle/.store in = \placeangle,
 joint i text/.store in = \jointitext,
@@ -202,7 +216,8 @@ dof arrow tip width/.store in = \dofarrtipwid,}
 \tikzmath{
 real \startx, \starty, \deltaxdir, \deltaydir, \dofnodaloffset, \lengthdofsr;
 real \rotationangle, \lengthofelement, \startglobalx, \startglobaly;
-real \dotradius, \jointinnersepi, \jointinnersepj, \lengthdimoffset, \lengthdimspace, \lengthdimspaceratio;
+real \dotradius, \jointinnersepi, \jointinnersepj;
+real \lengthdimoffset, \lengthdimspace, \lengthdimspaceratio;
 real \startoffsetx, \startoffsety, \endoffsetx, \endoffsety;
 real \localxstartoffset, \localystartoffset, \localxlength, \localylength;
 real \startjointangle, \endjointangle;
@@ -215,6 +230,7 @@ real \arrsizrat, \arrlen, \arrwid, \dofarrtipsizrat, \dofarrtiplen, \dofarrtipwi
 real \rotationarrowratio;
 real \beamdepth, \beamopa, \dashedopa, \graylevel, \dashedthk;
 int \showdeep;
+int \placelocalxaxes, \placelocalyaxes;
 %Conversion all units to the unit pt
 \startx = \startx;
 \starty = \starty;
@@ -249,6 +265,7 @@ int \showdeep;
 \beamdepth=\beamdepth;
 %End conversion, All values are now in pt units
 \rotationangle = atan2(\deltaydir, \deltaxdir);
+if \rotationangle < 5 then {\placeangle=0;};
 \lengthofelement = veclen(\deltaxdir, \deltaydir);
 \startoffsetx = \startoffsetx;
 \startoffsety = \startoffsety;
@@ -310,80 +327,51 @@ node[midway, \propertyloc, rotate=\propertyrotation]{\lengthpropfontsize \proper
 \fill [black](0,0) circle[radius=\dotradius];
 \fill [black](\lengthofelement,0) circle[radius=\dotradius];
 
-%Place the local axes
-\ifthenelse{\placelocalaxes=1}{
+%Place the local x axes
+\ifthenelse{\placelocalxaxes=1}{
 \draw [arrowcoord] (\localxstart,\localxshift) --
-node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle+180]{\localaxesfontsize \localxtext}(\localxlength+\localxstart,\localxshift);
-\draw [arrowcoord] (\localyshift,\localystart) --
-node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle-90]{\localaxesfontsize \localytext}(\localyshift, \localystart+\localylength);
+node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle+180]
+{\localaxesfontsize \localxtext}(\localxlength+\localxstart,\localxshift);
 }{}
 
-%Place the DOFs on the ith joint
-\ifthenelse{\placeidofs=1}{
+%Place the local y axes
+\ifthenelse{\placelocalyaxes=1}{
+\draw [arrowcoord] (\localyshift,\localystart) --
+node[at end, inner sep=1pt, outer sep=0, anchor=\rotationangle-90]
+{\localaxesfontsize \localytext}(\localyshift, \localystart+\localylength);
+}{}
 
-%Place only y and z dofs only
-\ifthenelse{\placeyzdofsonly=1}
-{\dofsyz[startx = \startoffsetx, starty = \startoffsety,
+%Place DOFs at ith joint
+\dofs[startx = \startoffsetx, starty = \startoffsety,
 length x = \lengthdofs,length y = \lengthdofs,
 offset x= \idofnodaloffsetx, offset y= \idofnodaloffsety,
 offset rotation xdir = \irotnodaloffsetx, offset rotation ydir = \irotnodaloffsety,
 start angle = \irotdofstartangle, end angle = \irotdofendangle, 
 radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext,
-rstring = \inoderdoftext, font size = \doffontsize,
-rotation=\dofsroti, font rotation=\rotationangle+\inodedoftextrot,
-font rotation for y = \inodeydoftextrot+\rotationangle,
-font rotation for r = \inoderdoftextrot+\rotationangle,
-dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen,
-dof arrow tip width=\dofarrtipwid]}
-%
-%Place x y and z dofs
-{\dofs[startx = \startoffsetx, starty = \startoffsety,
-length x = \lengthdofs,length y = \lengthdofs,
-offset x= \idofnodaloffsetx, offset y= \idofnodaloffsety,
-offset rotation xdir = \irotnodaloffsetx, offset rotation ydir = \irotnodaloffsety,
-start angle = \irotdofstartangle, end angle = \irotdofendangle, 
-radius = \rotationdofradius, xstring = \inodexdoftext, ystring = \inodeydoftext,
-rstring = \inoderdoftext, font size = \doffontsize,
+rstring = \inoderdoftext, font size = \doffontsize, font scale=\doffontscale,
 rotation=\dofsroti, font rotation=\rotationangle+\inodedoftextrot,
 font rotation for x = \inodexdoftextrot+\rotationangle,
 font rotation for y = \inodeydoftextrot+\rotationangle,
 font rotation for r = \inoderdoftextrot+\rotationangle,
 dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen,
-dof arrow tip width=\dofarrtipwid]}
-}{}
+dof arrow tip width=\dofarrtipwid,
+show dofx=\placeidofx, show dofy=\placeidofy, show dofr=\placeidofz,];
 
-%Place the DOFs on the jth joint
-\ifthenelse{\placejdofs=1}{
-
-%Place only y and z dofs only
-\ifthenelse{\placeyzdofsonly=1}
-{\dofsyz[startx = \lengthofelement+\endoffsetx, starty = \endoffsety,
+%Place DOFs at ith joint
+\dofs[startx = \lengthofelement+\endoffsetx, starty = \endoffsety,
 length x = \lengthdofs,length y = \lengthdofs,
 offset x= \jdofnodaloffsetx, offset y= \jdofnodaloffsety,
 offset rotation xdir = \jrotnodaloffsetx, offset rotation ydir = \jrotnodaloffsety,
 start angle = \jrotdofstartangle, end angle = \jrotdofendangle, 
 radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext,
-rstring = \jnoderdoftext, font size = \doffontsize,
-rotation=\dofsrotj, font rotation=\rotationangle+\inodedoftextrot,
-font rotation for y = \inodeydoftextrot+\rotationangle,
-font rotation for r = \inoderdoftextrot+\rotationangle,
-dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof arrow tip width=\dofarrtipwid]}
-%
-%Place x y and z dofs
-{\dofs[startx = \lengthofelement+\endoffsetx, starty = \endoffsety,
-length x = \lengthdofs,length y = \lengthdofs,
-offset x= \jdofnodaloffsetx, offset y= \jdofnodaloffsety,
-offset rotation xdir = \jrotnodaloffsetx, offset rotation ydir = \jrotnodaloffsety,
-start angle = \jrotdofstartangle, end angle = \jrotdofendangle, 
-radius = \rotationdofradius, xstring = \jnodexdoftext, ystring = \jnodeydoftext,
-rstring = \jnoderdoftext, font size = \doffontsize,
+rstring = \jnoderdoftext, font size = \doffontsize, font scale=\doffontscale,
 rotation=\dofsrotj, font rotation=\rotationangle+\jnodedoftextrot,
 font rotation for x = \jnodexdoftextrot+\rotationangle,
 font rotation for y = \jnodeydoftextrot+\rotationangle,
 font rotation for r = \jnoderdoftextrot+\rotationangle,
-dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen, dof arrow tip width=\dofarrtipwid]}
-}{}
-
+dof arrow size ratio=\dofarrtipsizrat, dof arrow tip length=\dofarrtiplen,
+dof arrow tip width=\dofarrtipwid,
+show dofx=\placejdofx, show dofy=\placejdofy, show dofr=\placejdofz,];
 
 %Place the length dimension line
 \ifthenelse{\placelengthdim=1}{
@@ -408,13 +396,20 @@ extension end length={\lengthdimspace pt}, extension end style={black, line widt
 
 
 %Place the global axes
-\ifthenelse{\placeglobalaxes=1}{
+\ifthenelse{\placeglobalaxesX=1}{
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; 
 \draw [arrowcoord] (\globalXstart,0) -- node[at end, inner sep=1pt, outer sep = 0, right]{\globalaxesfontsize \globalxtext}(\globalXend,0);
-\draw [arrowcoord] (0,\globalYstart) -- node[at end, inner sep=1pt, outer sep = 0, above]{\globalaxesfontsize \globalytext}(0,\globalYend);
 \end{scope}
 }{}
 
+%Place the global axes
+\ifthenelse{\placeglobalaxesY=1}{
+\begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0]; 
+\draw [arrowcoord] (0,\globalYstart) --
+node[at end, inner sep=1pt, outer sep = 0, above]{\globalaxesfontsize \globalytext}
+(0,\globalYend);
+\end{scope}
+}{}
 
 %Place the angle
 \ifthenelse{\placeangle=1}{
