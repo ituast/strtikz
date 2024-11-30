@@ -5,19 +5,50 @@
   starty = 0cm,
   endx = 3cm,
   endy = 3cm,
-  rigid start = 0.5cm,
-  rigid end = 0.5cm,
+  rigid start x = 0.5cm,
+  rigid start y = 0.5cm,
+  rigid end x= 0.5cm,
+  rigid end y= 0.5cm,
   tick length = 0.1cm,
-  tick width = 0.5pt},
+  tick width = 0.5pt,
+  rigid end thickness = 2pt,
+  frame thickness = 2pt,
+  rigid color=gray,
+  frame color=black,
+  frame text node i = {$i'$},
+  frame text node j = {$j'$},
+  frame text = {$L, E, I, A$},
+  rigid text node i x = {$r_i^x$},
+  rigid text node i y = {$r_i^y$},
+  rigid text node i end = {$i$},
+  rigid text node j x = {$r_j^x$},
+  rigid text node j y = {$r_j^y$},
+  rigid text node j end = {$j$},
+  horizontal=1,},
   startx/.store in =\startx,
   starty/.store in =\starty,
   endx/.store in =\endx,
   endy/.store in =\endy,
-  rigid start/.store in =\rgds,
-  rigid end/.store in =\rgde,
+  rigid start x/.store in =\rigidstartx,
+  rigid start y/.store in =\rigidstarty,
+  rigid end x/.store in =\rigidendx,
+  rigid end y/.store in =\rigidendy,
   tick length/.store in =\tic,
-  tick width/.store in =\ticklw
-}
+  tick width/.store in =\ticklw,
+  rigid end thickness/.store in=\rigidthk,
+  frame thickness/.store in=\framethk,
+  rigid color/.store in=\rigidcolor,
+  frame color/.store in=\framecolor,
+  frame text node i/.store in=\frametextnodei,
+  frame text node j/.store in=\frametextnodej,
+  frame text/.store in=\frametext,
+  rigid text node i x/.store in=\rigidtextnodeix,
+  rigid text node i y/.store in=\rigidtextnodeiy,
+  rigid text node i end/.store in=\rigidtextnodeiend,
+  rigid text node j x/.store in=\rigidtextnodejx,
+  rigid text node j y/.store in=\rigidtextnodejy,
+  rigid text node j end/.store in=\rigidtextnodejend,
+  horizontal/.store in=\horver,}
 
 
 \newcommand{\framerigid}[1][]{
@@ -32,35 +63,228 @@ real \dy1, \dy2, \dy3, \dy4, \dy5, \dy6;
 real \x1, \x2, \x3, \x4, \x5, \x6;
 real \y1, \y2, \y3, \y4, \y5, \y6;
 real \r1, \r2, \r3, \r4, \r5, \r6
-real \rgds, \rgde, \radi;
+real \rigidstartx, \rigidendx, \rigidstarty, \rigidendy, \radi;
 real \angg;
 real \tic, \tickdx, \tickdy, \ticklw;
-\dxx = (\endx-\startx)/28.45274;
-\dyy = (\endy-\starty)/28.45274;
-\len = ((\dxx)^2+(\dyy)^2)^0.5;
-\r1 = \rgds/28.45274/\len;
-\r2 = 1-(\rgde/28.45274/\len);
-\dx1 = \r1*\dxx;
-\dx2 = \r2*\dxx;
-\dy1 = \r1*\dyy;
-\dy2 = \r2*\dyy;
-\x1 = \startx/28.45274+\dx1;
-\x2 = \startx/28.45274+\dx2;
-\y1 = \starty/28.45274+\dy1;
-\y2 = \starty/28.45274+\dy2;
-%print {$\x1 -$};
-%print {$\starty -$};
-%print {$\y1 -$};
-%print {$ang = \angg -$};
-%print {$dyy = \dyy -$};
-%print {$dxx = \dxx -$};
+\dxx = (\endx-\startx);
+\dyy = (\endy-\starty);
+\len = veclen(\dxx, \dyy);
 \angg = atan2(\dyy,\dxx);
-\tickdx = \tic/28.45274*sin(\angg);
-\tickdy = \tic/28.45274*cos(\angg);
+%
+if equal(\horver,1) then {
+\r1 = \rigidstartx/\len;
+\r2 = 1-(\rigidendx/\len);
+%
+\dx1 = \r1*\dxx;
+\dy1 = \r1*\dyy;
+\dx2 = \r2*\dxx;
+\dy2 = \r2*\dyy;
+%
+\x1 = \startx+\dx1;
+\y1 = \starty+\dy1;
+\x2 = \startx+\dx2;
+\y2 = \starty+\dy2;
+} else {};
+%
+if equal(\horver,2) then {
+\dx1=-\rigidstartx*cos(\angg);
+\dy1=-\rigidstartx*sin(\angg);
+\dx2=+\rigidendx*cos(\angg);
+\dy2=+\rigidendx*sin(\angg);
+} else {};
+%
+if equal(\horver,3) then {
+\dx1=-\rigidstarty*sin(\angg);
+\dy1= \rigidstarty*cos(\angg);
+\dx2=-\rigidendy*sin(\angg);
+\dy2=+\rigidendy*cos(\angg);
+%
+\dxlinethkstart= sign(\rigidstarty)*\framethk/2*sin(\angg);
+\dylinethkstart=-sign(\rigidstarty)*\framethk/2*cos(\angg);
+\dxlinethkend= sign(\rigidendy)*\framethk/2*sin(\angg);
+\dylinethkend=-sign(\rigidendy)*\framethk/2*cos(\angg);
+} else {};
+if equal(\horver,4) then {
+\dx1=-\rigidstartx*cos(\angg);
+\dy1=-\rigidstartx*sin(\angg);
+\dx2=+\rigidendx*cos(\angg);
+\dy2=+\rigidendx*sin(\angg);
+%
+\dx3=-\rigidstarty*sin(\angg);
+\dy3= \rigidstarty*cos(\angg);
+\dx4=-\rigidendy*sin(\angg);
+\dy4=+\rigidendy*cos(\angg);
+} else {};
+%
+%
+if equal(\horver,5) then {
+\dx1=-\rigidstarty*sin(\angg);
+\dy1= \rigidstarty*cos(\angg);
+\dx2=-\rigidendy*sin(\angg);
+\dy2=+\rigidendy*cos(\angg);
+%
+\dx3=-\rigidstartx*cos(\angg);
+\dy3=-\rigidstartx*sin(\angg);
+\dx4=+\rigidendx*cos(\angg);
+\dy4=+\rigidendx*sin(\angg);
+%
+\dxlinethkstart= sign(\rigidstarty)*\framethk/2*sin(\angg);
+\dylinethkstart=-sign(\rigidstarty)*\framethk/2*cos(\angg);
+\dxlinethkend= sign(\rigidendy)*\framethk/2*sin(\angg);
+\dylinethkend=-sign(\rigidendy)*\framethk/2*cos(\angg);
+} else {};
+if equal(\horver,6) then {
+\dx1=-\rigidstarty*sin(\angg);
+\dy1= \rigidstarty*cos(\angg);
+\dx2=-\rigidendy*sin(\angg);
+\dy2=+\rigidendy*cos(\angg);
+%
+\dx3=-\rigidstartx*cos(\angg);
+\dy3=-\rigidstartx*sin(\angg);
+\dx4=+\rigidendx*cos(\angg);
+\dy4=+\rigidendx*sin(\angg);
+%
+\dx5=\dx1+\dx3;
+\dy5=\dy1+\dy3;
+\dx6=\dx2+\dx4;
+\dy6=\dy2+\dy4;
+%
+\dxlinethkstart= sign(\rigidstarty)*\framethk/2*sin(\angg);
+\dylinethkstart=-sign(\rigidstarty)*\framethk/2*cos(\angg);
+\dxlinethkend= sign(\rigidendy)*\framethk/2*sin(\angg);
+\dylinethkend=-sign(\rigidendy)*\framethk/2*cos(\angg);
+} else {};
+%
+\tickdx = \tic*sin(\angg);
+\tickdy = \tic*cos(\angg);
 }
-\draw [line width = 2pt] (\startx,\starty) -- (\x1,\y1);
-\draw [line width = 1pt] (\x1,\y1) -- (\x2,\y2);
-\draw [line width = 2pt] (\x2,\y2) -- (\endx,\endy);
-\foreach \i in {1,2}{
-\draw [line width = {\ticklw}] (\x{\i}-\tickdx,\y{\i}+\tickdy) -- (\x{\i}+\tickdx,\y{\i}-\tickdy);}
+
+\begin{scope}[x=1pt, y=1pt]
+
+\ifthenelse{\horver=1}{
+\draw [line width=\rigidthk, color=\rigidcolor] (\startx,\starty)  -- (\x1,\y1);
+\draw [line width=\framethk, color=\framecolor] (\x1,\y1) -- (\x2,\y2);
+\draw [line width=\rigidthk, color=\rigidcolor] (\x2,\y2) -- (\endx,\endy);
+}{}
+
+\ifthenelse{\horver=2}{
+\draw [line width=\rigidthk, color=\rigidcolor](\startx,\starty) --
+node[below, pos=0.5, anchor=\angg+90, inner sep=2pt]{\rigidtextnodeix}
+node[below, pos=1, anchor=\angg+90, inner sep=2pt]{\rigidtextnodeiend}
+++(\dx1,\dy1);
+
+\draw [line width=\rigidthk, color=\rigidcolor] (\endx,\endy)-- 
+node[below, pos=0.5, anchor=\angg+90, inner sep=2pt]{\rigidtextnodejx}
+node[below, pos=1, anchor=\angg+90, inner sep=2pt]{\rigidtextnodejend}
+++(\dx2,\dy2);
+
+\draw [line width=\framethk, color=\framecolor] (\startx,\starty) --
+node[pos=0, anchor=\angg+90, inner sep=2pt]{\frametextnodei}
+node[sloped, below, inner sep=2pt]{\frametext}
+node[pos=1, anchor=\angg+90, inner sep=2pt]{\frametextnodej}
+(\endx,\endy);
+}{}
+
+\ifthenelse{\horver=3}{
+
+\draw [line width=\rigidthk, color=\rigidcolor]
+(\startx,\starty) ++(\dxlinethkstart,\dylinethkstart) --
+node[below, pos=0.5, anchor=\angg, inner sep=2pt]{\rigidtextnodeiy}
+node[below, pos=1, anchor=\angg, inner sep=2pt]{\rigidtextnodeiend}
+++(\dx1,\dy1);
+
+\draw [line width=\rigidthk, color=\rigidcolor]
+(\endx,\endy) ++(\dxlinethkend,\dylinethkend) --
+node[below, pos=0.5, anchor=\angg+180, inner sep=2pt]{\rigidtextnodejy}
+node[below, pos=1, anchor=\angg+180, inner sep=2pt]{\rigidtextnodejend}
+++(\dx2,\dy2);
+
+\draw [line width=\framethk, color=\framecolor] (\startx,\starty) --
+node[pos=0, anchor=\angg+0, inner sep=1pt]{\frametextnodei}
+node[sloped, below, inner sep=2pt]{\frametext}
+node[pos=1, anchor=\angg+180, inner sep=3pt]{\frametextnodej}
+(\endx,\endy);
+}{}
+
+\ifthenelse{\horver=4}{
+\draw [line width=\rigidthk, color=\rigidcolor] (\startx,\starty)  --
+node[below, pos=0.5, anchor=\angg+90, inner sep=2pt]{\rigidtextnodeix}
+++(\dx1,\dy1) --
+node[below, pos=0.5, anchor=\angg, inner sep=2pt]{\rigidtextnodeiy}
+node[below, pos=1, anchor=\angg, inner sep=2pt]{\rigidtextnodeiend}
+++(\dx3,\dy3);
+
+\draw [line width=\rigidthk, color=\rigidcolor]  (\endx,\endy) --
+node[below, pos=0.5, anchor=\angg+90, inner sep=2pt]{\rigidtextnodejx}
+++(\dx2,\dy2) --
+node[below, pos=0.5, anchor=\angg+180, inner sep=2pt]{\rigidtextnodejy}
+node[below, pos=1, anchor=\angg+180, inner sep=2pt]{\rigidtextnodejend}
+++(\dx4,\dy4);
+
+\draw [line width=\framethk, color=\framecolor] (\startx,\starty) --
+node[below, pos=0, anchor=\angg+90, inner sep=2pt]{\frametextnodei}
+node[sloped, below, inner sep=2pt]{\frametext}
+node[below, pos=1, anchor=\angg+90, inner sep=2pt]{\frametextnodej}
+(\endx,\endy);
+}{}
+
+\ifthenelse{\horver=5}{
+\draw [line width=\rigidthk, color=\rigidcolor]
+(\startx,\starty) ++(\dxlinethkstart,\dylinethkstart) --
+node[below, pos=0.5, anchor=\angg+180, inner sep=2pt]{\rigidtextnodeiy}
+++(\dx1,\dy1) --
+node[below, pos=0.5, anchor=\angg-90, inner sep=2pt]{\rigidtextnodeix}
+node[below, pos=1, anchor=\angg-90, inner sep=2pt]{\rigidtextnodeiend}
+++(\dx3,\dy3);
+
+\draw [line width=\rigidthk, color=\rigidcolor]
+(\endx,\endy) ++(\dxlinethkend,\dylinethkend) --
+node[below, pos=0.5, anchor=\angg, inner sep=2pt]{\rigidtextnodejy}
+++(\dx2,\dy2) --
+node[below, pos=0.5, anchor=\angg-90, inner sep=2pt]{\rigidtextnodejx}
+node[below, pos=1, anchor=\angg-90, inner sep=2pt]{\rigidtextnodejend}
+++(\dx4,\dy4);
+
+\draw [line width=\framethk, color=\framecolor] (\startx,\starty) --
+node[below, pos=0, anchor=\angg+90, inner sep=2pt]{\frametextnodei}
+node[sloped, below, inner sep=2pt]{\frametext}
+node[below, pos=1, anchor=\angg+90, inner sep=2pt]{\frametextnodej}
+(\endx,\endy);
+
+}{}
+
+
+\ifthenelse{\horver=6}{
+
+\draw [line width=\rigidthk, color=\rigidcolor] (\startx,\starty) -- ++(\dx5,\dy5);
+
+\draw [line width=\rigidthk, color=\rigidcolor] (\endx,\endy) -- ++(\dx6,\dy6);
+
+\draw [line width=0.5pt, color=\rigidcolor]
+(\startx,\starty) ++(\dxlinethkstart,\dylinethkstart) --
+node[below, pos=0.5, anchor=\angg+180, inner sep=2pt]{\rigidtextnodeiy}
+++(\dx1,\dy1) --
+node[below, pos=0.5, anchor=\angg-90, inner sep=2pt]{\rigidtextnodeix}
+node[below, pos=1, anchor=\angg-90, inner sep=2pt]{\rigidtextnodeiend}
+++(\dx3,\dy3);
+
+\draw [line width=0.5pt, color=\rigidcolor]
+(\endx,\endy) ++(\dxlinethkend,\dylinethkend) --
+node[below, pos=0.5, anchor=\angg, inner sep=2pt]{\rigidtextnodejy}
+++(\dx2,\dy2) --
+node[below, pos=0.5, anchor=\angg-90, inner sep=2pt]{\rigidtextnodejx}
+node[below, pos=1, anchor=\angg-90, inner sep=2pt]{\rigidtextnodejend}
+++(\dx4,\dy4);
+
+\draw [line width=\framethk, color=\framecolor] (\startx,\starty) --
+node[below, pos=0, anchor=\angg+90, inner sep=2pt]{\frametextnodei}
+node[sloped, below, inner sep=2pt]{\frametext}
+node[below, pos=1, anchor=\angg+90, inner sep=2pt]{\frametextnodej}
+(\endx,\endy);
+
+}{}
+
+%\foreach \i in {1,2}{
+%\draw [line width = {\ticklw}] (\x{\i}-\tickdx,\y{\i}+\tickdy) -- (\x{\i}+\tickdx,\y{\i}-\tickdy);}
+\end{scope}
 }
