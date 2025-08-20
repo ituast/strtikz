@@ -298,7 +298,7 @@ if greater(\doflocfloor,\storynumber) then {\doflocfloor=0;} else{};
 if greater(\dofloccolumn,\columnnumber) then {\dofloccolumn=1;} else{};
 \dofloch = 1+\doflocfloor;
 \minlen = min(\storyheight,\baywidth);
-\dofxx = \x{\dofloccolumn}+\dofoffsetratio*\minlen+\deflect{\dofloch};
+\dofxx = \x{\dofloccolumn}+\dofoffsetratio*\minlen+\deflect{\dofloch}*\showdefl;
 \dofyy = \y{\dofloch}+\dofoffsetratio*\minlen;
 \arrlen = \arrowlenratio*\minlen;
 \arrrad = \rotarrowlenratio*\minlen;
@@ -485,6 +485,26 @@ cycle;
 
 \foreach \j in {2,...,{\ncolmo}}
 {\draw [line width = \collinet/2] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
+
+\ifthenelse{\showmass=1}{
+	\ifthenelse{\showsupports=5}{
+		\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+		{\foreach \j in {1,...,{\columnnumber}}{
+				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
+		}}
+		\foreach \iii in {2,...,\useeval{\subfloors+1}}
+		{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
+		}}
+	}
+	{
+		\foreach \iii in {2,...,{\levelnumber}}
+		{\foreach \j in {1,...,{\columnnumber}}{
+				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
+		}}
+	}
+}{}
+
 }{}
 
 %%% Draw Frame - Undeflected shape but beams and columns are drawn seperately
@@ -556,29 +576,31 @@ cycle;
 	
 	
 	}{}
+	
+	\ifthenelse{\showmass=1}{
+		\ifthenelse{\showsupports=5}{
+			\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+			{\foreach \j in {1,...,{\columnnumber}}{
+					\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+			}}
+			\foreach \iii in {2,...,\useeval{\subfloors+1}}
+			{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+					\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+			}}
+		}
+		{
+			\foreach \iii in {2,...,{\levelnumber}}
+			{\foreach \j in {1,...,{\columnnumber}}{
+					\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+			}}
+		}
+	}{}
 
 }{}
 
 
 
-\ifthenelse{\showmass=1}{
-\ifthenelse{\showsupports=5}{
-	\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
-	{\foreach \j in {1,...,{\columnnumber}}{
-	\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-	}}
-	\foreach \iii in {2,...,\useeval{\subfloors+1}}
-	{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-	\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-	}}
-}
-{
-	\foreach \iii in {2,...,{\levelnumber}}
-	{\foreach \j in {1,...,{\columnnumber}}{
-	\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-	}}
-}
-}{}
+
 
 
 \ifthenelse{\showsupports=0}{
@@ -623,14 +645,16 @@ rectangle
 }{}
 
 \ifthenelse{\showaxes=1}{
+\tikzset{>={Classical TikZ Rightarrow[scale=1, width=3, length=5, bend]}};
 \draw [{->}] (\Xaxesstartx,\Xaxesstarty) -- +(\axeslenX,0) node[above]{$X$};
 \draw [{->}] (\Yaxesstartx,\Yaxesstarty) -- +(0,\axeslenY) node[right]{$Y$};
 }{}
 
 \ifthenelse{\showdof=1}{
-\dofs[startx = \dofxx, starty = \dofyy, length x = \arrlen,  length y = \arrlen,
+\dofs[startx = \dofxx, starty = \dofyy,
+  length x = \arrlen,  length y = \arrlen,
   offset x=\dofoffsetx, offset y=\dofoffsety,
-offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
   xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr,
   font size = \normalsize, font scale = \doftextratio,
@@ -638,7 +662,8 @@ offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   font rotation for x = \dofxrotation,
   font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio,
+  show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
   dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
   dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ]  
@@ -655,9 +680,11 @@ offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
 	\dofcounterz=\dofcounterx+2;
 }
 
-\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+\dofs[
+  startx = \x{\j}+\deflect{\iii}, starty = \y{\iii},
+  length x = \arrlen,  length y = \arrlen,
   offset x=\dofoffsetx, offset y=\dofoffsety,
-offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
   xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
   font size = \normalsize, font scale = \doftextratio,
@@ -665,7 +692,8 @@ offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   font rotation for x = \dofxrotation,
   font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio,
+  show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
   dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
   dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ]  
@@ -682,7 +710,9 @@ offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
 }
 
 
-\dofs[startx = \x{\j} +\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+\dofs[
+  startx = \x{\j} +\deflect{\iii}, starty = \y{\iii},
+  length x = \arrlen,  length y = \arrlen,
   offset x=\dofoffsetx, offset y=\dofoffsety,
   offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
@@ -692,7 +722,8 @@ offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   font rotation for x = \dofxrotation,
   font rotation for y = \dofyrotation,
   font rotation for r = \dofrrotation,
-  dof arrow size ratio=\dofarrowratio, show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dof arrow size ratio=\dofarrowratio,
+  show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
   dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
   dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx, dofr inner sep=\dofinnersepr,
   ] 	
@@ -710,7 +741,9 @@ offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
 }
 
 
-\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii}, length x = \arrlen,  length y = \arrlen,
+\dofs[
+  startx = \x{\j}+\deflect{\iii}, starty = \y{\iii},
+  length x = \arrlen,  length y = \arrlen,
   offset x=\dofoffsetx, offset y=\dofoffsety,
   offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
   start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
