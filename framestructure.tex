@@ -55,6 +55,7 @@
   dof text ratio=0.5,
   show axes = 1,
   subfloor number=2,
+  half space type=1,
   left soil distance = 2cm,
   right soil distance = 4cm,
   left soil depth = 2cm,
@@ -137,6 +138,7 @@
   dof text ratio/.store in = \doftextratio,
   show axes/.store in = \showaxes,
   subfloor number/.store in=\subfloors,
+  half space type/.store in=\halfspacetype,
   left soil distance/.store in = \leftsoildist,
   right soil distance/.store in = \rightsoildist,
   left soil depth/.store in = \leftsoildepth,
@@ -170,7 +172,7 @@
 \pgfkeys{/framestructure, default, #1}
 \tikzmath{
 int \storynumber, \baynumber, \columnnumber, \levelnumber, \storyminone;
-int \nlevmo, \ncolmo, \iii, \j, \pileind, \showsupports;
+int \nlevmo, \ncolmo, \iii, \j, \pileind;
 real \storyheight, \baywidth, \startx, \starty, \xx, \y;
 int \numberofisolators, \kiso, \isoshiftyn;
 real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \isomidy;
@@ -184,9 +186,10 @@ int \showaxes, \showdof, \showmass, \showsupports;
 real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
 real \dofxrotation, \dofyrotation, \dofrrotation;
 real \rotdofstartangle, \rotdofendangle;
-int \subfloors;
+int \subfloors, \deflstart, \deflstartplusone, \superstorynumber;
 real \basewallstartx, \basewallstarty, \basewallendx, \basewallendy;
 real \buildingwidth, \basewalldepth;
+int \halfspacetype;
 real \leftsoildist, \rightsoildist, \leftsoildepth, \rightsoildepth;
 real \soilbelowfound, \leftcontrolx, \leftcontroly;
 real \rightcontrolx, \rightcontroly;
@@ -257,8 +260,15 @@ for \j in {1,...,{\columnnumber}}{
 };
 };
 %% Deflected shape coordinates
-for \idefl in {1,...,{\levelnumber}}{
-	\deflect{\idefl} = (\idefl-1)*\drift;
+if equal(\showsupports,5) then
+{\deflstart=\subfloors+1;} else {\deflstart=1;};
+\deflstartplusone=\deflstart+1;
+\superstorynumber=\storynumber-\subfloors;
+for \idefl in {1,...,{\deflstart}}{
+	\deflect{\idefl} = 0;
+};
+for \idefl in {\deflstart+1,...,{\levelnumber}}{
+	\deflect{\idefl} = (\idefl-\deflstart)*\drift;
 };
 \tempdim = sqrt(\defparx*\defparx + \defpary*\defpary);
 \fixbeamx = \collinet/2/2*\defpary/\tempdim;
@@ -276,6 +286,7 @@ for \idefl in {1,...,{\levelnumber}}{
 \structheight=\storynumber*\storyheight;
 \isomidy = \supportheight+\isolinet+\isolationdepth/2-\baselinet;
 %%%Basement%%%%
+\soilbelowfoundtof = \soilbelowfound+\supportheight;
 \basewallstartx=-\supportwidth;
 \buildingwidth=\baynumber*\baywidth;
 \basewalldepth=\subfloors*\storyheight;
@@ -283,7 +294,7 @@ for \idefl in {1,...,{\levelnumber}}{
 \basewallendx=\buildingwidth+\supportwidth;
 \basewallendy=\basewallstarty;
 \rightsoilx=\buildingwidth+\rightsoildist;
-\rightsoily=\basewalldepth-\rightsoildepth;
+\rightsoily=\basewalldepth-\rightsoildepth-\supportheight;
 %Some isolator properties
 \isospace = (\buildingwidth)/(\numberofisolators-1);
 for \kiso in {1,...,{\numberofisolators}}{
@@ -432,38 +443,94 @@ if equal(\latloadtype,4) then {
 }{;}
 
 
-
 %%%% Different Support Types
-\ifthenelse{\showsupports=5}{
-
-\path[fill=brown!75!white] decorate[decoration={random steps, segment length=0.25cm}]
-{(-\leftsoildist,\basewalldepth) -- ++(0,-\leftsoildepth)
-..controls++(0,-\leftcontroly) and ++(-\leftcontrolx,0)..(0,-\soilbelowfound)
- -- ++(\buildingwidth,0) ..controls ++(\rightcontrolx,0) and
- ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
- -- ++(0,\rightsoildepth)}
--- cycle;
-
-\draw(-\leftsoildist,\basewalldepth) --
-(\buildingwidth+\rightsoildist,\basewalldepth);
-
-\path[fill=white](0,\basewalldepth) -- ++(\buildingwidth,0) --
-++(0,-\basewalldepth) -- ++(-\buildingwidth,0) -- cycle;
-
-\ifthenelse{\showpiles=1}{
-\foreach \pileind in {1,...,{\numberofpiles}}
-{\pilesupport[x coordinate=\pilecoordx{\pileind}, y coordinate=\pilecoordy,
-pile depth=\piledepth, pile diameter=\pilediameter,
-pile line thickness=\pilelinethickness, fill color=gray,]}
+%% 0. No Supports
+\ifthenelse{\showsupports=0}{
 }{}
 
-\filldraw[line width = \baselinet, fill=gray!65]
-(\basewallstartx,\basewallstarty) -- ++(\supportwidth,0) -- 
-++(0,-\basewalldepth)
--- ++(\buildingwidth,0) -- ++(0,\basewalldepth) -- ++(\supportwidth,0) --
-++(0,-\basewalldepth-\supportheight) -- (\basewallstartx,-\supportheight) -- 
-cycle;
+%% 1. Individual fixed supports
+\ifthenelse{\showsupports=1}{
+	\foreach \j in {1,...,{\columnnumber}}
+	{
+		\fill [gray] (\x{\j},\y{1}) +({-\supportwidth/2},-\supportheight)
+		rectangle +({\supportwidth/2},\y{1});
+		\draw [line width = \baselinet]
+		(\x{\j},\y{1}) +({-\supportwidth/2},\y{1}) -- +({\supportwidth/2},\y{1});
+	}
+}{}
 
+%% 2. Support as continuous plate
+\ifthenelse{\showsupports=2}{
+	\fill [gray] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);
+	\draw [line width = \baselinet] (\rigbasestartx, 0) -- (\rigbaseendx,0);
+}{}
+
+
+%% 3. Support as ...
+\ifthenelse{\showsupports=3}{
+	\foreach \j in {1,...,{\columnnumber}}
+	{\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
+		rectangle
+		(\rigbaseendx,-\supportheight);}
+}{}
+
+
+%%% 4. Base Isolation
+\ifthenelse{\showsupports=4}{
+	\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
+	rectangle
+	(\rigbaseendx,-\supportheight);
+	
+	\foreach \j in {1,...,{\numberofisolators}}
+	{\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
+		(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
+		+(\isolationwidth/2,\isotopy);}
+	
+	\fill [fill=gray]
+	(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
+	\draw [line width = \baselinet] (\foundstartx, \foundtopy) -- (\foundendx, 
+	\foundtopy);
+}{}
+
+%%5. Pile Supports
+\ifthenelse{\showsupports=5}{
+	
+	\ifthenelse{\halfspacetype=1}{
+	\path[fill=brown!75!white]
+	{(-\leftsoildist,\basewalldepth) -- ++(0,-\basewalldepth) -- ++(0,-\soilbelowfoundtof)
+		-- ++(\buildingwidth,0) -- ++(\leftsoildist,0) -- ++(\rightsoildist,0)
+		-- ++(0,\soilbelowfoundtof)-- ++(0,\basewalldepth) }
+	-- cycle;}{}
+	
+	\ifthenelse{\halfspacetype=2}{
+	\path[fill=brown!75!white] decorate[decoration={random steps, segment length=0.25cm}]
+		{(-\leftsoildist,\basewalldepth) -- ++(0,-\leftsoildepth)
+		..controls++(0,-\leftcontroly) and ++(-\leftcontrolx,0)..(0,-\soilbelowfoundtof)
+		-- ++(\buildingwidth,0)
+		..controls ++(\rightcontrolx,0) and ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
+		-- ++(0,\supportheight)-- ++(0,\rightsoildepth)}
+	-- cycle;}{}
+	
+	\draw(-\leftsoildist,\basewalldepth) --
+	(\buildingwidth+\rightsoildist,\basewalldepth);
+	
+	\path[fill=white](0,\basewalldepth) -- ++(\buildingwidth,0) --
+	++(0,-\basewalldepth) -- ++(-\buildingwidth,0) -- cycle;
+	
+	\ifthenelse{\showpiles=1}{
+		\foreach \pileind in {1,...,{\numberofpiles}}
+		{\pilesupport[x coordinate=\pilecoordx{\pileind}, y coordinate=\pilecoordy,
+			pile depth=\piledepth, pile diameter=\pilediameter,
+			pile line thickness=\pilelinethickness, fill color=gray,]}
+	}{}
+	
+	\filldraw[line width = \baselinet, fill=gray!65]
+	(\basewallstartx,\basewallstarty) -- ++(\supportwidth,0) -- 
+	++(0,-\basewalldepth)
+	-- ++(\buildingwidth,0) -- ++(0,\basewalldepth) -- ++(\supportwidth,0) --
+	++(0,-\basewalldepth-\supportheight) -- (\basewallstartx,-\supportheight) -- 
+	cycle;
+	
 }{}
 
 
@@ -471,31 +538,39 @@ cycle;
 %%% Draw Frame - Undeflected shape
 \ifthenelse{\showdefl=0}{
 
+\ifthenelse{\storynumber>1}{
+	\foreach \iii in {2,...,{\nlevmo}}
+	{\draw [blue, line width = \beamlinet/2] (\x{1},\y{\iii}) -- 
+		(\x{\columnnumber},\y{\iii});}}
+{}
+
+
 \draw [line width = \collinet/2]
 (\x{1},\y{1}) -- (\x{1}, \y{\levelnumber});
+
 \draw [line width = \beamlinet/2]
 (\x{1}-\collinet/2/2, \y{\levelnumber}) -- (\x{\columnnumber}+\collinet/2/2, \y{\levelnumber});
+
 \draw [line width = \collinet/2]
 (\x{\columnnumber}, \y{\levelnumber}) -- (\x{\columnnumber}, \y{1});
  
 
-\foreach \iii in {2,...,{\nlevmo}}
-{\draw [line width = \beamlinet/2] (\x{1},\y{\iii}) -- 
-(\x{\columnnumber},\y{\iii});}
-
 \foreach \j in {2,...,{\ncolmo}}
 {\draw [line width = \collinet/2] (\x{\j},\y{1}) -- (\x{\j},\y{\levelnumber});}
+
 
 \ifthenelse{\showmass=1}{
 	\ifthenelse{\showsupports=5}{
 		\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
 		{\foreach \j in {1,...,{\columnnumber}}{
-				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
+			\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
 		}}
-		\foreach \iii in {2,...,\useeval{\subfloors+1}}
-		{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-		}}
+		\ifthenelse{\subfloors>0}{
+			\foreach \iii in {2,...,\useeval{\deflstart}}
+			{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+				\shade[ball color=red] (\x{\j},\y{\iii}) circle (\massrad);
+			}}
+		}{}
 	}
 	{
 		\foreach \iii in {2,...,{\levelnumber}}
@@ -504,6 +579,7 @@ cycle;
 		}}
 	}
 }{}
+
 
 }{}
 
@@ -520,129 +596,120 @@ cycle;
 }{}
 
 
+
+
+%\node at (10,10) {\deflstart};
+%\node at (50,50) {\deflstartplusone};
+%\node at (100,100) {\superstorynumber};
 %%% Draw Frame - Deflected shape
 \ifthenelse{\showdefl=1}{
-	\foreach \icol in {1,...,{\columnnumber}}
-	{
-		\draw [line width = \collinet/2]
-		(\x{\icol}+\deflect{1},\y{1}) .. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
-		(\x{\icol}+\deflect{2}, \y{2});
-	}
-	\foreach \ibeam in {1,...,{\baynumber}}
-	{
-		\draw [line width = \beamlinet/2]
-		(\x{\ibeam}-\fixbeamx+\deflect{2}, \y{2}+\fixbeamy) .. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
-		(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{2}, \y{2}-\fixbeamy);
-	}
+	
+%%% Substructure
+
+\ifthenelse{\subfloors>1}{
+	\foreach \iii in {2,...,{\subfloors}}
+	{\draw [blue, line width = \beamlinet/2] (\x{1},\y{\iii}) -- 
+		(\x{\columnnumber},\y{\iii});}}
+{}
+
+\draw [line width = \collinet/2]
+(\x{1},\y{1}) -- (\x{1}, \y{\deflstart});
+
+\draw [line width = \beamlinet/2]
+(\x{1}-\collinet/2/2, \y{\deflstart}) -- (\x{\columnnumber}+\collinet/2/2, \y{\deflstart});
+
+\draw [line width = \collinet/2]
+(\x{\columnnumber}, \y{\deflstart}) -- (\x{\columnnumber}, \y{1});
 
 
-	\ifthenelse{\storynumber>1}{
-	\ifthenelse{\storynumber>2}{
-	\foreach \istory in {2,...,{\storyminone}}
-	{
-		\foreach \icol in {1,...,{\columnnumber}}
+\foreach \j in {2,...,{\ncolmo}}
+{\draw [line width = \collinet/2] (\x{\j},\y{1}) -- (\x{\j},\y{\deflstart});}
+	
+	
+%%%Superstructure
+\ifthenelse{\superstorynumber>0}{
+\foreach \ibeam in {1,...,{\baynumber}}
+{
+	\draw [red, line width = \beamlinet/2]
+	(\x{\ibeam}-\fixbeamx+\deflect{\deflstartplusone}, \y{\deflstartplusone}+\fixbeamy)
+	.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, \defparbeamx) ..
+	(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{\deflstartplusone}, \y{\deflstartplusone}-\fixbeamy);
+}
+\foreach \icol in {1,...,{\columnnumber}}
+{
+	\draw [line width = \collinet/2]
+	(\x{\icol}+\deflect{\deflstart},\y{\deflstart})
+	.. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
+	(\x{\icol}+\deflect{\deflstartplusone}, \y{\deflstartplusone});
+}}{}
+	
+\ifthenelse{\superstorynumber>1}{
+	\ifthenelse{\superstorynumber>2}{
+		\foreach \istory in {\deflstartplusone,...,{\storyminone}}
 		{
-			\draw [line width = \collinet/2]
-			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
-			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
-		}
-		\foreach \ibeam in {1,...,{\baynumber}}
-		{
-			\draw [line width = \beamlinet/2]
-			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
-			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
-			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
-		}
-	}
+			\foreach \ibeam in {1,...,{\baynumber}}
+			{
+				\draw [blue, line width = \beamlinet/2]
+				(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
+				.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx)
+				.. (\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1},
+				\usevar\y{\istory+1}-\fixbeamy);
+			}
+				\foreach \icol in {1,...,{\columnnumber}}
+			{
+				\draw [line width = \collinet/2]
+				(\x{\icol}+\deflect{\istory},\y{\istory})
+				.. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
+				(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+			}
+			}
 	}{}
 	
 	\foreach \istory in {\storynumber}
 	{
-		\foreach \icol in {1,...,{\columnnumber}}
-		{
-			\draw [line width = \collinet/2]
-			(\x{\icol}+\deflect{\istory},\y{\istory}) .. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
-			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, +\usevar\y{\istory+1});
-		}
-		
 		\foreach \ibeam in {1,...,{\baynumber}}
 		{
 			\draw [line width = \beamlinet/2]
 			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
 			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
-			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}-\fixbeamy);
+			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1},\usevar\y{\istory+1}-\fixbeamy);
 		}
-	}	
-	
-	
-	}{}
-	
-	\ifthenelse{\showmass=1}{
-		\ifthenelse{\showsupports=5}{
-			\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
-			{\foreach \j in {1,...,{\columnnumber}}{
-					\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
-			}}
-			\foreach \iii in {2,...,\useeval{\subfloors+1}}
-			{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-					\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
-			}}
-		}
+		\foreach \icol in {1,...,{\columnnumber}}
 		{
-			\foreach \iii in {2,...,{\levelnumber}}
-			{\foreach \j in {1,...,{\columnnumber}}{
-					\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
-			}}
+			\draw [line width = \collinet/2]
+			(\x{\icol}+\deflect{\istory},\y{\istory})
+			.. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
+			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, +\usevar\y{\istory+1});
 		}
-	}{}
+		
+		}	
+	
+}{}
 
+\ifthenelse{\showmass=1}{
+	\ifthenelse{\showsupports=5}{
+		\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+		{\foreach \j in {1,...,{\columnnumber}}{
+			\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+		}}
+		\foreach \iii in {2,...,\useeval{\subfloors+1}}
+			{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+				\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+			}}
+	}
+	{
+		\foreach \iii in {2,...,{\levelnumber}}
+		{\foreach \j in {1,...,{\columnnumber}}{
+			\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+		}}
+	}
+}{}
+	
+	
 }{}
 
 
 
-
-
-
-\ifthenelse{\showsupports=0}{
-}{}
-
-\ifthenelse{\showsupports=1}{
-\foreach \j in {1,...,{\columnnumber}}
-{
-\fill [gray] (\x{\j},\y{1}) +({-\supportwidth/2},-\supportheight)
-rectangle +({\supportwidth/2},\y{1});
-\draw [line width = \baselinet]
-(\x{\j},\y{1}) +({-\supportwidth/2},\y{1}) -- +({\supportwidth/2},\y{1});
-}
-}{}
-
-\ifthenelse{\showsupports=2}{
-\fill [gray] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);
-\draw [line width = \baselinet] (\rigbasestartx, 0) -- (\rigbaseendx,0);
-}{}
-
-\ifthenelse{\showsupports=3}{
-\foreach \j in {1,...,{\columnnumber}}
-{\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
-rectangle
-	(\rigbaseendx,-\supportheight);}
-}{}
-
-\ifthenelse{\showsupports=4}{
-\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
-rectangle
-(\rigbaseendx,-\supportheight);
-
-\foreach \j in {1,...,{\numberofisolators}}
-{\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
-(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
-+(\isolationwidth/2,\isotopy);}
-
-\fill [fill=gray]
-(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
-\draw [line width = \baselinet] (\foundstartx, \foundtopy) -- (\foundendx, 
-\foundtopy);
-}{}
 
 \ifthenelse{\showaxes=1}{
 \tikzset{>={Classical TikZ Rightarrow[scale=1, width=3, length=5, bend]}};
