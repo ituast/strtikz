@@ -1,39 +1,9 @@
 
-\ifthenelse{\showmass=1}{
-	\ifthenelse{\showsupports=5}{
-		\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
-		{\foreach \j in {1,...,{\columnnumber}}{
-				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-		}}
-		\foreach \iii in {2,...,\useeval{\subfloors+1}}
-		{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-		}}
-	}
-	{
-		\foreach \iii in {2,...,{\levelnumber}}
-		{\foreach \j in {1,...,{\columnnumber}}{
-				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-		}}
-	}
-}{}
 
 
-\ifthenelse{\showmass=1}{
-\ifthenelse{\showsupports=5}{
-	\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
-	{\foreach \j in {1,...,{\columnnumber}}{
-		\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
-	}}
-	\foreach \iii in {2,...,\useeval{\subfloors+1}}
-	{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-		\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
-	}}
-	}
-	{
-	\foreach \iii in {2,...,{\levelnumber}}
-	{\foreach \j in {1,...,{\columnnumber}}{
-		\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
-	}}
-	}
-}{}
+
+
+
+
+
+

@@ -83,7 +83,11 @@
   interstory drift = 0.2cm,
   defl parameter x = 0.2cm,
   defl parameter y = 0.5cm,
-  defl parameter base = 0.15cm,},
+  defl parameter base = 0.15cm,
+  eng bedrock depth=2cm,
+  eng bedrock left distance=1cm,
+  eng bedrock right distance=1cm,
+  eng bedrock line thickness=1.5pt,},
   number of storys/.store in = \storynumber,
   number of bays/.store in = \baynumber,
   story height/.store in = \storyheight,
@@ -166,8 +170,12 @@
   interstory drift/.store in=\drift,
   defl parameter x/.store in=\defparx,
   defl parameter y/.store in=\defpary,
-  defl parameter base/.store in=\defbase,}
-
+  defl parameter base/.store in=\defbase,
+  eng bedrock depth/.store in=\engbedrockdepth,
+  eng bedrock left distance/.store in=\engbedrockleftdist,
+  eng bedrock right distance/.store in=\engbedrockrightdist,
+  eng bedrock line thickness/.store in=\engbedrocklinewidth,
+}
 \newcommand{\framestructure}[1][]{
 \pgfkeys{/framestructure, default, #1}
 \tikzmath{
@@ -205,6 +213,12 @@ int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
 real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase;
 real \tempdim, \fixbeamx, \fixbeamy;
 int \dofcounterx, \dofcountery, \dofcounterz;
+real \engbedrockdepth, \engbedrockleftdist, \engbedrockrightdist;
+real \engbedrockstartx, \engbedrockstarty;
+real \engbedrockdeltax, \engbedrockdeltay;
+int \engbedrocklinewidth;
+real \translayerleftstartx, \translayerleftstarty, \translayerleftdeltay;
+real \translayerrightstartx, \translayerrightstarty, \translayerrightdeltay;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -245,6 +259,10 @@ int \dofcounterx, \dofcountery, \dofcounterz;
 \defparx=\defparx;
 \defpary=\defpary;
 \defbase=\defbase;
+\engbedrockdepth=\engbedrockdepth;
+\engbedrockleftdist=\engbedrockleftdist;
+\engbedrockrightdist=\engbedrockrightdist;
+\engbedrocklinewidth=\engbedrocklinewidth;
 %End conversion, All values are now in pt units.
 \dofcounter=0;
 \storyminone = \storynumber-1;
@@ -354,8 +372,31 @@ if equal(\latloadtype,4) then {
 		(\structheight+\isomidy)-\latloadshift-\basearrlen;
 	};
 } else {};
+%%%Engineering Bedrock Coordinates
+\engbedrockstartx=-\leftsoildist-\engbedrockleftdist;
+\engbedrockstarty=-\soilbelowfoundtof-\engbedrockdepth;
+\engbedrockdeltax=\leftsoildist+\engbedrockleftdist+
+\buildingwidth+\rightsoildist+\engbedrockrightdist;
+\engbedrockdeltay=\engbedrockdepth;
+\engbedrockmidx=\engbedrockstartx + \engbedrockdeltax/2;
+\engbedrockmidy=\engbedrockstarty + \engbedrockdeltay/2;
+%%%Transmitting Layer
+\translayerlinet=2pt;
+\translayerleftstartx=-\leftsoildist-\translayerlinet/2;
+\translayerleftstarty=\basewalldepth;
+\translayerleftdeltay=\basewalldepth+\soilbelowfoundtof;
+\translayerrightstartx=\rightsoildist+\buildingwidth+\translayerlinet/2;
+\translayerrightstarty=\basewalldepth;
+\translayerrightdeltay=\basewalldepth+\soilbelowfoundtof;
+%%%Soil-Structure Interface
+\ssinterlinet=3pt;
+\ssinterleftstartx=-\supportwidth-\baselinet/2-\ssinterlinet/2;
+\ssinterrightstartx=\buildingwidth+\supportwidth+\baselinet/2+\ssinterlinet/2;
+\ssinterleftstarty=\basewalldepth;
+\ssinterrightstarty=\basewalldepth;
+\ssinterdeltax=\ssinterrightstartx-\ssinterleftstartx;
+\ssinterdeltay=\basewalldepth+\supportheight+\baselinet/2+\ssinterlinet/2;
 }   %End tikzmath
-
 
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0];
 	% Drawing everything in pt units
@@ -495,6 +536,7 @@ if equal(\latloadtype,4) then {
 %%5. Pile Supports
 \ifthenelse{\showsupports=5}{
 	
+	%%% Rectangular half space
 	\ifthenelse{\halfspacetype=1}{
 	\path[fill=brown!75!white]
 	{(-\leftsoildist,\basewalldepth) -- ++(0,-\basewalldepth) -- ++(0,-\soilbelowfoundtof)
@@ -502,6 +544,14 @@ if equal(\latloadtype,4) then {
 		-- ++(0,\soilbelowfoundtof)-- ++(0,\basewalldepth) }
 	-- cycle;}{}
 	
+	%%% Transmitting Layers
+	\draw[line width=\translayerlinet, red, dashed]
+	(\translayerleftstartx,\translayerleftstarty) -- ++(0,-\translayerleftdeltay);
+	
+	\draw[line width=\translayerlinet, red, dashed]
+	(\translayerrightstartx,\translayerrightstarty) -- ++(0,-\translayerrightdeltay);
+	
+	%%% Random half space
 	\ifthenelse{\halfspacetype=2}{
 	\path[fill=brown!75!white] decorate[decoration={random steps, segment length=0.25cm}]
 		{(-\leftsoildist,\basewalldepth) -- ++(0,-\leftsoildepth)
@@ -511,25 +561,54 @@ if equal(\latloadtype,4) then {
 		-- ++(0,\supportheight)-- ++(0,\rightsoildepth)}
 	-- cycle;}{}
 	
-	\draw(-\leftsoildist,\basewalldepth) --
+	
+	%%% Top thin line
+	\draw[line width=0.5pt, color=black]
+	(-\leftsoildist,\basewalldepth) --
 	(\buildingwidth+\rightsoildist,\basewalldepth);
 	
+	%% White rectangle
 	\path[fill=white](0,\basewalldepth) -- ++(\buildingwidth,0) --
 	++(0,-\basewalldepth) -- ++(-\buildingwidth,0) -- cycle;
 	
+	
+	%%% Piles
 	\ifthenelse{\showpiles=1}{
 		\foreach \pileind in {1,...,{\numberofpiles}}
 		{\pilesupport[x coordinate=\pilecoordx{\pileind}, y coordinate=\pilecoordy,
 			pile depth=\piledepth, pile diameter=\pilediameter,
-			pile line thickness=\pilelinethickness, fill color=gray,]}
+			pile line thickness=\pilelinethickness, fill color=gray,
+			draw boundary line=1,
+			boundary line thickness=2pt,
+			boundary line color=blue,
+			boundary line type=dashed,]}
 	}{}
 	
+	
+	%%% Retaining walls and mat foundations
 	\filldraw[line width = \baselinet, fill=gray!65]
-	(\basewallstartx,\basewallstarty) -- ++(\supportwidth,0) -- 
-	++(0,-\basewalldepth)
-	-- ++(\buildingwidth,0) -- ++(0,\basewalldepth) -- ++(\supportwidth,0) --
-	++(0,-\basewalldepth-\supportheight) -- (\basewallstartx,-\supportheight) -- 
-	cycle;
+	(\basewallstartx,\basewallstarty) -- ++(\supportwidth,0)
+	-- ++(0,-\basewalldepth) -- ++(\buildingwidth,0)
+	-- ++(0,\basewalldepth) -- ++(\supportwidth,0)
+	-- ++(0,-\basewalldepth-\supportheight) -- (\basewallstartx,-\supportheight)
+	-- cycle;
+	
+	%%%Soil-Structure Interface
+	\draw[line width=\ssinterlinet, green, dashed]
+	(\ssinterleftstartx,\ssinterleftstarty) -- ++(0,-\ssinterdeltay) 
+	-- ++ (\ssinterdeltax,0) -- ++(0,\ssinterdeltay);
+
+	
+	%% Engineering Bedrock
+	\fill[gray]
+		(\engbedrockstartx, \engbedrockstarty) rectangle
+		++(\engbedrockdeltax, \engbedrockdeltay);
+		
+	\draw[line width=\engbedrocklinewidth]
+		(\engbedrockstartx,\engbedrockstarty) ++(0, \engbedrockdeltay)
+		-- ++(\engbedrockdeltax,0);
+		
+	\node[align=center, scale=1] at (\engbedrockmidx, \engbedrockmidy) {Bedrock};
 	
 }{}
 
@@ -829,6 +908,8 @@ if equal(\latloadtype,4) then {
 }}
 }
 }{}
+
+
 
 \end{scope}
 }

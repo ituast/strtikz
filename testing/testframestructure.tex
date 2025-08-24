@@ -2,7 +2,7 @@
 \usepackage{mathptmx}
 %\renewcommand{\familydefault}{\rmdefault}
 \usepackage[T1]{fontenc}
-\usepackage[latin9]{inputenc}
+%\usepackage[latin9]{inputenc}
 \usepackage{siunitx}
 \usepackage{array}
 \usepackage{amsmath}
@@ -22,7 +22,7 @@
 \begin{document}
 \begin{tikzpicture}
 \framestructure[%
-number of storys = 10,
+number of storys = 3,
 number of bays = 3,
 story height = 1cm,
 bay width = 2cm,
@@ -80,7 +80,7 @@ left soil distance = 2cm,
 right soil distance = 2cm,
 left soil depth = 6cm,
 right soil depth = 6cm,
-soil below foundation = 5cm,
+soil below foundation = 4cm,
 left control distance x = 2cm,
 left control distance y = 2cm,
 right control distance x = 2cm,
@@ -91,7 +91,7 @@ x axis length = 0.5cm,
 y axis length = 0.5cm,
 show piles=1,
 number of piles=5,
-pile depth=4cm,
+pile depth=3cm,
 pile side space=0.5cm,
 pile diameter=0.5cm,
 pile line thickness=1pt,
@@ -104,6 +104,10 @@ show deflection = 1,
 interstory drift = 0.2cm,
 defl parameter x = 0.2cm,
 defl parameter y = 0.5cm,
-defl parameter base = 0.15cm,]
+defl parameter base = 0.15cm,
+eng bedrock depth=2cm,
+eng bedrock left distance=2cm,
+eng bedrock right distance=2cm,
+eng bedrock line thickness=2pt,]
 \end{tikzpicture}
 \end{document}
