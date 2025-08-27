@@ -19,9 +19,14 @@
   beam color=blue,
   column line thickness = 1.5pt,
   column color=black,
+  show shear wall=1,
+  shear wall bay=2,
+  shear wall line thickness=0.75pt,
+  shear wall fill color=gray,
   support width = 0.3cm,
   support height = 0.15cm,
   support line thickness = 1.5pt,
+  support fill color=gray!65,
   show supports = 1,
   number of isolators = 4,
   isolator width = 0.3cm,
@@ -67,6 +72,7 @@
   show axes = 1,
   subfloor number=2,
   half space type=1,
+  half space fill color=brown!75!white,
   left soil distance = 2cm,
   right soil distance = 4cm,
   left soil depth = 2cm,
@@ -85,6 +91,7 @@
   pile side space=0.5cm,
   pile diameter=0.5cm,
   pile line thickness=1pt,
+  pile fill color=gray,
   show pile boundary line=0,
   pile boundary line thickness=2pt,
   pile boundary line color=blue,
@@ -105,6 +112,7 @@
   eng bedrock right distance=1cm,
   eng bedrock line thickness=1.5pt,
   eng bedrock text=Bedrock,
+  eng bedrock fill color=gray,
   show trans layer=0,
   trans layer line thickness=2pt,
   trans layer color=red,
@@ -146,9 +154,14 @@
   beam color/.store in=\beamcolor,
   column line thickness/.store in=\collinet,
   column color/.store in=\columncolor,
+  show shear wall/.store in=\showshearwall,
+  shear wall bay/.store in=\shearwallbay,
+  shear wall line thickness/.store in=\shearwalllinet,
+  shear wall fill color/.store in=\shearwallfillcolor,
   support width/.store in = \supportwidth,
   support height/.store in = \supportheight,
   support line thickness/.store in = \baselinet,
+  support fill color/.store in=\supportfillcolor,
   show supports/.store in = \showsupports,
   number of isolators/.store in = \numberofisolators,
   isolator width/.store in = \isolationwidth,
@@ -194,6 +207,7 @@
   show axes/.store in = \showaxes,
   subfloor number/.store in=\subfloors,
   half space type/.store in=\halfspacetype,
+  half space fill color/.store in=\halfspacefillcolor,
   left soil distance/.store in = \leftsoildist,
   right soil distance/.store in = \rightsoildist,
   left soil depth/.store in = \leftsoildepth,
@@ -212,6 +226,7 @@
   pile side space/.store in=\pilesidespace,
   pile diameter/.store in=\pilediameter,
   pile line thickness/.store in=\pilelinethickness,
+  pile fill color/.store in=\pilefillcolor,
   show pile boundary line/.store in=\showpbline,
   pile boundary line thickness/.store in=\pblinet,
   pile boundary line color/.store in=\pblinecolor,
@@ -232,6 +247,7 @@
   eng bedrock right distance/.store in=\engbedrockrightdist,
   eng bedrock line thickness/.store in=\engbedrocklinewidth,
   eng bedrock text/.store in=\engbedrocktext,
+  eng bedrock fill color/.store in=\engbedrockfillcolor,
   show trans layer/.store in=\showtranslayer,
   trans layer line thickness/.store in= \translayerlinet,
   trans layer color/.store in=\translayercolor,
@@ -372,7 +388,6 @@ real \leftwallh, \leftopenh, \rightwallh, \rightopenh, \diffwallh;
 \markssrad=\markssrad;
 \marksslinet=\marksslinet;
 \supershadespace=\supershadespace;
-\shearwalllinet=0.75pt;
 \shearwalllinet=\shearwalllinet;
 \marksuperexspace=\marksuperexspace;
 \marksuperrad=\marksuperrad;
@@ -559,15 +574,17 @@ if equal(\showlessbays,0) then {
 %%% Modification for the ground beam
 \groundbeamshifty=\groundbeamlinet/2-\baselinet/2;
 %%% Shear Wall
-\showshearwall=1;
-\shearwallbay=3;
+%\showshearwall=1;
+%\shearwallbay=3;
 \shearwallstartcolumn=\shearwallbay;
 \shearwallendcolumn=\shearwallbay+1;
 \shearwallstartx=\x{\shearwallstartcolumn}-\collinet/2;
-\shearwallstarty=\y{1}+\baselinet/2-\shearwalllinet/2;
+\shearwallstarty=\y{1}+\baselinet/2-+\shearwalllinet/2;
 \shearwalldeltax=\baywidth+\collinet;
 if equal(\superstorynumber,0) then {
-\shearwalldeltay=\y{\levelnumber};} else {\shearwalldeltay=\y{\levelnumber}-\baselinet/2+\beamlinet/2;};
+\shearwalldeltay=\y{\levelnumber};} else
+{\shearwalldeltay=\y{\levelnumber}-\shearwallstarty
++\beamlinet/2-\shearwalllinet/2;};
 %%%Mark for Superstructure
 %\showmarksuper=1;
 %\marksuperexspace=0.3cm;
@@ -718,7 +735,7 @@ if equal(\superstorynumber,0) then {
 	
 	%%% Rectangular half space
 	\ifthenelse{\halfspacetype=1}{
-	\path[fill=brown!75!white]
+	\path[fill=\halfspacefillcolor]
 	{(-\leftsoildist,\leftwallh) -- ++(0,-\leftwallh)
 		-- ++(0,-\soilbelowfoundtof) -- ++(\buildingwidth,0)
 		-- ++(\leftsoildist,0) -- ++(\rightsoildist,0)
@@ -739,7 +756,7 @@ if equal(\superstorynumber,0) then {
 	
 	%%% Random half space
 	\ifthenelse{\halfspacetype=2}{
-	\path[fill=brown!75!white]
+	\path[fill=\halfspacefillcolor]
 	decorate[decoration={random steps, segment length=0.25cm}]
 	{(-\leftsoildist,\leftwallh) -- ++(0,-\leftsoildepth)
 	..controls ++(0,-\leftcontroly) and  ++(-\leftcontrolx,0)
@@ -762,7 +779,7 @@ if equal(\superstorynumber,0) then {
 		{\pilesupport[x coordinate=\pilecoordx{\pileind},
 		y coordinate=\pilecoordy,
 		pile depth=\piledepth, pile diameter=\pilediameter,
-		pile line thickness=\pilelinethickness, fill color=gray,
+		pile line thickness=\pilelinethickness, fill color=\pilefillcolor,
 		draw boundary line=\showpbline,
 		boundary line thickness=\pblinet,
 		boundary line color=\pblinecolor,
@@ -771,7 +788,7 @@ if equal(\superstorynumber,0) then {
 	
 	
 	%%% Retaining walls and mat foundations
-	\filldraw[line width=\baselinet, fill=gray!65]
+	\filldraw[line width=\baselinet, fill=\supportfillcolor]
 	(\basewallstartx,\leftwallh) -- ++(\supportwidth,0)
 	-- ++(0,-\leftwallh) -- ++(\buildingwidth,0)
 	-- ++(0,\rightwallh) -- ++(\supportwidth,0)
@@ -794,21 +811,18 @@ if equal(\superstorynumber,0) then {
 	
 	%% Engineering Bedrock
 	\ifthenelse{\showengbedrock=1}{
-	\fill[gray]
-		(\engbedrockstartx, \engbedrockstarty) rectangle
-		++(\engbedrockdeltax, \engbedrockdeltay);
+	\fill[\engbedrockfillcolor]
+	(\engbedrockstartx, \engbedrockstarty) rectangle
+	++(\engbedrockdeltax, \engbedrockdeltay);
 		
 	\draw[line width=\engbedrocklinewidth]
-		(\engbedrockstartx,\engbedrockstarty) ++(0, \engbedrockdeltay)
-		-- ++(\engbedrockdeltax,0);
+	(\engbedrockstartx,\engbedrockstarty) ++(0, \engbedrockdeltay)
+	-- ++(\engbedrockdeltax,0);
 		
 	\node[align=center, scale=1] at
-		(\engbedrockmidx, \engbedrockmidy) {\engbedrocktext};}{}
+	(\engbedrockmidx, \engbedrockmidy) {\engbedrocktext};}{}
 	
 }{}
-
-
-
 
 
 %%Substructure - Same for both deflected shape and undeflected shape
@@ -908,9 +922,17 @@ if equal(\superstorynumber,0) then {
 
 %%%% Shear Wall
 \ifthenelse{\showshearwall=1}{
-\filldraw[fill=gray, line width=\shearwalllinet]
+\filldraw[fill=\shearwallfillcolor, line width=\shearwalllinet]
 (\shearwallstartx, \shearwallstarty)
-rectangle ++(\shearwalldeltax,\shearwalldeltay);}{}
+rectangle ++(\shearwalldeltax,\shearwalldeltay);
+
+%% Fix for foundations
+\draw[line width=\shearwalllinet, \supportfillcolor]
+(\shearwallstartx-\shearwalllinet/2, \shearwallstarty)
+--++(\shearwalldeltax+\shearwalllinet,0);
+\draw[line width=\baselinet, black]
+(\shearwallstartx-\shearwalllinet/2,\y{1})
+--++(\shearwalldeltax+\shearwalllinet,0);}{}
 
 %%% Mark for Substructure
 \ifthenelse{\superstorynumber>0}{
