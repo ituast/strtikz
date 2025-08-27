@@ -2,13 +2,20 @@
  /framestructure/.is family, /framestructure,
   default/.style = {
   number of storys = 5,
-  number of bays = 3,
+  show open story=1,
+  left story=2,
+  right story=3,
+  number of bays = 5,
+  show less bays=0,
+  left bays=1,
+  right bays=1,
   story height = 1cm,
   bay width = 2cm,
   startX = 0cm,
   startY = 0cm,
   line thickness = 1.5pt,
   beam line thickness = 1.5pt,
+  ground beam line thickness = 1.5pt,
   beam color=blue,
   column line thickness = 1.5pt,
   column color=black,
@@ -24,8 +31,10 @@
   isolator shift distance = 0.2cm,
   foundation thickness = 0.5cm,
   foundation side width = 1cm,
-  mass radius = 2pt,
   show mass = 1,
+  mass radius = 2pt,
+  mass color super=black,
+  mass color sub=red,
   show dof = 1,
   show dofx = 1,
   show dofy = 1,
@@ -109,17 +118,31 @@
   substructure mark radius=0.25cm,
   substructure mark line thickness=0.75pt,
   substructure mark line type=dashed,
+  substructure mark line color=blue,
   show superstructure shade=0,
   superstructure shade space=5pt,
-  superstructure shade opacity=0.75,},
-  number of storys/.store in = \storynumber,
+  superstructure shade opacity=0.75,
+  show superstructure mark=0,
+  superstructure mark space=0.30cm,
+  superstructure mark radius=0.25cm,
+  superstructure mark line thickness=0.75pt,
+  superstructure mark line type=dashed,
+  superstructure mark line color=red,},
+  number of storys/.store in=\storynumber,
+  show open story/.store in=\showopenstory,
+  left story/.store in=\leftstory,
+  right story/.store in=\rightstory,
   number of bays/.store in = \baynumber,
+  show less bays/.store in=\showlessbays,
+  left bays/.store in=\leftbays,
+  right bays/.store in=\rightbays,
   story height/.store in = \storyheight,
   bay width/.store in = \baywidth,
   startX/.store in = \startx,
   startY/.store in = \starty,
   line thickness/.store in = \linet,
   beam line thickness/.store in=\beamlinet,
+  ground beam line thickness/.store in=\groundbeamlinet,
   beam color/.store in=\beamcolor,
   column line thickness/.store in=\collinet,
   column color/.store in=\columncolor,
@@ -135,8 +158,10 @@
   isolator shift distance/.store in = \isoshift,
   foundation thickness/.store in = \foundationdepth,
   foundation side width/.store in = \foundsidew,
-  mass radius/.store in = \massrad,
   show mass/.store in = \showmass,
+  mass radius/.store in = \massrad,
+  mass color super/.store in = \masscolorsuper,
+  mass color sub/.store in = \masscolorsub,
   show dof/.store in = \showdof,
   show dofx/.store in = \shodofx,
   show dofy/.store in = \shodofy,
@@ -220,9 +245,16 @@
   substructure mark radius/.store in=\markssrad,
   substructure mark line thickness/.store in=\marksslinet,
   substructure mark line type/.store in=\marksslinetype,
+  substructure mark line color/.store in=\marksslinecolor,
   show superstructure shade/.store in=\showsupershade,
   superstructure shade space/.store in=\supershadespace,
   superstructure shade opacity/.store in=\supershadeopacity,
+  show superstructure mark/.store in=\showmarksuper,
+  superstructure mark space/.store in=\marksuperexspace,
+  superstructure mark radius/.store in=\marksuperrad,
+  superstructure mark line thickness/.store in=\marksuperlinet,
+  superstructure mark line type/.store in=\marksuperlinetype,
+  superstructure mark line color/.store in=\marksuperlinecolor,
 }
 \newcommand{\framestructure}[1][]{
 \pgfkeys{/framestructure, default, #1}
@@ -278,6 +310,17 @@ real \supershadespace;
 real \supershadestartx, \supershadestarty, \supershadedeltax, \supershadedeltay;
 real \supershadespace, \supershadeopacity;
 int \showsupershade;
+int \showlessbays, \leftbays, \rightbays, \startcol, \endcol;
+int \showshearwall, \shearwallbay, \shearwallstartcolumn, \shearwallendcolumn;
+real \shearwallstartx, \shearwallstarty \shearwalldeltax, \shearwalldeltay;
+real \shearwalllinet;
+int \showmarksuper;
+real \marksuperexspace, \marksuperrad, \marksuperlinet;
+real \marksuperleftstartx, \marksuperleftstarty,
+real \marksuperdeltax, \marksuperdeltay;
+int \leftstory, \leftlevel, \rightstory, \rightlevel;
+int \leftopenstory, \rightopenstory, \showopenstory;
+real \leftwallh, \leftopenh, \rightwallh, \rightopenh, \diffwallh;
 %Conversion all units to the unit pt
 \storyheight = \storyheight;
 \baywidth = \baywidth;
@@ -329,6 +372,11 @@ int \showsupershade;
 \markssrad=\markssrad;
 \marksslinet=\marksslinet;
 \supershadespace=\supershadespace;
+\shearwalllinet=0.75pt;
+\shearwalllinet=\shearwalllinet;
+\marksuperexspace=\marksuperexspace;
+\marksuperrad=\marksuperrad;
+\marksuperlinet=\marksuperlinet;
 %End conversion, All values are now in pt units.
 \dofcounter=0;
 \storyminone = \storynumber-1;
@@ -372,6 +420,22 @@ for \idefl in {\deflstart+1,...,{\levelnumber}}{
 \foundendx = \x{\columnnumber}+\foundsidew;
 \structheight=\storynumber*\storyheight;
 \isomidy = \supportheight+\isolinet+\isolationdepth/2-\baselinet;
+%%%Unbalanced Soil
+%\showopenstory=0;
+%\leftstory=1;
+%\rightstory=1;
+if equal(\showopenstory,0) then
+{\leftstory=\subfloors;
+\rightstory=\subfloors;};
+\leftopenstory=\subfloors-\leftstory;
+\leftlevel=\leftstory+1;
+\leftwallh=\leftstory*\storyheight;
+\leftopenh=\leftopenstory*\storyheight;
+\rightopenstory=\subfloors-\rightstory;
+\rightlevel=\rightstory+1;
+\rightwallh=\rightstory*\storyheight;
+\rightopenh=\rightopenstory*\storyheight;
+\diffwallh=\leftwallh-\rightwallh;
 %%%Basement%%%%
 \soilbelowfoundtof = \soilbelowfound+\supportheight;
 \basewallstartx=-\supportwidth;
@@ -381,7 +445,7 @@ for \idefl in {\deflstart+1,...,{\levelnumber}}{
 \basewallendx=\buildingwidth+\supportwidth;
 \basewallendy=\basewallstarty;
 \rightsoilx=\buildingwidth+\rightsoildist;
-\rightsoily=\basewalldepth-\rightsoildepth-\supportheight;
+\rightsoily=\rightwallh-\rightsoildepth-\supportheight;
 %Some isolator properties
 \isospace = (\buildingwidth)/(\numberofisolators-1);
 for \kiso in {1,...,{\numberofisolators}}{
@@ -454,19 +518,20 @@ if equal(\latloadtype,4) then {
 %%%Transmitting Layer
 %\translayerlinet=2pt;
 \translayerleftstartx=-\leftsoildist-\translayerlinet/2;
-\translayerleftstarty=\basewalldepth;
-\translayerleftdeltay=\basewalldepth+\soilbelowfoundtof;
+\translayerleftstarty=\leftwallh;
+\translayerleftdeltay=\leftwallh+\soilbelowfoundtof;
 \translayerrightstartx=\rightsoildist+\buildingwidth+\translayerlinet/2;
-\translayerrightstarty=\basewalldepth;
-\translayerrightdeltay=\basewalldepth+\soilbelowfoundtof;
+\translayerrightstarty=\rightwallh;
+\translayerrightdeltay=\rightwallh+\soilbelowfoundtof;
 %%%Soil-Structure Interface
 %\ssinterlinet=3pt;
 \ssinterleftstartx=-\supportwidth-\baselinet/2-\ssinterlinet/2;
 \ssinterrightstartx=\buildingwidth+\supportwidth+\baselinet/2+\ssinterlinet/2;
-\ssinterleftstarty=\basewalldepth;
-\ssinterrightstarty=\basewalldepth;
+\ssinterleftstarty=\leftwallh;
+\ssinterrightstarty=\rightwallh;
 \ssinterdeltax=\ssinterrightstartx-\ssinterleftstartx;
-\ssinterdeltay=\basewalldepth+\supportheight+\baselinet/2+\ssinterlinet/2;
+\ssinterleftdeltay=\leftwallh+\supportheight+\baselinet/2+\ssinterlinet/2;
+\ssinterrightdeltay=\rightwallh+\supportheight+\baselinet/2+\ssinterlinet/2;
 %%%Mark for Substructure
 %\markssexspace=0.3cm;
 %\markssrad=0.25cm;
@@ -483,10 +548,39 @@ if equal(\latloadtype,4) then {
 \supershadedeltax=\buildingwidth+\collinet+2*\supershadespace
  +\deflect{\levelnumber}*\showdefl;
 \supershadedeltay=\superstorynumber*\storyheight+\beamlinet/2+\supershadespace;
+%%% Superstructure with less bays
+if equal(\showlessbays,0) then {
+\leftbays=0;
+\rightbays=0;};
+\startcol=\leftbays+1;
+\endcol=\columnnumber-\rightbays;
+\superbays=\baynumber-\leftbays-\rightbays;
+\superwidth=\superbays*\baywidth;
+%%% Modification for the ground beam
+\groundbeamshifty=\groundbeamlinet/2-\baselinet/2;
+%%% Shear Wall
+\showshearwall=1;
+\shearwallbay=3;
+\shearwallstartcolumn=\shearwallbay;
+\shearwallendcolumn=\shearwallbay+1;
+\shearwallstartx=\x{\shearwallstartcolumn}-\collinet/2;
+\shearwallstarty=\y{1}+\baselinet/2-\shearwalllinet/2;
+\shearwalldeltax=\baywidth+\collinet;
+if equal(\superstorynumber,0) then {
+\shearwalldeltay=\y{\levelnumber};} else {\shearwalldeltay=\y{\levelnumber}-\baselinet/2+\beamlinet/2;};
+%%%Mark for Superstructure
+%\showmarksuper=1;
+%\marksuperexspace=0.3cm;
+%\marksuperrad=0.25cm;
+%\marksuperlinet=0.75pt;
+\marksuperleftstartx=\x{\startcol}-\marksuperexspace;
+\marksuperleftstarty=\basewalldepth+\marksuperexspace/2;
+\marksuperdeltax=\superwidth+2*\marksuperexspace;
+\marksuperdeltay=\y{\levelnumber}-\y{\deflstart}+\marksuperexspace/2;
 }   %End tikzmath
 
 \begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0];
-	% Drawing everything in pt units
+	% Drawing everyg in pt units
 
 
 %%%% Lateral Laods
@@ -597,9 +691,8 @@ if equal(\latloadtype,4) then {
 %% 3. Support as ...
 \ifthenelse{\showsupports=3}{
 	\foreach \j in {1,...,{\columnnumber}}
-	{\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
-		rectangle
-		(\rigbaseendx,-\supportheight);}
+	{\fill [fill=gray, draw=black, line width = \baselinet]
+	(\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);}
 }{}
 
 
@@ -611,13 +704,13 @@ if equal(\latloadtype,4) then {
 	
 	\foreach \j in {1,...,{\numberofisolators}}
 	{\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
-		(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
-		+(\isolationwidth/2,\isotopy);}
+	(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
+	+(\isolationwidth/2,\isotopy);}
 	
 	\fill [fill=gray]
 	(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
-	\draw [line width = \baselinet] (\foundstartx, \foundtopy) -- (\foundendx, 
-	\foundtopy);
+	\draw [line width = \baselinet] (\foundstartx, \foundtopy)
+	-- (\foundendx, \foundtopy);
 }{}
 
 %%5. Pile Supports
@@ -626,67 +719,78 @@ if equal(\latloadtype,4) then {
 	%%% Rectangular half space
 	\ifthenelse{\halfspacetype=1}{
 	\path[fill=brown!75!white]
-	{(-\leftsoildist,\basewalldepth) -- ++(0,-\basewalldepth) -- ++(0,-\soilbelowfoundtof)
-		-- ++(\buildingwidth,0) -- ++(\leftsoildist,0) -- ++(\rightsoildist,0)
-		-- ++(0,\soilbelowfoundtof)-- ++(0,\basewalldepth) }
+	{(-\leftsoildist,\leftwallh) -- ++(0,-\leftwallh)
+		-- ++(0,-\soilbelowfoundtof) -- ++(\buildingwidth,0)
+		-- ++(\leftsoildist,0) -- ++(\rightsoildist,0)
+		-- ++(0,\soilbelowfoundtof)-- ++(0,\rightwallh)
+		-- ++(-\rightsoildist,0) -- ++(-\supportwidth*1.1,0)
+		-- ++(0,\diffwallh) }
 	-- cycle;}{}
 	
-	\ifthenelse{\showtranslayer=1}{
 	%%% Transmitting Layers
+	\ifthenelse{\showtranslayer=1}{
 	\draw[line width=\translayerlinet, \translayercolor, \translayerlinetype]
-	(\translayerleftstartx,\translayerleftstarty) -- ++(0,-\translayerleftdeltay);
+	(\translayerleftstartx,\translayerleftstarty)
+	-- ++(0,-\translayerleftdeltay);
 	
 	\draw[line width=\translayerlinet, \translayercolor, \translayerlinetype]
-	(\translayerrightstartx,\translayerrightstarty) -- ++(0,-\translayerrightdeltay);}{}
+	(\translayerrightstartx,\translayerrightstarty)
+	-- ++(0,-\translayerrightdeltay);}{}
 	
 	%%% Random half space
 	\ifthenelse{\halfspacetype=2}{
-	\path[fill=brown!75!white] decorate[decoration={random steps, segment length=0.25cm}]
-		{(-\leftsoildist,\basewalldepth) -- ++(0,-\leftsoildepth)
-		..controls++(0,-\leftcontroly) and ++(-\leftcontrolx,0)..(0,-\soilbelowfoundtof)
-		-- ++(\buildingwidth,0)
-		..controls ++(\rightcontrolx,0) and ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
-		-- ++(0,\supportheight)-- ++(0,\rightsoildepth)}
+	\path[fill=brown!75!white]
+	decorate[decoration={random steps, segment length=0.25cm}]
+	{(-\leftsoildist,\leftwallh) -- ++(0,-\leftsoildepth)
+	..controls ++(0,-\leftcontroly) and  ++(-\leftcontrolx,0)
+	..(0,-\soilbelowfoundtof)
+	-- ++(\buildingwidth,0)	..controls ++(\rightcontrolx,0)
+	and ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
+	-- ++(0,\supportheight) -- ++(0,\rightsoildepth)}
+	-- ++(-\rightsoildist,0) -- ++(-\supportwidth*1.1,0)
+	-- ++(0,\diffwallh)
 	-- cycle;}{}
-	
-	
-	%%% Top thin line
-	\draw[line width=0.5pt, color=black]
-	(-\leftsoildist,\basewalldepth) --
-	(\buildingwidth+\rightsoildist,\basewalldepth);
-	
+		
 	%% White rectangle
-	\path[fill=white](0,\basewalldepth) -- ++(\buildingwidth,0) --
-	++(0,-\basewalldepth) -- ++(-\buildingwidth,0) -- cycle;
+	\path[fill=white](0,\basewalldepth+1pt) -- ++(\buildingwidth,0)
+	--++(0,-\basewalldepth-1pt) -- ++(-\buildingwidth,0) -- cycle;
 	
 	
 	%%% Piles
 	\ifthenelse{\showpiles=1}{
 		\foreach \pileind in {1,...,{\numberofpiles}}
-		{\pilesupport[x coordinate=\pilecoordx{\pileind}, y coordinate=\pilecoordy,
-			pile depth=\piledepth, pile diameter=\pilediameter,
-			pile line thickness=\pilelinethickness, fill color=gray,
-			draw boundary line=\showpbline,
-			boundary line thickness=\pblinet,
-			boundary line color=\pblinecolor,
-			boundary line type=\pblinetype,]}
+		{\pilesupport[x coordinate=\pilecoordx{\pileind},
+		y coordinate=\pilecoordy,
+		pile depth=\piledepth, pile diameter=\pilediameter,
+		pile line thickness=\pilelinethickness, fill color=gray,
+		draw boundary line=\showpbline,
+		boundary line thickness=\pblinet,
+		boundary line color=\pblinecolor,
+		boundary line type=\pblinetype,]}
 	}{}
 	
 	
 	%%% Retaining walls and mat foundations
 	\filldraw[line width=\baselinet, fill=gray!65]
-	(\basewallstartx,\basewallstarty) -- ++(\supportwidth,0)
-	-- ++(0,-\basewalldepth) -- ++(\buildingwidth,0)
-	-- ++(0,\basewalldepth) -- ++(\supportwidth,0)
-	-- ++(0,-\basewalldepth-\supportheight) -- (\basewallstartx,-\supportheight)
+	(\basewallstartx,\leftwallh) -- ++(\supportwidth,0)
+	-- ++(0,-\leftwallh) -- ++(\buildingwidth,0)
+	-- ++(0,\rightwallh) -- ++(\supportwidth,0)
+	-- ++(0,-\rightwallh)-- ++(0,-\supportheight)
+	-- (\basewallstartx,-\supportheight)
 	-- cycle;
 	
-	\ifthenelse{\showssinter=1}{
 	%%%Soil-Structure Interface
+	\ifthenelse{\showssinter=1}{
 	\draw[line width=\ssinterlinet, \ssintercolor, \ssinterlinetype]
-	(\ssinterleftstartx,\ssinterleftstarty) -- ++(0,-\ssinterdeltay) 
-	-- ++ (\ssinterdeltax,0) -- ++(0,\ssinterdeltay);}{}
+	(\ssinterleftstartx,\ssinterleftstarty) -- ++(0,-\ssinterleftdeltay) 
+	-- ++ (\ssinterdeltax,0) -- ++(0,\ssinterrightdeltay);}{}
 
+	%%% Top thin line
+	\draw[line width=0.5pt, color=black]
+	(0,\leftwallh) -- ++(-\leftsoildist-\translayerlinet,0);
+	
+	\draw[line width=0.5pt, color=black]
+	(\buildingwidth,\rightwallh) -- ++(\rightsoildist+\translayerlinet,0);
 	
 	%% Engineering Bedrock
 	\ifthenelse{\showengbedrock=1}{
@@ -704,55 +808,186 @@ if equal(\latloadtype,4) then {
 }{}
 
 
+
+
+
+%%Substructure - Same for both deflected shape and undeflected shape
+\ifthenelse{\subfloors>0}{
+	
+	%Draw the beam at the ground level
+	\draw [line width = \groundbeamlinet, \beamcolor]
+	(\x{1}+\baselinet/2, \y{\deflstart}-\groundbeamshifty)
+	-- (\x{\columnnumber}-\baselinet/2, \y{\deflstart}-\groundbeamshifty);
+	
+	%Draw the beams except the ground level beam
+	\ifthenelse{\subfloors>1}{
+		\foreach \iii in {2,...,{\subfloors}}
+		{\draw [blue, line width = \beamlinet, \beamcolor]
+		(\x{1}+\baselinet/2,\y{\iii})
+		-- (\x{\columnnumber}-\baselinet/2,\y{\iii});}
+	}{}
+	
+	%% Draw first column - No Need to Draw when bays are reduced
+	\ifthenelse{\leftbays=0}{
+	\ifthenelse{\superstorynumber>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{1},\y{1}+\baselinet/2)
+	-- (\x{1}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{1}, \y{1}) -- ++(-\collinet/2,0)
+	-- ++(-\baselinet/2,0) -- ++(0,\leftwallh);}{}}{}
+
+	%% When left open - same as above
+	\ifthenelse{\leftbays>0}{
+	\ifthenelse{\leftopenstory>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{1},\y{1}+\baselinet/2)
+	-- (\x{1}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{1}, \y{1}) -- ++(-\collinet/2,0)
+	-- ++(-\baselinet/2,0) -- ++(0,\leftwallh);}{}}{}
+
+	
+	%% Draw the columns between the first and the last column
+	\foreach \j in {2,...,{\ncolmo}}
+	{\draw [line width = \collinet, \columncolor]
+	(\x{\j}, \y{1}+\baselinet/2)
+	-- (\x{\j}, \y{\deflstart}+\baselinet/2);}
+	
+	%% Draw the last column - No Need to Draw when bays are reduced
+	\ifthenelse{\rightbays=0}{
+	\ifthenelse{\superstorynumber>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{\columnnumber}, \y{1}+\baselinet/2)
+	-- (\x{\columnnumber}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{\columnnumber}, \y{1}) -- ++(+\collinet/2,0)
+	-- ++(\baselinet/2,0)  -- ++(0,\rightwallh);}{}}{}	
+
+	%% When Right Open
+	\ifthenelse{\rightbays>0}{
+	\ifthenelse{\rightopenstory>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{\columnnumber}, \y{1}+\baselinet/2)
+	-- (\x{\columnnumber}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{\columnnumber}, \y{1}) -- ++(+\collinet/2,0)
+	-- ++(\baselinet/2,0)  -- ++(0,\rightwallh);}{}}{}	
+
+	
+}{}
+
 %\draw (0,0)-- (0.5cm,2cm);
 %%% Draw Frame - Undeflected shape
 \ifthenelse{\showdefl=0}{
-
+%%% Superstructure
+\ifthenelse{\superstorynumber>0}{
 %% Draw beams up the top level minus one
-\ifthenelse{\storynumber>1}{
-	\foreach \iii in {2,...,{\nlevmo}}
-	{\draw [\beamcolor, line width = \beamlinet] (\x{1},\y{\iii}) -- 
-		(\x{\columnnumber},\y{\iii});}}{}
+\ifthenelse{\superstorynumber>1}{
+\foreach \iii in {\deflstartplusone,...,{\nlevmo}}
+{\draw [\beamcolor, line width = \beamlinet]
+(\x{\startcol},\y{\iii}) -- (\x{\endcol},\y{\iii});}
+}{}
 
 %% Draw the beam the the top floor
 \draw [line width = \beamlinet, \beamcolor]
-(\x{1}-\collinet/2, \y{\levelnumber})
--- (\x{\columnnumber}+\collinet/2, \y{\levelnumber});
+(\x{\startcol}-\collinet/2, \y{\levelnumber})
+-- (\x{\endcol}+\collinet/2, \y{\levelnumber});
 
 %% Draw the first column
 \draw [line width = \collinet, \columncolor]
-(\x{1},\y{1}-\baselinet/2) -- (\x{1}, \y{\levelnumber}+\beamlinet/2);
+(\x{\startcol},\y{\deflstart}-\baselinet/2)
+-- (\x{\startcol}, \y{\levelnumber}+\beamlinet/2);
 
 %% Columns other than first and last columns
-\foreach \j in {2,...,{\ncolmo}}
+\foreach \j in {\startcol,...,{\endcol}}
 {\draw [line width = \collinet, \columncolor]
-	(\x{\j},\y{1}-\baselinet/2) -- (\x{\j},\y{\levelnumber}+\beamlinet/2);}
+	(\x{\j},\y{\deflstart}-\baselinet/2)
+	-- (\x{\j},\y{\levelnumber}+\beamlinet/2);}
+}{}
 
-%% Draw the last column
-\draw [line width = \collinet, \columncolor]
-(\x{\columnnumber}, \y{1}-\baselinet/2)
--- (\x{\columnnumber}, \y{\levelnumber}+\beamlinet/2);
+%%%% Shear Wall
+\ifthenelse{\showshearwall=1}{
+\filldraw[fill=gray, line width=\shearwalllinet]
+(\shearwallstartx, \shearwallstarty)
+rectangle ++(\shearwalldeltax,\shearwalldeltay);}{}
+
+%%% Mark for Substructure
+\ifthenelse{\superstorynumber>0}{
+\ifthenelse{\showmarksuper=1}{
+	\draw[rounded corners=\marksuperrad,
+	line width=\marksuperlinet, color=\marksuperlinecolor, \marksuperlinetype]
+	(\marksuperleftstartx,\marksuperleftstarty)
+	rectangle ++(\marksuperdeltax,\marksuperdeltay);}{}}{}
 
 %% Masses for Undeflected Shape
 \ifthenelse{\showmass=1}{
-	\ifthenelse{\showsupports=5}{
-		\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
-		{\foreach \j in {1,...,{\columnnumber}}{
-			\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-		}}
-		\ifthenelse{\subfloors>0}{
-			\foreach \iii in {2,...,\useeval{\deflstart}}
-			{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
-				\shade[ball color=red] (\x{\j},\y{\iii}) circle (\massrad);
-			}}
-		}{}
+\ifthenelse{\showsupports=5}{
+	
+	%% Masses for superstructure
+	\ifthenelse{\superstorynumber>0}{
+	\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+	{\foreach \j in {\startcol,...,{\endcol}}{
+	\ifthenelse{\showshearwall=1}{
+		
+		\ifthenelse{\j=\shearwallstartcolumn}{
+		\shade[ball color=\masscolorsuper]
+		(\x{\j}-\collinet/2,\y{\iii}) circle (\massrad);}{
+		
+		\ifthenelse{\j=\shearwallendcolumn}{
+		\shade[ball color=\masscolorsuper]
+		(\x{\j}+\collinet/2,\y{\iii}) circle (\massrad);}{
+		
+		\shade[ball color=\masscolorsuper]
+		(\x{\j},\y{\iii}) circle (\massrad);}};}{}
+	}}}{}
+
+	%% Masses for substructure
+	\ifthenelse{\subfloors>0}{
+	\foreach \iii in {2,...,\useeval{\deflstart}}
+	{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+	%% Masses at ground level
+	\ifthenelse{\iii=\deflstart}{
+		
+		\ifthenelse{\showshearwall=1}{
+	
+		\ifthenelse{\j=\shearwallstartcolumn}{
+		\shade[ball color=\masscolorsub]
+		(\x{\j}-\collinet/2,\y{\iii}-\groundbeamshifty) circle (\massrad);}{
+		
+		\ifthenelse{\j=\shearwallendcolumn}{
+		\shade[ball color=\masscolorsub]
+		(\x{\j}+\collinet/2,\y{\iii}-\groundbeamshifty) circle (\massrad);}{
+	
+		\shade[ball color=\masscolorsub]
+		(\x{\j},\y{\iii}-\groundbeamshifty) circle (\massrad);}};}{}
 	}
+	%%Masses at sub levels other than grond level
 	{
-		\foreach \iii in {2,...,{\levelnumber}}
-		{\foreach \j in {1,...,{\columnnumber}}{
-				\shade[ball color=black] (\x{\j},\y{\iii}) circle (\massrad);
-		}}
+		\ifthenelse{\showshearwall=1}{
+		
+		\ifthenelse{\j=\shearwallstartcolumn}{
+		\shade[ball color=\masscolorsub]
+		(\x{\j}-\collinet/2,\y{\iii}) circle (\massrad);}{
+		
+		\ifthenelse{\j=\shearwallendcolumn}{
+		\shade[ball color=\masscolorsub]
+		(\x{\j}+\collinet/2,\y{\iii}) circle (\massrad);}{
+			
+		\shade[ball color=\masscolorsub]
+		(\x{\j},\y{\iii}) circle (\massrad);}};}{}
 	}
+	}
+	
+	}}{}
+}
+{
+	\foreach \iii in {2,...,{\levelnumber}}
+	{\foreach \j in {1,...,{\columnnumber}}{
+		\shade[ball color=\masscolorsuper]
+		(\x{\j},\y{\iii}) circle (\massrad);
+	}}
+}
 }{}
 
 
@@ -779,34 +1014,9 @@ if equal(\latloadtype,4) then {
 %%% Draw Frame - Deflected shape
 \ifthenelse{\showdefl=1}{
 	
-%%% Substructure
-\ifthenelse{\showsupports=5}{
-\ifthenelse{\subfloors>1}{
-	\foreach \iii in {2,...,{\subfloors}}
-	{\draw [blue, line width = \beamlinet, \beamcolor] (\x{1},\y{\iii}) -- 
-		(\x{\columnnumber},\y{\iii});}
-	
-	\draw [line width = \beamlinet, \beamcolor]
-	(\x{1}-\collinet/2, \y{\deflstart})
-	-- (\x{\columnnumber}+\collinet/2, \y{\deflstart});
-}{}
-}{}
-
-\draw [line width = \collinet, \columncolor]
-(\x{1},\y{1}-\baselinet/2) -- (\x{1}, \y{\deflstart}+\beamlinet/2);
-
-\draw [line width = \collinet, \columncolor]
-(\x{\columnnumber}, \y{1}-\baselinet/2)
--- (\x{\columnnumber}, \y{\deflstart}+\beamlinet/2);
-
-\foreach \j in {2,...,{\ncolmo}}
-{\draw [line width = \collinet, \columncolor]
-	(\x{\j},\y{1}-\baselinet/2) -- (\x{\j},\y{\deflstart}+\beamlinet/2);}
-	
-	
 %%%Superstructure
 
-%% If the superstory number is different then zero, firs draw the first story
+%% If the superstory number is different then zero, first draw the first story
 \ifthenelse{\superstorynumber>0}{
 %%Beams at the second level only
 \foreach \ibeam in {1,...,{\baynumber}}
@@ -902,7 +1112,7 @@ if equal(\latloadtype,4) then {
 	%%% Mark for Substructure
 	\ifthenelse{\showmarkss=1}{
 		\draw[rounded corners=\markssrad,
-		line width=\marksslinet, color=black, \marksslinetype]
+		line width=\marksslinet, color=\marksslinecolor, \marksslinetype]
 		(\markssleftstartx,\markssleftstarty)
 		rectangle ++(\markssdeltax,-\markssdeltay);}{}
 }{}
