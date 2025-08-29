@@ -6,6 +6,7 @@
   x value = 0,
   y value = 0,
   rotation = 0,
+  show shade=1,
   shade color=gray,},
   support width/.store in = \supwid,
   support depth/.store in = \supdep,
@@ -13,6 +14,7 @@
   x value/.store in = \xvalue,
   y value/.store in = \yvalue,
   rotation/.store in = \rotat,
+  show shade/.store in = \showshade,
   shade color/.store in = \shadecol,
 }
 
@@ -20,6 +22,7 @@
 \pgfkeys{/fixedsupport, default, #1}
 \tikzmath{
 real \supwid, \supdep, \linethk, \xvalue, \yvalue, \rotat;
+int \showshade;
 %Conversion all units to the unit pt
 \supwid=\supwid;
 \supdep=\supdep;
@@ -34,7 +37,8 @@ real \supwid, \supdep, \linethk, \xvalue, \yvalue, \rotat;
 \begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=\rotat];
 % Draw everything in pt units
 
-\fill[fill=\shadecol] (-\halfwid,-\supdep) rectangle ++(\supwid,\supdep);
+\ifthenelse{\showshade=1}{
+\fill[fill=\shadecol] (-\halfwid,-\supdep) rectangle ++(\supwid,\supdep);}{}
 
 \draw[line width=\linethk] (-\halfwid,0) -- ++(\supwid,0);
 
