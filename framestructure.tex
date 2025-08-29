@@ -1419,11 +1419,12 @@ rotation=\rightrotpin]}}
 		-- ++ (\ssinterdeltax,0) -- ++(0,\ssinterrightdeltay);}{}
 	
 	%%% Top thin line
+	\ifthenelse{\halfspacetype=1}{
 	\draw[line width=0.5pt, color=black]
 	(0,\leftwallh) -- ++(-\leftsoildist-\translayerlinet,0);
 	
 	\draw[line width=0.5pt, color=black]
-	(\buildingwidth,\rightwallh) -- ++(\rightsoildist+\translayerlinet,0);
+	(\buildingwidth,\rightwallh) -- ++(\rightsoildist+\translayerlinet,0);}
 	
 	%% Engineering Bedrock
 	\ifthenelse{\showengbedrock=1}{
