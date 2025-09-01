@@ -1,0 +1,177 @@
+\pgfkeys{
+/framehorizontalspring/.is family, /framehorizontalspring,
+default/.style={
+startx = 0cm,
+starty = 0cm,
+endx = 5cm,
+endy = 5cm,
+number of springs = 10,
+spring direction = 1,
+space between springs = 0.02cm,
+space = 0.1cm,
+start ratio = 0.02,
+end ratio = 0.02,
+spring text = $\SI{10}{\kilo\newton/\meter}$,
+text color = black,
+text shiftx=0pt,
+text shifty=0pt,
+spring prelength ratio=0.25,
+spring postlength ratio=0.25,
+spring segment=0.15cm,
+spring width=3pt,
+spring scale=1,
+spring line thickness=1pt,
+spring color=black,
+support width=0.3cm,
+support depth=0.1cm,
+support line thickness=1pt,
+show support shade=1,
+support shade color=gray,},
+startx/.store in = \springstartcoordx,
+starty/.store in = \springstartcoordy,
+endx/.store in = \springendcoordx,
+endy/.store in = \springendcoordy,
+number of springs/.store in = \springnumber,
+spring direction/.store in = \springdir,
+space between springs/.store in = \spbtwspr,
+space/.store in = \springspace,
+start ratio/.store in = \springstartratio,
+end ratio/.store in = \springendratio,
+spring text/.store in = \springtext,
+text color/.store in = \textcolor,
+text shiftx/.store in = \textshiftx,
+text shifty/.store in = \textshifty,
+spring prelength ratio/.store in = \prelenratio,
+spring postlength ratio/.store in = \postlenratio,
+spring segment/.store in = \segm,
+spring width/.store in = \sprwid,
+spring scale/.store in = \sprscale,
+spring line thickness/.store in = \sprlinethk,
+spring color/.store in = \sprcolor,
+support width/.store in = \suppwidth,
+support depth/.store in = \suppdepth,
+support line thickness/.store in = \supplinethk,
+show support shade/.store in = \showsuppshade,
+support shade color/.store in = \suppshadecol,}
+
+\newcommand{\framehorizontalspring}[1][]{
+\pgfkeys{/framehorizontalspring, default, #1}
+\tikzmath{
+real \springstartcoordx, \springstartcoordy, \springendcoordx, \springendcoordy;
+real \springangle, \springunx, \springuny, \springdxf, \springdyf;
+real \springdxa, \springdya, \springaaa, \springbbb;
+real \springxvalue, \springyvalue;
+real \springwxvalue, \springwyvalue;
+real \springstartratio, \springendratio, \lenf;
+real \textshiftx, \textshifty;
+int \springnumber, \springnumbermo, \i, \j, \springdir;
+real \sprlen, \sprwid, \sprscale, \sprlinethk;
+real \prelenratio, \postlenratio, \prelength, \postlength, \segm;
+real \spbtwspr;
+real \spacebetweenspringsdx, \spacebetweenspringsdy;
+real \totalspacebetweensprings, \totalspacebetweenspringsdx, \totalspacebetweenspringsdy;
+real \supportdist, \supportdistdx, \supportdistdy, \supportendx, \supportendy;
+real \suppwidth, \supdepth, \supplinethk, \suppangle;
+int \showsuppshade;
+%Conversion all units to the unit pt
+\springstartcoordx = \springstartcoordx;
+\springstartcoordy = \springstartcoordy;
+\springendcoordx = \springendcoordx;
+\springendcoordy = \springendcoordy;
+\textshiftx=\textshiftx;
+\textshifty=\textshifty;
+\springspace = \springspace;
+\sprwid=\sprwid;
+\sprlinethk=\sprlinethk;
+\segm=\segm;
+\spbtwspr=\spbtwspr;
+\suppdepth=\suppdepth;
+\suppwidth=\suppwidth;
+\supplinethk=\supplinethk;
+%End conversion, All values are now in pt units.
+%% Force application line
+\springdxf = (\springendcoordx-\springstartcoordx); %dx for the whole frame
+\springdyf = (\springendcoordy-\springstartcoordy); %dy for the whole frame
+\springangle = atan2(\springdyf,\springdxf);
+%% Start of springs
+\sprforceratio= 1-(\springstartratio+\springendratio);
+\springdxa = \springdxf*(\sprforceratio); %dx for the start and end of spring
+\springdya = \springdyf*(\sprforceratio); %dy for the start and end of spring
+%%
+\spacebetweenspringsdx=\spbtwspr*cos(\springangle);
+\spacebetweenspringsdy=\spbtwspr*sin(\springangle);
+\totalspacebetweensprings=(\springnumber-1)*\spbtwspr;
+\totalspacebetweenspringsdx=(\springnumber-1)*\spacebetweenspringsdx;
+\totalspacebetweenspringsdy=(\springnumber-1)*\spacebetweenspringsdy;
+%%
+\suppdx=(\suppdepth+\supplinethk/2)*cos(\springangle);
+\suppdy=(\suppdepth+\supplinethk/2)*sin(\springangle);
+%%
+\springwxvalue = (\springdxa-\totalspacebetweenspringsdx)/(\springnumber); %dx for the single spring
+\springwyvalue = (\springdya-\totalspacebetweenspringsdy)/(\springnumber); %dx for the single spring
+\horspringlen= veclen(\springwxvalue, \springwyvalue);
+\sprlen = \horspringlen - \suppdepth - \supplinethk/2;
+%
+\prelength=\prelenratio*\sprlen;
+\postlength=\postlenratio*\sprlen;
+%%
+\springxvalue{1} = \springstartcoordx + \springdxf*(\springstartratio) + \suppdx ;
+\springyvalue{1} = \springstartcoordy + \springdyf*(\springstartratio) + \suppdy ;
+%%
+for \i in {2,...,\springnumber}{
+\springxvalue{\i} = \springxvalue{1} + (\i-1)*(\springwxvalue + \spacebetweenspringsdx) ;
+\springyvalue{\i} = \springyvalue{1} + (\i-1)*(\springwyvalue + \spacebetweenspringsdy);
+};
+%%%
+\sprspang=90+\springangle;
+%%
+\texti=int(\springnumber/2);
+\textshifty=\textshifty+\springspace;
+%%
+\supportdist=\springspace;
+\supportdistdx=cos(90+\springangle)*\supportdist;
+\supportdistdy=sin(90+\springangle)*\supportdist;
+for \i in {1,...,{\springnumber}}{
+	\supportendx{\i} = \springxvalue{\i} + \supportdistdx;
+	\supportendy{\i} = \springyvalue{\i} + \supportdistdy;
+};
+\suppangle=\springangle-90;
+}
+
+%\node at (-1cm,1cm) {\horspringlen};
+%\node at (-1cm,2cm) {\springdxf};
+%\node at (-1cm,3cm) {\springdyf};
+
+
+\begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
+
+%Springs
+\foreach \i in {1,...,\springnumber}{
+	\draw[line width=\sprlinethk, \sprcolor, line join=round]
+	(\springxvalue{\i}, \springyvalue{\i}) ++(\sprspang:\springspace)
+	decorate[
+	decoration={zigzag,
+		amplitude=\sprwid,
+		pre length=\prelength,
+		post length=\postlength,
+		segment length=\segm,}] 
+	{--	++(\springangle:\sprlen)} --++(\sprspang:-\springspace);
+	
+\fixedsupport[%
+support width = \suppwidth,
+support depth = \suppdepth,
+line thickness = \supplinethk,
+x value = \supportendx{\i},
+y value = \supportendy{\i},
+rotation = \suppangle,
+show shade=\showsuppshade,
+shade color=\suppshadecol,]
+	
+}
+
+\path (\springstartcoordx, \springstartcoordy) --
+node[sloped, above, xshift=\textshiftx, yshift=\textshifty]
+{\springtext}(\springendcoordx, \springendcoordy);
+
+\end{scope}
+}

@@ -1,0 +1,39 @@
+\documentclass[]{standalone}
+\usepackage{mathptmx}
+%\renewcommand{\familydefault}{\rmdefault}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.14}
+\usepackage{titling, graphicx}
+\usepackage{tikz}
+\usepackage{upgreek}
+\usepackage{amsmath,amsthm}
+\usepackage{strtikz}
+\usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard,math,fit}
+\usetikzlibrary{calc,intersections,through,backgrounds}
+\usetikzlibrary{decorations.pathmorphing, decorations.markings,decorations.pathreplacing}
+
+
+\begin{document}
+\def \fsize {\tiny}
+\begin{tikzpicture}
+\continuousline[startx=-5cm,
+starty = 3cm,
+endx = -5.0cm,
+endy = -3cm,
+sign radius = 0.2cm,
+sign curvature ratio = 0.1,
+sign location ratio = 0.5,
+line thickness = 2pt,
+line color = black];
+
+\node at (0,0) [text width=1.5cm, align=center]{Panel\\Zone};
+
+%\draw [line width=1.5pt, decorate, decoration={snake,pre length=1.0cm, post length=1cm, segment length=0.6153794cm, amplitude=0.5cm}] (0,0) --(3,0);
+\end{tikzpicture}
+\end{document}

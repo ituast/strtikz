@@ -7,7 +7,8 @@
   radius ratio = 0.2,
   x value = 0,
   y value = 0,
-  show circle = 1,},
+  show circle = 1,
+  rotation=0},
   triangle width/.store in = \triw,
   line width/.store in = \linew,
   line depth/.store in = \lined,
@@ -16,7 +17,7 @@
   x value/.store in = \xvalue,
   y value/.store in = \yvalue,
   show circle/.store in = \showcircle,
-}
+  rotation/.store in = \rotpin,}
 
 \newcommand{\pinsupport}[1][]{
 \pgfkeys{/pinsupport, default, #1}
@@ -40,7 +41,7 @@ int showcircle;
 \c6 = (-\linew/2, -\triw-\lined);
 \c7 = (+\linew/2, -\triw-\lined);
 }
-\begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=0];    % Draw everything in pt units
+\begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=\rotpin];    % Draw everything in pt units
 \draw [line join=bevel, line width = \linet] (0, 0) -- (-\triw/2, -\triw) -- (+\triw/2, -\triw) -- cycle;
 \ifthenelse{\showcircle=1}
 	{\filldraw [fill=white, line width = \linet] (0, 0) circle[radius=\rad];}

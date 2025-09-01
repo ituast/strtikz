@@ -1,0 +1,79 @@
+\pgfkeys{
+ /continuousline/.is family, /continuousline,
+  default/.style={
+  startx = 0cm,
+  starty = 0cm,
+  endx = 4cm,
+  endy = 5cm,
+  sign radius = 0.2cm,
+  sign curvature ratio = 0.4,
+  sign bump ratio = 2,
+  sign location ratio = 0.5,
+  line thickness = 2pt,
+  line color = black,},
+  startx/.store in =\startx,
+  starty/.store in =\starty,
+  endx/.store in =\endx,
+  endy/.store in =\endy,
+  sign radius/.store in =\signrad,
+  sign curvature ratio/.store in =\signcurvratio,
+  sign bump ratio/.store in =\signbumpratio,
+  sign location ratio/.store in =\signlocratio,
+  line thickness/.store in =\linewid,
+  line color/.store in =\lcolor,
+}
+
+
+\newcommand{\continuousline}[1][]{
+\pgfkeys{/continuousline, default, #1}
+
+\tikzmath{
+real \startx, \starty, \endx, \endy;
+real \linewid;
+real \signrad, \signcurvratio, \signlocratio;
+real \linelength, \halflen, \signlena, \signlenb;
+real \lenx, \leny;
+real \midx, \midy;
+real \gam, \alp, \bet, \curvang, \curvlen;
+%Conversion all units to the unit pt
+\startx = \startx;
+\starty = \starty;
+\endx = \endx;
+\endy = \endy;
+\linewid = \linewid;
+\signrad = \signrad;
+%
+\lenx = (\endx - \startx);
+\leny = (\endy - \starty);
+\linelength = veclen(\lenx, \leny);
+\alp = atan2(\leny,\lenx);
+\halflen = \linelength*\signlocratio;
+\signlena = \halflen - 2*\signrad;
+\signlenb = \halflen + 2*\signrad;
+\midx{1} = \startx + \lenx*(\signlena/(\linelength));
+\midy{1} = \starty + \leny*(\signlena/(\linelength));
+\midx{2} = \startx + \lenx*\signlocratio;
+\midy{2} = \starty + \leny*\signlocratio;
+\midx{3} = \startx + \lenx*(\signlenb/(\linelength));
+\midy{3} = \starty + \leny*(\signlenb/(\linelength));
+\gam = atan(\signcurvratio);
+\curvang{1} = \alp+90-\gam;
+\curvang{2} = \alp+90+\gam;
+\curvang{3} = \curvang{2}+180;
+\curvang{4} = \curvang{1}+180;
+\curvlen = \signrad/(cos(\gam));
+\newcurvlen=\signbumpratio*\curvlen;
+}
+
+
+\begin{scope}[x=1pt, y=1pt];    % Draw everything in pt units
+
+\draw[line width=\linewid, \lcolor] (\startx,\starty) -- (\midx{1}, \midy{1})
+.. controls ++(\curvang{1}:\newcurvlen) and ++(\curvang{2}:\newcurvlen) ..
+(\midx{2}, \midy{2})
+.. controls ++(\curvang{3}:\newcurvlen) and ++(\curvang{4}:\newcurvlen) ..
+(\midx{3}, \midy{3}) -- (\endx,\endy);
+
+
+\end{scope}
+}

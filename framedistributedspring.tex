@@ -1,0 +1,147 @@
+\pgfkeys{
+ /framedistributedspring/.is family, /framedistributedspring,
+  default/.style={startx = 0cm,
+  starty = 0cm,
+  endx = 5cm,
+  endy = 5cm,
+  number of springs = 10,
+  space = 0.1cm,
+  start ratio = 0.02,
+  end ratio = 0.02,
+  spring text = {},
+  text shiftx=0pt,
+  text shifty=0pt,
+  spring length=1cm,
+  spring prelength ratio=0.25,
+  spring postlength ratio=0.25,
+  spring width=0.07cm,
+  spring segment=0.15cm,
+  spring scale=1,
+  spring line thickness=1pt,
+  spring color=black,
+  support width=0.3cm,
+  support depth = 0.1cm,
+  support line thickness = 1pt,
+  show support shade=1,
+  support shade color=gray,},
+  startx/.store in = \springstartcoordx,
+  starty/.store in = \springstartcoordy,
+  endx/.store in = \springendcoordx,
+  endy/.store in = \springendcoordy,
+  number of springs/.store in = \springnumber,
+  space/.store in = \springspace,
+  start ratio/.store in = \springstartratio,
+  end ratio/.store in = \springendratio,
+  spring text/.store in = \springtext,
+  text shiftx/.store in = \textshiftx,
+  text shifty/.store in = \textshifty,
+  spring length/.store in = \springlength,
+  spring prelength ratio/.store in = \prelenratio,
+  spring postlength ratio/.store in = \postlenratio,
+  spring width/.store in = \ampl,
+  spring segment/.store in = \segm,
+  spring scale/.store in = \springscale,
+  spring line thickness/.store in = \springthk,
+  spring color/.store in = \springcolor,
+  support width/.store in = \suppwidth,
+  support depth/.store in = \suppdepth,
+  support line thickness/.store in = \supplinethk,
+  show support shade/.store in = \showsuppshade,
+  support shade color/.store in = \suppshadecol,}
+
+\newcommand{\framedistributedspring}[1][]{
+\pgfkeys{/framedistributedspring, default, #1}
+\tikzmath{
+real \springstartcoordx, \springstartcoordy, \springendcoordx, \springendcoordy;
+real \springangle, \springunx, \springuny, \springdxf, \springdyf;
+real \springdxa, \springdya, \springaaa, \springbbb;
+real \springxvalue, \springyvalue;
+real \springwxvalue, \springwyvalue, \springheight, \springstartratio, \springendratio, \lenf;
+int \springnumber, \springnumbermo, \i, \j;
+real \rnarr;
+real \springscale;
+real \textshiftx, \textshifty;
+real \springthk, \ampl, \prelenratio, \postlenratio, \prelength, \postlength, \segm;
+real \springlength;
+real \supportdist, \supportdistdx, \supportdistdy, \supportendx, \supportendy;
+real \suppwidth, \supdepth, \supplinethk;
+int \showsuppshade;
+%Conversion all units to the unit pt
+\springstartcoordx = \springstartcoordx;
+\springstartcoordy = \springstartcoordy;
+\springendcoordx = \springendcoordx;
+\springendcoordy = \springendcoordy;
+\springspace = \springspace;
+\textshiftx=\textshiftx;
+\textshifty=\textshifty;
+\springlength=\springlength;
+\springthk=\springthk;
+\ampl=\ampl;
+\segm=\segm;
+\suppwidth=\suppwidth;
+\suppdepth=\suppdepth;
+\supplinethk=\supplinethk;
+%End conversion, All values are now in pt units.
+\prelength=\prelenratio*\springlength;
+\postlength=\postlenratio*\springlength;
+\springdxf = (\springendcoordx-\springstartcoordx); %dx for the whole frame
+\springdyf = (\springendcoordy-\springstartcoordy); %dy for the whole frame
+\lenf = veclen(\springdxf, \springdyf);
+\springangle = atan2(\springdyf,\springdxf);
+\springdxa = \springdxf*(1-(\springstartratio+\springendratio)); %dx for the start and end of spring
+\springdya = \springdyf*(1-(\springstartratio+\springendratio)); %dy for the start and end of spring
+\lena = veclen(\springdxa, \springdya);
+\rnarr = \springnumber;
+\springwxvalue = (\springdxa)/(\rnarr-1); %dx for the single spring
+\springwyvalue = (\springdya)/(\rnarr-1); %dx for the single spring
+\springxvalue{1} = \springstartcoordx + \springdxf*(\springstartratio);
+\springyvalue{1} = \springstartcoordy + \springdyf*(\springstartratio);
+\springxvalue{\springnumber} = \springendcoordx - \springdxf*(\springendratio);
+\springyvalue{\springnumber} = \springendcoordy - \springdyf*(\springendratio);
+for \i in {2,...,{\springnumber-1}}{
+\springxvalue{\i} = \springxvalue{1} + (\i-1)*\springwxvalue;
+\springyvalue{\i} = \springyvalue{1} + (\i-1)*\springwyvalue;
+};
+\springnumbermo = \springnumber-1;
+\loc = ifthenelse(\springlength>=0,"above","below");
+%
+\supportdist=\springspace+\springlength;
+\supportdistdx=cos(90+\springangle)*\supportdist;
+\supportdistdy=sin(90+\springangle)*\supportdist;
+for \i in {1,...,{\springnumber}}{
+	\supportendx{\i} = \springxvalue{\i} + \supportdistdx;
+	\supportendy{\i} = \springyvalue{\i} + \supportdistdy;
+};
+}
+
+
+%\node at(0,2cm) {\segm};
+
+\begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
+\foreach \i in {1,...,\springnumber}{
+\draw[line width=\springthk, \springcolor, line join=round,
+decorate,
+decoration={zigzag,
+	amplitude=\ampl,
+	pre length=\prelength,
+	post length=\postlength,
+	segment length=\segm,}] 
+(\springxvalue{\i}, \springyvalue{\i})
+++(90+\springangle:\springspace) --
+++(90+\springangle:\springlength);
+
+\fixedsupport[%
+support width = \suppwidth,
+support depth = \suppdepth,
+line thickness = \supplinethk,
+x value = \supportendx{\i},
+y value = \supportendy{\i},
+rotation = 180+\springangle,
+show shade=\showsuppshade,
+shade color=\suppshadecol,]
+
+}
+
+\end{scope}
+}
+

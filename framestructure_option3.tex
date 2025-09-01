@@ -1,0 +1,11 @@
+%%% Draw Frame - Undeflected shape but beams and columns are drawn seperately
+\ifthenelse{\showdefl=3}{
+	\foreach \istory in {1,...,{\storynumber}}{
+		\foreach \icol in {1,...,{\columnnumber}}{
+			\draw [line width = \collinet, \columncolor]
+			(\x{\icol},\y{\istory}) -- (\usevar\x{\icol}, \usevar\y{\istory+1});}
+		\foreach \ibeam in {1,...,{\baynumber}}		{
+			\draw [line width = \beamlinet, \beamcolor]
+			(\x{\ibeam}-\collinet/2,\usevar\y{\istory+1}) --
+			(\usevar\x{\ibeam+1}+\collinet/2, \usevar\y{\istory+1});}}
+}{}

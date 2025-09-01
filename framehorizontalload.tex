@@ -1,0 +1,128 @@
+\pgfkeys{
+/framehorizontalload/.is family, /framehorizontalload,
+default/.style={
+startx = 0cm,
+starty = 0cm,
+endx = 5cm,
+endy = 5cm,
+number of arrows = 10,
+load direction = 1,
+space between arrows = 0.02cm,
+space = 0.1cm,
+start ratio = 0.02,
+end ratio = 0.02,
+load text = $\SI{10}{\kilo\newton/\meter}$,
+text color = black,
+text shiftx=0pt,
+text shifty=0pt,
+arrow length=5pt,
+arrow width=3pt,
+arrow scale=1,
+arrow line thickness=1pt
+arrow color = black,},
+startx/.store in = \loadstartcoordx,
+starty/.store in = \loadstartcoordy,
+endx/.store in = \loadendcoordx,
+endy/.store in = \loadendcoordy,
+number of arrows/.store in = \loadarrownumber,
+load direction/.store in = \loaddir,
+space between arrows/.store in = \spbtwarr,
+space/.store in = \loadarrowspace,
+start ratio/.store in = \loadstartratio,
+end ratio/.store in = \loadendratio,
+load text/.store in = \loadtext,
+text color/.store in = \textcolor,
+text shiftx/.store in = \textshiftx,
+text shifty/.store in = \textshifty,
+arrow length/.store in = \arrlen,
+arrow width/.store in = \arrwid,
+arrow scale/.store in = \arrscale,
+arrow line thickness/.store in = \arrlinethk,
+arrow color/.store in = \arrcolor,}
+\newcommand{\framehorizontalload}[1][]{
+\pgfkeys{/framehorizontalload, default, #1}
+\tikzmath{
+real \loadstartcoordx, \loadstartcoordy, \loadendcoordx, \loadendcoordy;
+real \loadangle, \loadunx, \loaduny, \loaddxf, \loaddyf;
+real \loaddxa, \loaddya, \loadaaa, \loadbbb;
+real \loadxvalue, \loadyvalue;
+real \loadwxvalue, \loadwyvalue;
+real \loadstartratio, \loadendratio, \lenf;
+int \loadarrownumber, \loadarrownumbermo, \i, \j, \loaddir;
+real \arrlen, \arrwid, \arrscale, \arrlinethk;
+%Conversion all units to the unit pt
+\loadstartcoordx = \loadstartcoordx;
+\loadstartcoordy = \loadstartcoordy;
+\loadendcoordx = \loadendcoordx;
+\loadendcoordy = \loadendcoordy;
+\loadarrowspace = \loadarrowspace;
+\arrlen=\arrlen;
+\arrwid=\arrwid;
+\arrlinethk=\arrlinethk;
+%End conversion, All values are now in pt units.
+%% Force application line
+\loaddxf = (\loadendcoordx-\loadstartcoordx); %dx for the whole frame
+\loaddyf = (\loadendcoordy-\loadstartcoordy); %dy for the whole frame
+\loadangle = atan2(\loaddyf,\loaddxf);
+%% Start of arrows
+\arrforceratio= 1-(\loadstartratio+\loadendratio);
+\loaddxa = \loaddxf*(\arrforceratio); %dx for the start and end of arrow
+\loaddya = \loaddyf*(\arrforceratio); %dy for the start and end of arrow
+%%%
+\loadwxvalue = (\loaddxa)/(\loadarrownumber-1); %dx for the single arrow
+\loadwyvalue = (\loaddya)/(\loadarrownumber-1); %dx for the single arrow
+\horloadlen= veclen(\loadwxvalue, \loadwyvalue) - \spbtwarr;
+%%
+\loadxvalue{1} = \loadstartcoordx + \loaddxf*(\loadstartratio);
+\loadyvalue{1} = \loadstartcoordy + \loaddyf*(\loadstartratio);
+%%
+\loadarrownumbermo = \loadarrownumber-1;
+%% Mid Region
+for \i in {1,...,\loadarrownumber}{
+\loadxvalue{\i} = \loadxvalue{1} + (\i-1)*\loadwxvalue;
+\loadyvalue{\i} = \loadyvalue{1} + (\i-1)*\loadwyvalue;
+};
+%%%
+\arrspang=90+\loadangle;
+%%
+\horzarrdir = ifthenelse(\loaddir==0,"arrforce","forcearr");
+%%
+\texti=int(\loadarrownumber/2);
+\textshifty=\textshifty+\loadarrowspace;
+}
+
+\tikzset{
+forcearr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-}}
+};
+
+\tikzset{
+arrforce/.style={
+arrows={->[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}}
+};
+
+\tikzset{
+forcearrarr/.style={
+arrows={<[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]-
+>[length=\arrlen, width=\arrwid, scale=\arrscale, flex=1, bend]}}
+};
+
+\tikzset{
+loadarrowangle/.style={
+arrows={->[flex=1, bend, width=3pt, length=4pt]}}
+};
+
+\begin{scope}[x=1pt, y=1pt]; % Drawing everything in pt units
+
+% Inner Arrows
+\foreach \i in {1,...,\loadarrownumbermo}{
+\draw [\horzarrdir, line width=\arrlinethk, \arrcolor]
+(\loadxvalue{\i}, \loadyvalue{\i})
+++(\arrspang:\loadarrowspace) --
+++(\loadangle:\horloadlen);}
+
+\path (\loadstartcoordx, \loadstartcoordy) --
+node[sloped, above, xshift=\textshiftx, yshift=\textshifty]
+{\loadtext}(\loadendcoordx, \loadendcoordy);
+\end{scope}
+}

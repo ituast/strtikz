@@ -1,0 +1,56 @@
+\documentclass[]{standalone}
+%\usepackage{mathptmx}
+%\renewcommand{\familydefault}{\rmdefault}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{ifthen}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.14}
+\usepackage{titling, graphicx}
+\usepackage{tikz}
+\usepackage{upgreek}
+\usepackage{amsmath,amsthm}
+\usepackage{strtikz}
+\usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard}
+\usetikzlibrary{bending, math,fit, patterns, patterns.meta}
+\usetikzlibrary{calc,intersections,through,backgrounds,decorations.pathmorphing}
+%\usetikzlibrary{fpu}
+%\usepackage{pgfmath}
+
+
+\begin{document}
+
+
+\begin{tikzpicture}
+\draw [line width=1](0, 0) -- ++(4cm,3cm);
+\framehorizontalload[startx = 0cm,
+starty = 0cm,
+endx = 4cm,
+endy = 3cm,
+number of arrows = 15,
+load direction = 1,
+space between arrows = 0.02cm,
+space = 3pt,
+start ratio = 0.025,
+end ratio = 0.025,
+load text = ${q=w \times c}$,
+text color=black,
+text shiftx=0pt,
+text shifty=-2pt,
+arrow length=5pt,
+arrow width=3pt,
+arrow scale=1,
+arrow line thickness=1pt,
+arrow color=blue!75,]
+%$\SI{10}{\kilo\newton/\meter}$
+
+
+\end{tikzpicture}
+
+
+
+
+\end{document}

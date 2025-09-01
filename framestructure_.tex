@@ -1,0 +1,1403 @@
+\pgfkeys{
+ /framestructure/.is family, /framestructure,
+  default/.style = {
+  number of storys = 5,
+  show open story=1,
+  left story=2,
+  right story=3,
+  number of bays = 5,
+  show less bays=0,
+  left bays=1,
+  right bays=1,
+  story height = 1cm,
+  bay width = 2cm,
+  startX = 0cm,
+  startY = 0cm,
+  line thickness = 1.5pt,
+  beam line thickness = 1.5pt,
+  ground beam line thickness = 1.5pt,
+  beam color=blue,
+  column line thickness = 1.5pt,
+  column color=black,
+  show shear wall=1,
+  shear wall bay=2,
+  shear wall line thickness=0.75pt,
+  shear wall fill color=gray,
+  support width = 0.3cm,
+  support height = 0.15cm,
+  support line thickness = 1.5pt,
+  support fill color=gray!65,
+  show supports = 1,
+  number of isolators = 4,
+  isolator width = 0.3cm,
+  isolator thickness = 0.2cm,
+  isolator line thickness = 1.5pt,
+  isolator shift = 0,
+  isolator shift distance = 0.2cm,
+  foundation thickness = 0.5cm,
+  foundation side width = 1cm,
+  show mass = 1,
+  mass radius = 2pt,
+  mass color super=black,
+  mass color sub=red,
+  show dof = 1,
+  show dofx = 1,
+  show dofy = 1,
+  show dofr = 1,
+  dof xstring = $x$,
+  dof ystring = $y$,  
+  dof rstring = $\theta$,
+  dof floor = 1,
+  dof column = 2,
+  arrow length ratio = 0.4,
+  rot arrow length ratio = 0.4,
+  dof x rotation = 0,
+  dof y rotation = 0,
+  dof r rotation = 0,
+  dof offset ratio = 0.075,
+  rotation dof start angle = 120,
+  rotation dof end angle = 280,
+  dofx pos = 1,
+  dofy pos = 1,
+  dofr pos = 1,
+  dofx in sep=1pt,
+  dofy in sep=1pt,
+  dofr in sep=1pt,
+  dof offset x= 0.1cm,
+  dof offset y= 0.1cm,
+  dof offset rot x= 0.1cm,
+  dof offset rot y= 0.1cm, 
+  dof arrow ratio=0.75,
+  dof text ratio=0.5,
+  show axes = 1,
+  subfloor number=2,
+  half space type=1,
+  half space fill color=brown!75!white,
+  left soil distance = 2cm,
+  right soil distance = 4cm,
+  left soil depth = 2cm,
+  right soil depth = 2cm,
+  soil below foundation = 2cm,
+  left control distance x = 2cm,
+  left control distance y = 2cm,
+  right control distance x = 2cm,
+  right control distance y = 2cm,
+  axis seperation = 0.2cm,
+  x axis length = 0.5cm,
+  y axis length = 0.5cm,
+  show piles=1,
+  number of piles=3,
+  pile depth=4cm,
+  pile side space=0.5cm,
+  pile diameter=0.5cm,
+  pile line thickness=1pt,
+  pile fill color=gray,
+  show pile boundary line=0,
+  pile boundary line thickness=2pt,
+  pile boundary line color=blue,
+  pile boundary line type=dashed,
+  show lateral load = 0,
+  lateral load shift=0.5cm,
+  lateral load type=2,
+  top arrow length=1.5cm,
+  base arrow length=0.75cm,
+  show deflection = 0, 
+  interstory drift = 0.2cm,
+  defl parameter x = 0.2cm,
+  defl parameter y = 0.5cm,
+  defl parameter base = 0.15cm,
+  show eng bedrock=0,
+  eng bedrock depth=2cm,
+  eng bedrock left distance=1cm,
+  eng bedrock right distance=1cm,
+  eng bedrock line thickness=1.5pt,
+  eng bedrock text=Bedrock,
+  eng bedrock fill color=gray,
+  show trans layer=0,
+  trans layer line thickness=2pt,
+  trans layer color=red,
+  trans layer line type=dashed,
+  show ss interface=0,
+  ss interface line thickness=3pt,
+  ss interface color=green,
+  ss interface line type=dashed,
+  show substructure mark=0,
+  substructure mark space=0.30cm,
+  substructure mark radius=0.25cm,
+  substructure mark line thickness=0.75pt,
+  substructure mark line type=dashed,
+  substructure mark line color=blue,
+  show superstructure shade=0,
+  superstructure shade space=5pt,
+  superstructure shade opacity=0.75,
+  show superstructure mark=0,
+  superstructure mark space=0.30cm,
+  superstructure mark radius=0.25cm,
+  superstructure mark line thickness=0.75pt,
+  superstructure mark line type=dashed,
+  superstructure mark line color=red,},
+  number of storys/.store in=\storynumber,
+  show open story/.store in=\showopenstory,
+  left story/.store in=\leftstory,
+  right story/.store in=\rightstory,
+  number of bays/.store in = \baynumber,
+  show less bays/.store in=\showlessbays,
+  left bays/.store in=\leftbays,
+  right bays/.store in=\rightbays,
+  story height/.store in = \storyheight,
+  bay width/.store in = \baywidth,
+  startX/.store in = \startx,
+  startY/.store in = \starty,
+  line thickness/.store in = \linet,
+  beam line thickness/.store in=\beamlinet,
+  ground beam line thickness/.store in=\groundbeamlinet,
+  beam color/.store in=\beamcolor,
+  column line thickness/.store in=\collinet,
+  column color/.store in=\columncolor,
+  show shear wall/.store in=\showshearwall,
+  shear wall bay/.store in=\shearwallbay,
+  shear wall line thickness/.store in=\shearwalllinet,
+  shear wall fill color/.store in=\shearwallfillcolor,
+  support width/.store in = \supportwidth,
+  support height/.store in = \supportheight,
+  support line thickness/.store in = \baselinet,
+  support fill color/.store in=\supportfillcolor,
+  show supports/.store in = \showsupports,
+  number of isolators/.store in = \numberofisolators,
+  isolator width/.store in = \isolationwidth,
+  isolator thickness/.store in = \isolationdepth,
+  isolator line thickness/.store in = \isolinet,
+  isolator shift/.store in = \isoshiftyn,
+  isolator shift distance/.store in = \isoshift,
+  foundation thickness/.store in = \foundationdepth,
+  foundation side width/.store in = \foundsidew,
+  show mass/.store in = \showmass,
+  mass radius/.store in = \massrad,
+  mass color super/.store in = \masscolorsuper,
+  mass color sub/.store in = \masscolorsub,
+  show dof/.store in = \showdof,
+  show dofx/.store in = \shodofx,
+  show dofy/.store in = \shodofy,
+  show dofr/.store in = \shodofr,
+  dof floor/.store in = \doflocfloor,
+  dof xstring/.store in = \dofxstr,
+  dof ystring/.store in = \dofystr,
+  dof rstring/.store in = \dofrstr,
+  dof column/.store in = \dofloccolumn,
+  arrow length ratio/.store in = \arrowlenratio,
+  rot arrow length ratio/.store in = \rotarrowlenratio,
+  dof offset ratio/.store in = \dofoffsetratio,
+  dof x rotation/.store in = \dofxrotation,
+  dof y rotation/.store in = \dofyrotation,
+  dof r rotation/.store in = \dofrrotation,
+  rotation dof start angle/.store in = \rotdofstartangle,
+  rotation dof end angle/.store in = \rotdofendangle,
+  dofx pos/.store in = \dofposx,
+  dofy pos/.store in = \dofposy,
+  dofr pos/.store in = \dofposr,
+  dofx in sep/.store in = \dofinnersepx,
+  dofy in sep/.store in = \dofinnersepy,
+  dofr in sep/.store in = \dofinnersepr,
+  dof offset x/.store in = \dofoffsetx,
+  dof offset y/.store in = \dofoffsety,
+  dof offset rot x/.store in = \dofrotoffsetx,  
+  dof offset rot y/.store in = \dofrotoffsety,
+  dof arrow ratio/.store in = \dofarrowratio,
+  dof text ratio/.store in = \doftextratio,
+  show axes/.store in = \showaxes,
+  subfloor number/.store in=\subfloors,
+  half space type/.store in=\halfspacetype,
+  half space fill color/.store in=\halfspacefillcolor,
+  left soil distance/.store in = \leftsoildist,
+  right soil distance/.store in = \rightsoildist,
+  left soil depth/.store in = \leftsoildepth,
+  right soil depth/.store in = \rightsoildepth,
+  soil below foundation/.store in = \soilbelowfound,
+  left control distance x/.store in = \leftcontrolx,
+  left control distance y/.store in = \leftcontroly,
+  right control distance x/.store in = \rightcontrolx,
+  right control distance y/.store in = \rightcontroly,
+  axis seperation/.store in = \axisseperation,
+  x axis length/.store in = \axeslenX,
+  y axis length/.store in = \axeslenY,
+  show piles/.store in=\showpiles,
+  number of piles/.store in=\numberofpiles,
+  pile depth/.store in=\piledepth,
+  pile side space/.store in=\pilesidespace,
+  pile diameter/.store in=\pilediameter,
+  pile line thickness/.store in=\pilelinethickness,
+  pile fill color/.store in=\pilefillcolor,
+  show pile boundary line/.store in=\showpbline,
+  pile boundary line thickness/.store in=\pblinet,
+  pile boundary line color/.store in=\pblinecolor,
+  pile boundary line type/.store in=\pblinetype,
+  show lateral load/.store in=\showlatload,
+  lateral load shift/.store in=\latloadshift,
+  lateral load type/.store in=\latloadtype,
+  top arrow length/.store in=\toparrlen,
+  base arrow length/.store in=\basearrlen,
+  show deflection/.store in=\showdefl, 
+  interstory drift/.store in=\drift,
+  defl parameter x/.store in=\defparx,
+  defl parameter y/.store in=\defpary,
+  defl parameter base/.store in=\defbase,
+  show eng bedrock/.store in=\showengbedrock,
+  eng bedrock depth/.store in=\engbedrockdepth,
+  eng bedrock left distance/.store in=\engbedrockleftdist,
+  eng bedrock right distance/.store in=\engbedrockrightdist,
+  eng bedrock line thickness/.store in=\engbedrocklinewidth,
+  eng bedrock text/.store in=\engbedrocktext,
+  eng bedrock fill color/.store in=\engbedrockfillcolor,
+  show trans layer/.store in=\showtranslayer,
+  trans layer line thickness/.store in= \translayerlinet,
+  trans layer color/.store in=\translayercolor,
+  trans layer line type/.store in=\translayerlinetype,
+  show ss interface/.store in=\showssinter,
+  ss interface line thickness/.store in=\ssinterlinet,
+  ss interface color/.store in=\ssintercolor,
+  ss interface line type/.store in=\ssinterlinetype,
+  show substructure mark/.store in=\showmarkss,
+  substructure mark space/.store in=\markssexspace,
+  substructure mark radius/.store in=\markssrad,
+  substructure mark line thickness/.store in=\marksslinet,
+  substructure mark line type/.store in=\marksslinetype,
+  substructure mark line color/.store in=\marksslinecolor,
+  show superstructure shade/.store in=\showsupershade,
+  superstructure shade space/.store in=\supershadespace,
+  superstructure shade opacity/.store in=\supershadeopacity,
+  show superstructure mark/.store in=\showmarksuper,
+  superstructure mark space/.store in=\marksuperexspace,
+  superstructure mark radius/.store in=\marksuperrad,
+  superstructure mark line thickness/.store in=\marksuperlinet,
+  superstructure mark line type/.store in=\marksuperlinetype,
+  superstructure mark line color/.store in=\marksuperlinecolor,
+}
+\newcommand{\framestructure}[1][]{
+\pgfkeys{/framestructure, default, #1}
+\tikzmath{
+int \storynumber, \baynumber, \columnnumber, \levelnumber, \storyminone;
+int \nlevmo, \ncolmo, \iii, \j, \pileind;
+real \storyheight, \baywidth, \startx, \starty, \xx, \y;
+int \numberofisolators, \kiso, \isoshiftyn;
+real \supportwidth, \supportheight, \isolationwidth, \isolationdepth, \isomidy;
+real \foundationdepth, \massrad, \xiso, \isospace;
+real \axisseperation, \linet, \baselinet, \isolinet;
+real \beamlinet, \collinet;
+real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy, \isoshift;
+real \foundboty, \foundtopy, \foundstartx, \foundendx;
+int \doflocfloor, \dofloch, \dofloccolumn;
+int \showaxes, \showdof, \showmass, \showsupports;
+real \arrowlenratio, \minlen, \dofxx, \dofyy, \arrlen, \arrrad;
+real \dofxrotation, \dofyrotation, \dofrrotation;
+real \rotdofstartangle, \rotdofendangle;
+int \subfloors, \deflstart, \deflstartplusone, \superstorynumber;
+real \basewallstartx, \basewallstarty, \basewallendx, \basewallendy;
+real \buildingwidth, \basewalldepth;
+int \halfspacetype;
+real \leftsoildist, \rightsoildist, \leftsoildepth, \rightsoildepth;
+real \soilbelowfound, \leftcontrolx, \leftcontroly;
+real \rightcontrolx, \rightcontroly;
+real \rightsoilx, \rightsoily;
+real \axeslenX, \axeslenY;
+real \piledepth, \pilesidespace, \pilespace, \pilecoordy, \pilecoordx;
+real \pilelinethickness, \pblinet;
+int \showpbline;
+real \latloadshift, \arrstartx, \toparrlen, \addtempy, \basearrlen;
+int \latloadtype, \iarr, \showlatload;
+int \substextnum;
+int \showdefl;
+int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
+real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase;
+real \tempdim, \fixbeamx, \fixbeamy;
+int \dofcounterx, \dofcountery, \dofcounterz;
+int \showengbedrock;
+real \engbedrockdepth, \engbedrockleftdist, \engbedrockrightdist;
+real \engbedrockstartx, \engbedrockstarty;
+real \engbedrockdeltax, \engbedrockdeltay;
+real \engbedrocklinewidth;
+int \showtranslayer, \showssinter;
+real \translayerleftstartx, \translayerleftstarty, \translayerleftdeltay;
+real \translayerrightstartx, \translayerrightstarty, \translayerrightdeltay;
+real \translayerlinet, \ssinterlinet;
+int \showmarkss;
+real \markssleftstartx, \markssleftstarty;
+real \markssdeltax, \markssdeltay, \markssrad, \marksslinet, \markssexspace;
+real \supershadespace;
+real \supershadestartx, \supershadestarty, \supershadedeltax, \supershadedeltay;
+real \supershadespace, \supershadeopacity;
+int \showsupershade;
+int \showlessbays, \leftbays, \rightbays, \startcol, \endcol;
+int \showshearwall, \shearwallbay, \shearwallstartcolumn, \shearwallendcolumn;
+real \shearwallstartx, \shearwallstarty \shearwalldeltax, \shearwalldeltay;
+real \shearwalllinet;
+int \showmarksuper;
+real \marksuperexspace, \marksuperrad, \marksuperlinet;
+real \marksuperleftstartx, \marksuperleftstarty,
+real \marksuperdeltax, \marksuperdeltay;
+int \leftstory, \leftlevel, \rightstory, \rightlevel;
+int \leftopenstory, \rightopenstory, \showopenstory;
+real \leftwallh, \leftopenh, \rightwallh, \rightopenh, \diffwallh;
+%Conversion all units to the unit pt
+\storyheight = \storyheight;
+\baywidth = \baywidth;
+\startx = \startx;
+\starty = \starty;
+\supportwidth = \supportwidth;
+\supportheight = \supportheight;
+\isolationwidth = \isolationwidth;
+\isolationdepth = \isolationdepth;
+\isoshift=\isoshift;
+\foundationdepth = \foundationdepth;
+\linet = \linet;
+\beamlinet = \beamlinet;
+\collinet = \collinet;
+\baselinet = \baselinet;
+\isolinet = \isolinet;
+\massrad = \massrad;
+\foundsidew = \foundsidew;
+\leftsoildist = \leftsoildist;
+\rightsoildist = \rightsoildist;
+\leftsoildepth = \leftsoildepth;
+\rightsoildepth = \rightsoildepth;
+\soilbelowfound = \soilbelowfound;
+\leftcontrolx = \leftcontrolx;
+\leftcontroly = \leftcontroly;
+\rightcontrolx = \rightcontrolx;
+\rightcontroly = \rightcontroly;
+\axeslenX = \axeslenX;
+\axeslenY = \axeslenY;
+\piledepth=\piledepth;
+\pilesidespace=\pilesidespace;
+\pilediameter=\pilediameter;
+\pilelinethickness=\pilelinethickness;
+\pblinet=\pblinet;
+\latloadshift=\latloadshift;
+\toparrlen=\toparrlen;
+\basearrlen=\basearrlen;
+\drift=\drift;
+\defparx=\defparx;
+\defpary=\defpary;
+\defbase=\defbase;
+\engbedrockdepth=\engbedrockdepth;
+\engbedrockleftdist=\engbedrockleftdist;
+\engbedrockrightdist=\engbedrockrightdist;
+\engbedrocklinewidth=\engbedrocklinewidth;
+\translayerlinet=\translayerlinet;
+\ssinterlinet=\ssinterlinet;
+\markssexspace=\markssexspace;
+\markssrad=\markssrad;
+\marksslinet=\marksslinet;
+\supershadespace=\supershadespace;
+\shearwalllinet=\shearwalllinet;
+\marksuperexspace=\marksuperexspace;
+\marksuperrad=\marksuperrad;
+\marksuperlinet=\marksuperlinet;
+%End conversion, All values are now in pt units.
+\dofcounter=0;
+\storyminone = \storynumber-1;
+\columnnumber = \baynumber+1; %number of columns
+\levelnumber = \storynumber+1; %number of levels
+if \storynumber>1 then {\nlevmo = \levelnumber-1;} else {\nlevmo=2;};
+if \baynumber>1 then {\ncolmo = \columnnumber-1;} else {\ncolmo=2;};
+%% Undeflected shape coordinates
+for \iii in {1,...,{\levelnumber}}{
+\y{\iii} = (\iii-1)*\storyheight;
+for \j in {1,...,{\columnnumber}}{
+\x{\j} = (\j-1)*\baywidth;
+};
+};
+%% Deflected shape coordinates
+if equal(\showsupports,5) then
+{\deflstart=\subfloors+1;
+\superstorynumber=\storynumber-\subfloors;}
+else
+{\deflstart=1;
+\superstorynumber=\storynumber;};
+\deflstartplusone=\deflstart+1;
+for \idefl in {1,...,{\deflstart}}{
+	\deflect{\idefl} = 0;
+};
+for \idefl in {\deflstart+1,...,{\levelnumber}}{
+	\deflect{\idefl} = (\idefl-\deflstart)*\drift;
+};
+\tempdim = sqrt(\defparx*\defparx + \defpary*\defpary);
+\fixbeamx = \collinet/2*\defpary/\tempdim;
+\fixbeamy = \collinet/2*\defparx/\tempdim;
+\defparbeamx = \defparx / \storyheight * \baywidth;
+\defparbeamy = \defpary / \storyheight * \baywidth;
+\rigbasestartx = \x1-\supportwidth;
+\rigbaseendx = \x{\columnnumber}+\supportwidth;
+\isoboty = -\supportheight-\baselinet/2-\isolationdepth;
+\isotopy = -\supportheight-\baselinet/2;
+\foundboty = -\supportheight-\baselinet-\isolationdepth-\foundationdepth;
+\foundtopy = -\supportheight-\baselinet-\isolationdepth;
+\foundstartx = \x1-\foundsidew;
+\foundendx = \x{\columnnumber}+\foundsidew;
+\structheight=\storynumber*\storyheight;
+\isomidy = \supportheight+\isolinet+\isolationdepth/2-\baselinet;
+%%%Unbalanced Soil
+%\showopenstory=0;
+%\leftstory=1;
+%\rightstory=1;
+if equal(\showopenstory,0) then
+{\leftstory=\subfloors;
+\rightstory=\subfloors;};
+\leftopenstory=\subfloors-\leftstory;
+\leftlevel=\leftstory+1;
+\leftwallh=\leftstory*\storyheight;
+\leftopenh=\leftopenstory*\storyheight;
+\rightopenstory=\subfloors-\rightstory;
+\rightlevel=\rightstory+1;
+\rightwallh=\rightstory*\storyheight;
+\rightopenh=\rightopenstory*\storyheight;
+\diffwallh=\leftwallh-\rightwallh;
+%%%Basement%%%%
+\soilbelowfoundtof = \soilbelowfound+\supportheight;
+\basewallstartx=-\supportwidth;
+\buildingwidth=\baynumber*\baywidth;
+\basewalldepth=\subfloors*\storyheight;
+\basewallstarty=\basewalldepth;
+\basewallendx=\buildingwidth+\supportwidth;
+\basewallendy=\basewallstarty;
+\rightsoilx=\buildingwidth+\rightsoildist;
+\rightsoily=\rightwallh-\rightsoildepth-\supportheight;
+%Some isolator properties
+\isospace = (\buildingwidth)/(\numberofisolators-1);
+for \kiso in {1,...,{\numberofisolators}}{
+\xiso{\kiso} = (\kiso-1)*\isospace;
+};
+if equal(\isoshiftyn,1) then
+{\xiso{1}=\xiso{1}+\isoshift;
+\xiso{\numberofisolators}=\xiso{\numberofisolators}-\isoshift;}
+else {};
+%%%DOFs%%%%
+if greater(\doflocfloor,\storynumber) then {\doflocfloor=0;} else{};
+if greater(\dofloccolumn,\columnnumber) then {\dofloccolumn=1;} else{};
+\dofloch = 1+\doflocfloor;
+\minlen = min(\storyheight,\baywidth);
+\dofxx = \x{\dofloccolumn}+\dofoffsetratio*\minlen+\deflect{\dofloch}*\showdefl;
+\dofyy = \y{\dofloch}+\dofoffsetratio*\minlen;
+\arrlen = \arrowlenratio*\minlen;
+\arrrad = \rotarrowlenratio*\minlen;
+%\arrrad = \arrlen*0.8;
+%%%%%Axes%%%%%
+\Xaxesstarty = \y{1};
+\Yaxesstartx = \x{1};
+\Yaxesstarty = \y{\levelnumber}+\axisseperation;
+if equal(\showsupports,0) then
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation;} else
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth/2;};
+if equal(\showsupports,1) then
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth/2;} else
+{\Xaxesstartx = \x{\columnnumber}+\axisseperation+\supportwidth;};
+%%%%Piles%%%%
+\pilecoordy = -\supportheight;
+\pilespace = 
+(2*\supportwidth+\buildingwidth-2*\pilesidespace)/(\numberofpiles-1);
+for \pileind in {1,...,{\numberofpiles}}{
+\pilecoordx{\pileind} = -\supportwidth+\pilesidespace+(\pileind-1)*\pilespace;
+};
+%%%%Lateral Loads%%%%
+if or(equal(\latloadtype,1), equal(\latloadtype,3)) then {
+for \iarr in {1,...,{\levelnumber}}{
+	\arrstartx{\iarr}=-\toparrlen*\y{\iarr}/\structheight-\latloadshift;};
+} else {};
+if equal(\latloadtype,2) then {
+	\arrstartx{0}=-\latloadshift;
+	\y{0}=-\isomidy;
+	for \iarr in {1,...,{\levelnumber}}{
+		if equal(\iarr,1) then{\addtempy=\supportheight/2;} else {\addtempy=0;};
+		\arrstartx{\iarr}=-\toparrlen*(\y{\iarr}+\isomidy-\addtempy)/
+		(\structheight+\isomidy)-\latloadshift;
+	};
+} else {};
+if equal(\latloadtype,4) then {
+	\arrstartx{0}=-\latloadshift;
+	\y{0}=-\isomidy;
+	for \iarr in {1,...,{\levelnumber}}{
+		if equal(\iarr,1) then{\addtempy=\supportheight/2;} else {\addtempy=0;};
+		\arrstartx{\iarr}=-(\toparrlen-\basearrlen)*(\y{\iarr}+\isomidy-\addtempy)/
+		(\structheight+\isomidy)-\latloadshift-\basearrlen;
+	};
+} else {};
+%%%Engineering Bedrock Coordinates
+%\engbedrocklinewidth=2pt;
+%\engbedrocktext="Bedrock";
+\engbedrockstartx=-\leftsoildist-\engbedrockleftdist;
+\engbedrockstarty=-\soilbelowfoundtof-\engbedrockdepth;
+\engbedrockdeltax=\leftsoildist+\engbedrockleftdist+
+  \buildingwidth+\rightsoildist+\engbedrockrightdist;
+\engbedrockdeltay=\engbedrockdepth;
+\engbedrockmidx=\engbedrockstartx + \engbedrockdeltax/2;
+\engbedrockmidy=\engbedrockstarty + \engbedrockdeltay/2;
+%%%Transmitting Layer
+%\translayerlinet=2pt;
+\translayerleftstartx=-\leftsoildist-\translayerlinet/2;
+\translayerleftstarty=\leftwallh;
+\translayerleftdeltay=\leftwallh+\soilbelowfoundtof;
+\translayerrightstartx=\rightsoildist+\buildingwidth+\translayerlinet/2;
+\translayerrightstarty=\rightwallh;
+\translayerrightdeltay=\rightwallh+\soilbelowfoundtof;
+%%%Soil-Structure Interface
+%\ssinterlinet=3pt;
+\ssinterleftstartx=-\supportwidth-\baselinet/2-\ssinterlinet/2;
+\ssinterrightstartx=\buildingwidth+\supportwidth+\baselinet/2+\ssinterlinet/2;
+\ssinterleftstarty=\leftwallh;
+\ssinterrightstarty=\rightwallh;
+\ssinterdeltax=\ssinterrightstartx-\ssinterleftstartx;
+\ssinterleftdeltay=\leftwallh+\supportheight+\baselinet/2+\ssinterlinet/2;
+\ssinterrightdeltay=\rightwallh+\supportheight+\baselinet/2+\ssinterlinet/2;
+%%%Mark for Substructure
+%\markssexspace=0.3cm;
+%\markssrad=0.25cm;
+%\marksslinet=0.75pt;
+\markssleftstartx=-\supportwidth-\markssexspace;
+\markssleftstarty=\basewalldepth+\markssexspace;
+\markssdeltax=\buildingwidth+2*\supportwidth+2*\markssexspace;
+\markssdeltay=\basewalldepth+\supportheight+2*\markssexspace;
+%%%Shade for Superstructure
+%\supershadespace=5pt;
+%\supershadeopacity=0.75;
+\supershadestartx=-\collinet/2-\supershadespace;
+\supershadestarty=\basewalldepth+\baselinet/2;
+\supershadedeltax=\buildingwidth+\collinet+2*\supershadespace
+ +\deflect{\levelnumber}*\showdefl;
+\supershadedeltay=\superstorynumber*\storyheight+\beamlinet/2+\supershadespace;
+%%% Superstructure with less bays
+if equal(\showlessbays,0) then {
+\leftbays=0;
+\rightbays=0;};
+\startcol=\leftbays+1;
+\endcol=\columnnumber-\rightbays;
+\superbays=\baynumber-\leftbays-\rightbays;
+\superwidth=\superbays*\baywidth;
+%%% Modification for the ground beam
+\groundbeamshifty=\groundbeamlinet/2-\baselinet/2;
+%%% Shear Wall
+%\showshearwall=1;
+%\shearwallbay=3;
+\shearwallstartcolumn=\shearwallbay;
+\shearwallendcolumn=\shearwallbay+1;
+\shearwallstartx=\x{\shearwallstartcolumn}-\collinet/2;
+\shearwallstarty=\y{1}+\baselinet/2-+\shearwalllinet/2;
+\shearwalldeltax=\baywidth+\collinet;
+if equal(\superstorynumber,0) then {
+\shearwalldeltay=\y{\levelnumber};} else
+{\shearwalldeltay=\y{\levelnumber}-\shearwallstarty
++\beamlinet/2-\shearwalllinet/2;};
+%%%Mark for Superstructure
+%\showmarksuper=1;
+%\marksuperexspace=0.3cm;
+%\marksuperrad=0.25cm;
+%\marksuperlinet=0.75pt;
+\marksuperleftstartx=\x{\startcol}-\marksuperexspace;
+\marksuperleftstarty=\basewalldepth+\marksuperexspace/2;
+\marksuperdeltax=\superwidth+2*\marksuperexspace;
+\marksuperdeltay=\y{\levelnumber}-\y{\deflstart}+\marksuperexspace/2;
+}   %End tikzmath
+
+\begin{scope}[x=1pt, y=1pt, xshift=\startx, yshift=\starty, rotate=0];
+	% Drawing everyg in pt units
+
+
+%%%% Lateral Laods
+\ifthenelse{\showlatload=1}{
+\ifthenelse{\latloadtype=1}{
+	\foreach \iarr in {2,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+		(\arrstartx{\iarr},\y{\iarr}) --
+		node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+		(-\latloadshift,\y{\iarr});}
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{1},\y{\levelnumber});
+}{;}
+
+\ifthenelse{\latloadtype=2}{
+	\foreach \iarr in {1,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\ifthenelse{\iarr=1}{
+			\draw[arrows={-[length=2pt, width=2pt]>}, line width=0.5pt]
+			(\arrstartx{\iarr},\y{\iarr}-\supportheight/2) --
+			node[anchor=east, pos=0, inner sep=1pt]{$F_{\text{b}}$}
+			(-\latloadshift,\y{\iarr}-\supportheight/2);
+		}{
+			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+			(\arrstartx{\iarr},\y{\iarr}) --
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+			(-\latloadshift,\y{\iarr});
+		}
+	}
+	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{0},\y{0}) -- (\arrstartx{0},\y{\levelnumber});
+}{;}
+
+\ifthenelse{\latloadtype=4}{
+	\foreach \iarr in {1,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\ifthenelse{\iarr=1}{
+			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+			(\arrstartx{\iarr},\y{\iarr}-\supportheight/2) --
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\text{b}}$}
+			(-\latloadshift,\y{\iarr}-\supportheight/2);
+		}{
+			\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+			(\arrstartx{\iarr},\y{\iarr}) --
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+			(-\latloadshift,\y{\iarr});
+		}
+	}
+	\draw (\arrstartx{0},\isoboty) -- (\arrstartx{1},\y{1}-\supportheight/2)
+	-- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{0},\isoboty) -- (\arrstartx{0},\y{\levelnumber});
+}{;}
+
+
+\ifthenelse{\latloadtype=3}{
+	\foreach \iarr in {2,...,{\levelnumber}}{
+		\tikzmath{\substextnum=\iarr-1;}
+		\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+		(\arrstartx{\iarr},\y{\iarr}) --
+		node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}
+		(-\latloadshift,\y{\iarr});}
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
+	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{1},\y{\levelnumber});
+	\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+	(-\latloadshift-1cm,-\supportheight/2)--
+	node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\text{b}}$}
+	++(1cm,0);
+}{;}
+
+\ifthenelse{\latloadtype=5}
+{
+	\foreach \istory in {2,...,{\levelnumber}}
+	{
+		\tikzmath{\substextnum=\istory-1;}
+		\draw [arrows={-[length=5pt, width=4pt]>}, line width=1pt]
+		(\x{1}+\deflect{\istory}-\toparrlen,\y{\istory}) --
+			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}		
+		(\x{1}+\deflect{\istory}-0.1cm, \y{\istory});
+	}
+}{;}
+}{;}
+
+
+%%%% Different Support Types
+%% 0. No Supports
+\ifthenelse{\showsupports=0}{
+}{}
+
+%% 1. Individual fixed supports
+\ifthenelse{\showsupports=1}{
+	\foreach \j in {1,...,{\columnnumber}}
+	{
+		\fill [gray] (\x{\j},\y{1}) +({-\supportwidth/2},-\supportheight)
+		rectangle +({\supportwidth/2},\y{1});
+		\draw [line width = \baselinet]
+		(\x{\j},\y{1}) +({-\supportwidth/2},\y{1}) -- +({\supportwidth/2},\y{1});
+	}
+}{}
+
+%% 2. Support as continuous plate
+\ifthenelse{\showsupports=2}{
+	\fill [gray] (\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);
+	\draw [line width = \baselinet] (\rigbasestartx, 0) -- (\rigbaseendx,0);
+}{}
+
+
+%% 3. Support as ...
+\ifthenelse{\showsupports=3}{
+	\foreach \j in {1,...,{\columnnumber}}
+	{\fill [fill=gray, draw=black, line width = \baselinet]
+	(\rigbasestartx, 0) rectangle (\rigbaseendx,-\supportheight);}
+}{}
+
+
+%%% 4. Base Isolation
+\ifthenelse{\showsupports=4}{
+	\fill [fill=gray, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
+	rectangle
+	(\rigbaseendx,-\supportheight);
+	
+	\foreach \j in {1,...,{\numberofisolators}}
+	{\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
+	(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
+	+(\isolationwidth/2,\isotopy);}
+	
+	\fill [fill=gray]
+	(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
+	\draw [line width = \baselinet] (\foundstartx, \foundtopy)
+	-- (\foundendx, \foundtopy);
+}{}
+
+%%5. Pile Supports
+\ifthenelse{\showsupports=5}{
+	
+	%%% Rectangular half space
+	\ifthenelse{\halfspacetype=1}{
+	\path[fill=\halfspacefillcolor]
+	{(-\leftsoildist,\leftwallh) -- ++(0,-\leftwallh)
+		-- ++(0,-\soilbelowfoundtof) -- ++(\buildingwidth,0)
+		-- ++(\leftsoildist,0) -- ++(\rightsoildist,0)
+		-- ++(0,\soilbelowfoundtof)-- ++(0,\rightwallh)
+		-- ++(-\rightsoildist,0) -- ++(-\supportwidth*1.1,0)
+		-- ++(0,\diffwallh) }
+	-- cycle;}{}
+	
+	%%% Transmitting Layers
+	\ifthenelse{\showtranslayer=1}{
+	\draw[line width=\translayerlinet, \translayercolor, \translayerlinetype]
+	(\translayerleftstartx,\translayerleftstarty)
+	-- ++(0,-\translayerleftdeltay);
+	
+	\draw[line width=\translayerlinet, \translayercolor, \translayerlinetype]
+	(\translayerrightstartx,\translayerrightstarty)
+	-- ++(0,-\translayerrightdeltay);}{}
+	
+	%%% Random half space
+	\ifthenelse{\halfspacetype=2}{
+	\path[fill=\halfspacefillcolor]
+	decorate[decoration={random steps, segment length=0.25cm}]
+	{(-\leftsoildist,\leftwallh) -- ++(0,-\leftsoildepth)
+	..controls ++(0,-\leftcontroly) and  ++(-\leftcontrolx,0)
+	..(0,-\soilbelowfoundtof)
+	-- ++(\buildingwidth,0)	..controls ++(\rightcontrolx,0)
+	and ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
+	-- ++(0,\supportheight) -- ++(0,\rightsoildepth)}
+	-- ++(-\rightsoildist,0) -- ++(-\supportwidth*1.1,0)
+	-- ++(0,\diffwallh)
+	-- cycle;}{}
+		
+	%% White rectangle
+	\path[fill=white](0,\basewalldepth+1pt) -- ++(\buildingwidth,0)
+	--++(0,-\basewalldepth-1pt) -- ++(-\buildingwidth,0) -- cycle;
+	
+	
+	%%% Piles
+	\ifthenelse{\showpiles=1}{
+		\foreach \pileind in {1,...,{\numberofpiles}}
+		{\pilesupport[x coordinate=\pilecoordx{\pileind},
+		y coordinate=\pilecoordy,
+		pile depth=\piledepth, pile diameter=\pilediameter,
+		pile line thickness=\pilelinethickness, fill color=\pilefillcolor,
+		draw boundary line=\showpbline,
+		boundary line thickness=\pblinet,
+		boundary line color=\pblinecolor,
+		boundary line type=\pblinetype,]}
+	}{}
+	
+	
+	%%% Retaining walls and mat foundations
+	\filldraw[line width=\baselinet, fill=\supportfillcolor]
+	(\basewallstartx,\leftwallh) -- ++(\supportwidth,0)
+	-- ++(0,-\leftwallh) -- ++(\buildingwidth,0)
+	-- ++(0,\rightwallh) -- ++(\supportwidth,0)
+	-- ++(0,-\rightwallh)-- ++(0,-\supportheight)
+	-- (\basewallstartx,-\supportheight)
+	-- cycle;
+	
+	%%%Soil-Structure Interface
+	\ifthenelse{\showssinter=1}{
+	\draw[line width=\ssinterlinet, \ssintercolor, \ssinterlinetype]
+	(\ssinterleftstartx,\ssinterleftstarty) -- ++(0,-\ssinterleftdeltay) 
+	-- ++ (\ssinterdeltax,0) -- ++(0,\ssinterrightdeltay);}{}
+
+	%%% Top thin line
+	\draw[line width=0.5pt, color=black]
+	(0,\leftwallh) -- ++(-\leftsoildist-\translayerlinet,0);
+	
+	\draw[line width=0.5pt, color=black]
+	(\buildingwidth,\rightwallh) -- ++(\rightsoildist+\translayerlinet,0);
+	
+	%% Engineering Bedrock
+	\ifthenelse{\showengbedrock=1}{
+	\fill[\engbedrockfillcolor]
+	(\engbedrockstartx, \engbedrockstarty) rectangle
+	++(\engbedrockdeltax, \engbedrockdeltay);
+		
+	\draw[line width=\engbedrocklinewidth]
+	(\engbedrockstartx,\engbedrockstarty) ++(0, \engbedrockdeltay)
+	-- ++(\engbedrockdeltax,0);
+		
+	\node[align=center, scale=1] at
+	(\engbedrockmidx, \engbedrockmidy) {\engbedrocktext};}{}
+	
+}{}
+
+
+%%Substructure - Same for both deflected shape and undeflected shape
+\ifthenelse{\subfloors>0}{
+	
+	%Draw the beam at the ground level
+	\draw [line width = \groundbeamlinet, \beamcolor]
+	(\x{1}+\baselinet/2, \y{\deflstart}-\groundbeamshifty)
+	-- (\x{\columnnumber}-\baselinet/2, \y{\deflstart}-\groundbeamshifty);
+	
+	%Draw the beams except the ground level beam
+	\ifthenelse{\subfloors>1}{
+		\foreach \iii in {2,...,{\subfloors}}
+		{\draw [blue, line width = \beamlinet, \beamcolor]
+		(\x{1}+\baselinet/2,\y{\iii})
+		-- (\x{\columnnumber}-\baselinet/2,\y{\iii});}
+	}{}
+	
+	%% Draw first column - No Need to Draw when bays are reduced
+	\ifthenelse{\leftbays=0}{
+	\ifthenelse{\superstorynumber>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{1},\y{1}+\baselinet/2)
+	-- (\x{1}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{1}, \y{1}) -- ++(-\collinet/2,0)
+	-- ++(-\baselinet/2,0) -- ++(0,\leftwallh);}{}}{}
+
+	%% When left open - same as above
+	\ifthenelse{\leftbays>0}{
+	\ifthenelse{\leftopenstory>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{1},\y{1}+\baselinet/2)
+	-- (\x{1}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{1}, \y{1}) -- ++(-\collinet/2,0)
+	-- ++(-\baselinet/2,0) -- ++(0,\leftwallh);}{}}{}
+
+	
+	%% Draw the columns between the first and the last column
+	\foreach \j in {2,...,{\ncolmo}}
+	{\draw [line width = \collinet, \columncolor]
+	(\x{\j}, \y{1}+\baselinet/2)
+	-- (\x{\j}, \y{\deflstart}+\baselinet/2);}
+	
+	%% Draw the last column - No Need to Draw when bays are reduced
+	\ifthenelse{\rightbays=0}{
+	\ifthenelse{\superstorynumber>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{\columnnumber}, \y{1}+\baselinet/2)
+	-- (\x{\columnnumber}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{\columnnumber}, \y{1}) -- ++(+\collinet/2,0)
+	-- ++(\baselinet/2,0)  -- ++(0,\rightwallh);}{}}{}	
+
+	%% When Right Open
+	\ifthenelse{\rightbays>0}{
+	\ifthenelse{\rightopenstory>0}{
+	\draw [line width = \collinet, \columncolor]
+	(\x{\columnnumber}, \y{1}+\baselinet/2)
+	-- (\x{\columnnumber}, \y{\deflstart}+\baselinet/2);
+	\draw[line width=\baselinet]
+	(\x{\columnnumber}, \y{1}) -- ++(+\collinet/2,0)
+	-- ++(\baselinet/2,0)  -- ++(0,\rightwallh);}{}}{}	
+}{} %% Closure for substructure - same as deflected and undeflected shape
+
+
+%\draw (0,0)-- (0.5cm,2cm);
+%%% Draw Frame - Undeflected shape
+\ifthenelse{\showdefl=0}{
+%%% Superstructure
+\ifthenelse{\superstorynumber>0}{
+%% Draw beams up the top level minus one
+\ifthenelse{\superstorynumber>1}{
+\foreach \iii in {\deflstartplusone,...,{\nlevmo}}
+{\draw [\beamcolor, line width = \beamlinet]
+(\x{\startcol},\y{\iii}) -- (\x{\endcol},\y{\iii});}
+}{}
+
+%% Draw the beam the the top floor
+\draw [line width = \beamlinet, \beamcolor]
+(\x{\startcol}-\collinet/2, \y{\levelnumber})
+-- (\x{\endcol}+\collinet/2, \y{\levelnumber});
+
+%% Draw the first column
+\draw [line width = \collinet, \columncolor]
+(\x{\startcol},\y{\deflstart}-\baselinet/2)
+-- (\x{\startcol}, \y{\levelnumber}+\beamlinet/2);
+
+%% Columns other than first and last columns
+\foreach \j in {\startcol,...,{\endcol}}
+{\draw [line width = \collinet, \columncolor]
+	(\x{\j},\y{\deflstart}-\baselinet/2)
+	-- (\x{\j},\y{\levelnumber}+\beamlinet/2);}
+}{}
+
+%%%% Shear Wall
+\ifthenelse{\showshearwall=1}{
+\filldraw[fill=\shearwallfillcolor, line width=\shearwalllinet]
+(\shearwallstartx, \shearwallstarty)
+rectangle ++(\shearwalldeltax,\shearwalldeltay);
+
+%% Fix for foundations
+\draw[line width=\shearwalllinet, \supportfillcolor]
+(\shearwallstartx-\shearwalllinet/2, \shearwallstarty)
+--++(\shearwalldeltax+\shearwalllinet,0);
+\draw[line width=\baselinet, black]
+(\shearwallstartx-\shearwalllinet/2,\y{1})
+--++(\shearwalldeltax+\shearwalllinet,0);}{}
+
+%%% Mark for Substructure
+\ifthenelse{\superstorynumber>0}{
+\ifthenelse{\showmarksuper=1}{
+\draw[rounded corners=\marksuperrad,
+line width=\marksuperlinet, color=\marksuperlinecolor, \marksuperlinetype]
+(\marksuperleftstartx,\marksuperleftstarty)
+rectangle ++(\marksuperdeltax,\marksuperdeltay);}{}}{}
+
+}{} %%% Closure Undeflected Shape
+
+
+
+
+
+%\node at (10,10) {\deflstart};
+%\node at (50,50) {\deflstartplusone};
+%\node at (100,100) {\superstorynumber};
+%%% Draw Frame - Deflected shape
+\ifthenelse{\showdefl=1}{
+	
+%%%Superstructure
+
+%% If the superstory number is different then zero, first draw the first story
+\ifthenelse{\superstorynumber>0}{
+%%Beams at the second level only
+\foreach \ibeam in {1,...,{\baynumber}}
+{
+	\draw [red, line width = \beamlinet, \beamcolor]
+	(\x{\ibeam}-\fixbeamx+\deflect{\deflstartplusone}, \y{\deflstartplusone}+\fixbeamy)
+	.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, \defparbeamx) ..
+	(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{\deflstartplusone}, \y{\deflstartplusone}-\fixbeamy);
+}
+%% Columns at the first story only
+\foreach \icol in {1,...,{\columnnumber}}
+{
+	\draw [line width = \collinet, \columncolor]
+	(\x{\icol}+\deflect{\deflstart},\y{\deflstart})
+	.. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
+	(\x{\icol}+\deflect{\deflstartplusone}, \y{\deflstartplusone}+\beamlinet/2);
+}}{}
+
+
+%% If story number is larger than two, draw the storys other than first and last story
+\ifthenelse{\superstorynumber>1}{
+	\ifthenelse{\superstorynumber>2}{
+		\foreach \istory in {\deflstartplusone,...,{\storyminone}}
+		{
+			\foreach \ibeam in {1,...,{\baynumber}}
+			{
+				\draw [blue, line width = \beamlinet, \beamcolor]
+				(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
+				.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx)
+				.. (\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1},
+				\usevar\y{\istory+1}-\fixbeamy);
+			}
+			\foreach \icol in {1,...,{\columnnumber}}
+			{
+				\draw [line width = \collinet, \columncolor]
+				(\x{\icol}+\deflect{\istory},\y{\istory})
+				.. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
+				(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+			}
+		}
+	}{}
+	
+	%% Draw the last story
+	\foreach \istory in {\storynumber}
+	{
+		\foreach \ibeam in {1,...,{\baynumber}}
+		{
+			\draw [line width = \beamlinet, \beamcolor]
+			(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
+			.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
+			(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1},\usevar\y{\istory+1}-\fixbeamy);
+		}
+		\foreach \icol in {1,...,{\columnnumber}}
+		{
+			\draw [line width = \collinet, \columncolor]
+			(\x{\icol}+\deflect{\istory},\y{\istory})
+			.. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
+			(\usevar\x{\icol}+\usevar\deflect{\istory+1}, +\usevar\y{\istory+1}+\beamlinet/2);
+		}
+	}
+	
+%% Masses for deflected shape - super structure
+\ifthenelse{\showmass=1}{
+	\ifthenelse{\showsupports=5}{
+		\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+		{\foreach \j in {1,...,{\columnnumber}}{
+				\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+		}}
+		\foreach \iii in {2,...,\useeval{\subfloors+1}}
+		{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+				\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+		}}
+	}
+	{
+		\foreach \iii in {2,...,{\levelnumber}}
+		{\foreach \j in {1,...,{\columnnumber}}{
+				\shade[ball color=black] (\x{\j} + \deflect{\iii}, \y{\iii}) circle (\massrad);
+		}}
+	}
+}{}	
+	
+	
+	
+}{}
+
+}{} %% Closure for deflected shape
+
+
+%%%% Masses for Undeflected Shape
+\ifthenelse{\showmass=1}{
+%%% Masses for supports=5
+\ifthenelse{\showsupports=5}{
+%% Masses for superstructure
+\ifthenelse{\superstorynumber>0}{
+\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}{
+\foreach \j in {\startcol,...,{\endcol}}{
+
+\ifthenelse{\showshearwall=1}{
+	
+	\ifthenelse{\j=\shearwallstartcolumn}{
+	\shade[ball color=\masscolorsuper]
+	(\x{\j}-\collinet/2,\y{\iii}) circle (\massrad);}
+	
+	\ifthenelse{\j=\shearwallendcolumn}{
+	\shade[ball color=\masscolorsuper]
+	(\x{\j}+\collinet/2,\y{\iii}) circle (\massrad);}
+	
+	\ifthenelse{\NOT{\j=\shearwallstartcolumn}
+		\AND \NOT{\j=\shearwallendcolumn}}{
+	\shade[ball color=\masscolorsuper]
+	(\x{\j},\y{\iii}) circle (\massrad);}
+	
+}}}}{}
+
+%% Masses for substructure
+\ifthenelse{\subfloors>0}{
+
+\foreach \iii in {2,...,\useeval{\deflstart}}{
+\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+%% Masses at ground level
+	\ifthenelse{\iii=\deflstart}{
+		
+		\ifthenelse{\showshearwall=1}{
+		
+			\ifthenelse{\j=\shearwallstartcolumn}{
+			\shade[ball color=\masscolorsuper]
+			(\x{\j}-\collinet/2,\y{\iii}-\groundbeamshifty) circle (\massrad);}
+					
+			\ifthenelse{\j=\shearwallendcolumn}{
+			\shade[ball color=\masscolorsuper]
+			(\x{\j}+\collinet/2,\y{\iii}-\groundbeamshifty) circle (\massrad);}
+					
+			\ifthenelse{\NOT{\j=\shearwallstartcolumn}
+				\AND \NOT{\j=\shearwallendcolumn}}
+			{\shade[ball color=\masscolorsuper]
+			(\x{\j},\y{\iii}-\groundbeamshifty) circle (\massrad);}
+				
+		}}{
+		
+		\ifthenelse{\showshearwall=1}{
+				
+			\ifthenelse{\j=\shearwallstartcolumn}{
+			\shade[ball color=\masscolorsuper]
+			(\x{\j}-\collinet/2,\y{\iii}) circle (\massrad);}
+					
+			\ifthenelse{\j=\shearwallendcolumn}{
+			\shade[ball color=\masscolorsuper]
+			(\x{\j}+\collinet/2,\y{\iii}) circle (\massrad);}
+					
+			\ifthenelse{\NOT{\j=\shearwallstartcolumn}
+				\AND \NOT{\j=\shearwallendcolumn}}
+			{\shade[ball color=\masscolorsuper]
+			(\x{\j},\y{\iii}) circle (\massrad);}}
+		}
+	
+}}}}{  %% Closure for supports=5
+%%% Masses for not support=5
+\foreach \iii in {2,...,{\levelnumber}}{
+\foreach \j in {1,...,{\columnnumber}}{
+\shade[ball color=\masscolorsuper]
+(\x{\j},\y{\iii}) circle (\massrad);}}}
+}{} %%% Closure show mass
+
+
+%%% White Shading for Superstructure
+\ifthenelse{\showsupports=5}{
+\ifthenelse{\showsupershade=1}{
+\fill[fill=white, opacity=\supershadeopacity]
+(\supershadestartx,\supershadestarty)
+rectangle ++(\supershadedeltax,\supershadedeltay);}{}
+
+%%% Mark for Substructure
+\ifthenelse{\showmarkss=1}{
+\draw[rounded corners=\markssrad,
+line width=\marksslinet, color=\marksslinecolor, \marksslinetype]
+(\markssleftstartx,\markssleftstarty)
+rectangle ++(\markssdeltax,-\markssdeltay);}{}
+}{}
+
+%%% Global Axes
+\ifthenelse{\showaxes=1}{
+\tikzset{>={Classical TikZ Rightarrow[scale=1, width=3, length=5, bend]}};
+\draw [{->}] (\Xaxesstartx,\Xaxesstarty) -- +(\axeslenX,0) node[above]{$X$};
+\draw [{->}] (\Yaxesstartx,\Yaxesstarty) -- +(0,\axeslenY) node[right]{$Y$};
+}{}
+
+
+
+
+%%% Degrees of Freedom
+
+%% DOF at only one joint
+\ifthenelse{\showdof=1}{
+\dofs[startx = \dofxx, starty = \dofyy,
+  length x = \arrlen,  length y = \arrlen,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofxstr, ystring = \dofystr, rstring = \dofrstr,
+  font size = \normalsize, font scale = \doftextratio,
+  rotation=0, font rotation=0,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
+  dof arrow size ratio=\dofarrowratio,
+  show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx,
+  dofr inner sep=\dofinnersepr,]  
+}{}
+
+\ifthenelse{\showdof=2}{
+
+\ifthenelse{\showsupports=5}{
+\foreach \iii in {\useeval{2+\subfloors},...,{\levelnumber}}
+{\foreach \j in {1,...,{\columnnumber}}{
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*3+ (\j-1)*3 + 1;
+				\dofcountery=\dofcounterx+1);
+				\dofcounterz=\dofcountery+1;}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=0}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcountery=\dofcounterx+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=0}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcounterz=\dofcounterx+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=0}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcountery=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcounterz=\dofcountery+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=0}{
+	\ifthenelse{\shodofy=0}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterz=(\iii-2)*\columnnumber*1+ (\j-1)*1 + 1;}
+		}{}	
+	}{}	
+}{}
+
+
+\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii},
+  length x = \arrlen,  length y = \arrlen,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
+  font size = \normalsize, font scale = \doftextratio,
+  rotation=0, font rotation=0,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
+  dof arrow size ratio=\dofarrowratio,
+  show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx,
+  dofr inner sep=\dofinnersepr,]  
+
+}}
+
+\foreach \iii in {2,...,\useeval{\subfloors+1}}
+{\foreach \j in {2,...,\useeval{\columnnumber-1}}{
+		
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*3+ (\j-1)*3 + 1;
+				\dofcountery=\dofcounterx+1);
+				\dofcounterz=\dofcountery+1;}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=0}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcountery=\dofcounterx+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=0}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcounterz=\dofcounterx+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=0}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcountery=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcounterz=\dofcountery+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=0}{
+	\ifthenelse{\shodofy=0}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterz=(\iii-2)*\columnnumber*1+ (\j-1)*1 + 1;}
+		}{}	
+	}{}	
+}{}
+
+
+\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii},
+  length x = \arrlen,  length y = \arrlen,
+  offset x=\dofoffsetx, offset y=\dofoffsety,
+  offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+  start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+  xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
+  font size = \normalsize, font scale = \doftextratio,
+  rotation=0, font rotation=0,
+  font rotation for x = \dofxrotation,
+  font rotation for y = \dofyrotation,
+  font rotation for r = \dofrrotation,
+  dof arrow size ratio=\dofarrowratio,
+  show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+  dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+  dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx,
+  dofr inner sep=\dofinnersepr,] 	
+	
+}}
+}
+
+
+{
+\foreach \iii in {2,...,{\levelnumber}}
+{\foreach \j in {1,...,{\columnnumber}}{
+
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*3+ (\j-1)*3 + 1;
+				\dofcountery=\dofcounterx+1);
+				\dofcounterz=\dofcountery+1;}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=0}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcountery=\dofcounterx+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=1}{
+	\ifthenelse{\shodofy=0}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterx=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcounterz=\dofcounterx+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=0}{
+	\ifthenelse{\shodofy=1}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcountery=(\iii-2)*\columnnumber*2+ (\j-1)*2 + 1;
+				\dofcounterz=\dofcountery+1);}
+		}{}	
+	}{}	
+}{}
+
+\ifthenelse{\shodofx=0}{
+	\ifthenelse{\shodofy=0}{
+		\ifthenelse{\shodofr=1}{
+			\tikzmath{
+				\dofcounterz=(\iii-2)*\columnnumber*1+ (\j-1)*1 + 1;}
+		}{}	
+	}{}	
+}{}
+
+
+%\node at (\x{\j}+\deflect{\iii},\y{\iii}) {aa};
+
+\dofs[startx = \x{\j}+\deflect{\iii}, starty = \y{\iii},
+length x = \arrlen,  length y = \arrlen,
+offset x=\dofoffsetx, offset y=\dofoffsety,
+offset rotation xdir=\dofrotoffsetx, offset rotation ydir=\dofrotoffsety,
+start angle = \rotdofstartangle, end angle = \rotdofendangle, radius = \arrrad,
+xstring = \dofcounterx, ystring = \dofcountery, rstring = \dofcounterz,
+font size = \normalsize, font scale = \doftextratio,
+rotation=0, font rotation=0,
+font rotation for x = \dofxrotation,
+font rotation for y = \dofyrotation,
+font rotation for r = \dofrrotation,
+dof arrow size ratio=\dofarrowratio,
+show dofx = \shodofx, show dofy = \shodofy, show dofr = \shodofr,
+dofx position=\dofposx, dofy position=\dofposy, dofr position=\dofposr,
+dofx inner sep=\dofinnersepx, dofy inner sep=\dofinnersepx,
+dofr inner sep=\dofinnersepr,] 	
+	
+}}
+}
+}{}
+
+
+
+\end{scope}
+}

@@ -10,50 +10,55 @@
   x value/.store in = \xvalue,
   y value/.store in = \yvalue,
   support width/.store in = \supwidth,
-  line width/.store in = \linewidth,
+  line width/.store in = \linewidt,
   base width/.store in = \basewidth,
   base height/.store in = \baseheight,
   circle radius/.store in = \circrad,
-  circle line width/.store in = \circlinewidth,
+  circle line width/.store in = \circlinewidt,
 }
 
 \newcommand{\rollersupportcircle}[1][]{
 \pgfkeys{/rollersupportcircle, default, #1}
 \tikzmath{
-real \xvalue, \yvalue, \linewidth, \circrad;
-real \basewidth, \baseheight, \circlinewidth, \circlocrat;
+real \xvalue, \yvalue, \linewidt, \circrad;
+real \basewidth, \baseheight, \circlinewidt, \circlocrat;
 int \showcircles;
+real \ccr;
 %Conversion all units to the unit pt
 \xvalue = \xvalue;
 \yvalue = \yvalue;
-\linewidth = \linewidth;
+\linewidt = \linewidt;
 \basewidth = \basewidth;
 \baseheight = \baseheight;
-\circlinewidth = \circlinewidth;
+\circlinewidt = \circlinewidt;
 \circrad = \circrad;
 %All units are converted to pt
+\ccr=0.90;
+\circrad=\circrad-\circlinewidt/2;
 %
 \gfsx = -\basewidth/2; %gray fill start x
 \gfex = \basewidth/2; %gray fill end x
-\gfsy = -2*\circrad - \circlinewidth*4/3; %gray fill start y
-\gfey = -2*\circrad - \circlinewidth*4/3 -\baseheight ; %gray fill end y
+\gfsy = -2*\circrad - \circlinewidt*\ccr - \linewidt/2; %gray fill start y
+\gfey = -2*\circrad - \circlinewidt*\ccr -\baseheight ; %gray fill end y
 %
 \flsx = -\basewidth/2; % first line start x
 \flex = \basewidth/2; % first line end x
-\flsy = -2*\circrad - \circlinewidth*4/3; % first line start y
+\flsy = -2*\circrad - \linewidt/2-\circlinewidt*\ccr; % first line start y
 \fley = \flsy; % first line end y
 %
 \mccx = 0; %middle circle center x
-\mccy = -\circrad - \circlinewidth/3*2; %middle circle center y
+\mccy = -\circrad-\circlinewidt/2; %middle circle center y
 %
 }
 
 \begin{scope}[x=1pt, y=1pt, xshift=\xvalue, yshift=\yvalue, rotate=0];    % Draw everything in pt units
 	
-	\draw [line width=\circlinewidth] (\mccx, \mccy) circle (\circrad);
+	\draw [line width=\circlinewidt] (\mccx, \mccy) circle (\circrad);
 	
 	\fill [gray] (\gfsx, \gfsy) rectangle (\gfex, \gfey);
-	\draw [line width=\linewidth] (\flsx, \flsy) -- (\flex, \fley);
+	\draw [line width=\linewidt] (\flsx, \flsy) -- (\flex, \fley);
+%	\draw [line width=0.1pt] (0,0) -- ++(1cm,0);
+%	\draw (0,5) -- ++(10,0);
 
 \end{scope}
 }

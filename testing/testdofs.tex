@@ -14,31 +14,40 @@
 \usepackage{upgreek}
 \usepackage{amsmath,amsthm}
 \usepackage{strtikz}
-\usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard}
-\usetikzlibrary{math,fit}
-\usetikzlibrary{calc,intersections,through,backgrounds,decorations.pathmorphing}
+\usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard,math,fit}
+\usetikzlibrary{bending, calc,intersections,through,backgrounds}
+\usetikzlibrary{decorations.pathmorphing, decorations.markings,decorations.pathreplacing}
 
 
 \begin{document}
 \begin{tikzpicture}
-\dofs[startx = 4cm,
-  starty = 2cm,
-  length x = 1cm,
-  length y = 1cm,
-  offset x= 0.3cm,
-  offset y= 0.1cm,
-  offset rotation xdir= 0cm,
-  offset rotation ydir= -0.3cm,  
-  start angle = 90,
-  end angle = 270,  
-  radius = 0.5cm,
-  xstring = $x$,
-  ystring = $y$,  
-  rstring = $\theta$,
-  font size = \scriptsize,
-  rotation=45,
-  font rotation=0,
-  arrow size ratio=0.5]
+\tikzmath{\aaa{1}=5cm;}
+\dofs[startx = \aaa{1},
+starty = 0cm,
+length x = 1cm,
+length y = 1cm,
+offset x= 0.1cm,
+offset y= 0.1cm,
+offset rotation xdir= 0.1cm,
+offset rotation ydir= 0.1cm,  
+start angle = 110,
+end angle = 340,  
+radius = 0.5cm,
+xstring = $x$,
+ystring = $y$,  
+rstring = $z$,
+show dofx = -1,
+show dofy = -1,
+show dofr = -1,
+font size = \normalsize,
+rotation = 0,
+font rotation = 0,
+font rotation for x = 180,
+font rotation for y = -90,
+font rotation for r = 0,
+dof arrow size ratio=1,
+dof arrow tip length=4pt,
+dof arrow tip width=2pt,]
 \draw(0,0) -- (4,2);
 \end{tikzpicture}
 \end{document}

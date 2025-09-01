@@ -15,7 +15,7 @@
 \usepackage{amsmath,amsthm}
 \usepackage{strtikz}
 \usetikzlibrary{shapes,arrows.meta,intersections,graphs,graphs.standard}
-\usetikzlibrary{math,fit}
+\usetikzlibrary{bending, math,fit}
 \usetikzlibrary{calc,intersections,through,backgrounds,decorations.pathmorphing}
 %\usetikzlibrary{fpu}
 %\usepackage{pgfmath}
@@ -31,14 +31,22 @@ starty = 0cm,
 endx = 2.5in,
 endy = 1in,
 number of arrows = 10,
-print first arrow = 1,
-height of arrows left= 0.5cm,
+print first arrow = 0,
+height of arrows left= 0cm,
 height of arrows right= 2.cm,
 space = 0.0cm,
 start ratio = 0.025,
 end ratio = 0.025,
 right load text = $\SI{10}{\kilo\newton/\meter}$,
-left load text = $ $]
+left load text = $10$,
+right text shiftx=0pt,
+right text shifty=5pt,
+left text shiftx=-10pt,
+left text shifty=5pt,
+arrow length=5pt,
+arrow width=3pt,
+arrow scale=1,
+arrow line thickness=1pt]
 %$\SI{10}{\kilo\newton/\meter}$
 \end{tikzpicture}
 
