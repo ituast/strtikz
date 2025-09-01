@@ -193,7 +193,7 @@
   paxial support line thickness = 1pt,
   paxial show support shade=1,
   paxial support shade color=gray,
-  left wall show springs=1,
+  left wall show springs=0,
   left wall number of springs = 5,
   left wall space = 0.0cm,
   left wall start ratio = 0.1,
@@ -214,7 +214,7 @@
   left wall support line thickness = 1pt,
   left wall show support shade=1,
   left wall support shade color=gray,
-  right wall show springs=1,
+  right wall show springs=0,
   right wall number of springs = 5,
   right wall space = 0.0cm,
   right wall start ratio = 0.1,
@@ -235,7 +235,7 @@
   right wall support line thickness = 1pt,
   right wall show support shade=1,
   right wall support shade color=gray,
-  foundation show springs=1,
+  foundation show springs=0,
   foundation number of springs = 30,
   foundation space = 0.0cm,
   foundation start ratio = 0.05,
@@ -585,6 +585,7 @@ real \foundationdepth, \massrad, \xiso, \isospace;
 real \axisseperation, \linet, \baselinet, \isolinet;
 real \beamlinet, \collinet;
 real \rigbasestartx, \rigbaseendx, \isoboty, \isotopy, \isoshift;
+real \isodeflratio, \isodeflx;
 real \foundboty, \foundtopy, \foundstartx, \foundendx;
 int \doflocfloor, \dofloch, \dofloccolumn;
 int \showaxes, \showdof, \showmass, \showsupports;
@@ -609,7 +610,7 @@ int \substextnum;
 int \showdefl;
 int \istory, \ibay, \icol, \ibeam, \idefl, \jdefl;
 real \drift, \deflect, \defparx, \defpary, \defparbeamx, \defparbeamy, \defbase;
-real \tempdim, \fixbeamx, \fixbeamy;
+real \tempdim, \fixbeamx, \fixbeamy, \fixcolx, \fixcoly;
 int \dofcounterx, \dofcountery, \dofcounterz;
 int \showengbedrock;
 real \engbedrockdepth, \engbedrockleftdist, \engbedrockrightdist;
@@ -692,7 +693,18 @@ real \bottomtriw, \bottomlinew, \bottomlined, \bottomlinet, \bottomradratio;
 real \bottomxvalue, \bottomyvalue;
 int \bottomshowcircle;
 real \bottomrotpin;
+real \hsdistleft, \hsdistright, \hsdistbottom, \hsinnerlinethk, \thinlinethk;
 %Conversion all units to the unit pt
+\hsdistleft=0.0cm;
+\hsdistright=0.0cm;
+\hsdistbottom=0.0cm;
+\hsinnerlinethk=0pt;
+\thinlinethk=0.5pt;
+\isodeflratio=1.5;
+\hsdistleft=\hsdistleft;
+\hsdistright=\hsdistright;
+\hsdistbottom=\hsdistbottom;
+\hsinnerlinethk=\hsinnerlinethk;
 \storyheight = \storyheight;
 \baywidth = \baywidth;
 \startx = \startx;
@@ -826,6 +838,10 @@ real \bottomrotpin;
 \bottomxvalue=\bottomxvalue;
 \bottomyvalue=\bottomyvalue;
 %End conversion, All values are now in pt units.
+if greater(2*\massrad,\collinet) then {
+\latloadshift=\latloadshift+\massrad;} else {
+\latloadshift=\latloadshift+\collinet/2;};
+%%
 \dofcounter=0;
 %
 if notequal(\showsupports,5) then {\subfloors=0;};
@@ -857,18 +873,21 @@ for \idefl in {\deflstart+1,...,{\levelnumber}}{
 	\deflect{\idefl} = (\idefl-\deflstart)*\drift;
 };
 \tempdim = sqrt(\defparx*\defparx + \defpary*\defpary);
-\fixbeamx = \collinet/2*\defpary/\tempdim;
-\fixbeamy = \collinet/2*\defparx/\tempdim;
+\fixbeamx = \collinet/2 * (\defpary / \tempdim);
+\fixbeamy = \collinet/2 * (\defparx / \tempdim);
+\fixcoly = 1.01*\beamlinet/2 * (\defpary / \tempdim);
+\fixcolx = 1.01*\beamlinet/2 * (\defparx / \tempdim);
 \defparbeamx = \defparx / \storyheight * \baywidth;
 \defparbeamy = \defpary / \storyheight * \baywidth;
 \rigbasestartx = \x1-\supportwidth;
 \rigbaseendx = \x{\columnnumber}+\supportwidth;
 \isoboty = -\supportheight-\baselinet/2-\isolationdepth;
 \isotopy = -\supportheight-\baselinet/2;
+\isodeflx=\isodeflratio*\isolationdepth*\showdefl;
 \foundboty = -\supportheight-\baselinet-\isolationdepth-\foundationdepth;
 \foundtopy = -\supportheight-\baselinet-\isolationdepth;
-\foundstartx = \x1-\foundsidew;
-\foundendx = \x{\columnnumber}+\foundsidew;
+\foundstartx = \x1-\foundsidew-\isodeflx;
+\foundendx = \x{\columnnumber}+\foundsidew-\isodeflx;
 \structheight=\storynumber*\storyheight;
 \isomidy = \supportheight+\isolinet+\isolationdepth/2-\baselinet;
 %%%Unbalanced Soil
@@ -891,15 +910,15 @@ if equal(\showopenstory,0) then
 \rightopenh=\rightopenstory*\storyheight;
 \diffwallh=\leftwallh-\rightwallh;
 %%%Basement%%%%
-\soilbelowfoundtof = \soilbelowfound+\supportheight;
+\soilbelowfoundtof = \soilbelowfound+\supportheight+\hsdistbottom;
 \basewallstartx=-\supportwidth;
 \buildingwidth=\baynumber*\baywidth;
 \basewalldepth=\subfloors*\storyheight;
 \basewallstarty=\basewalldepth;
 \basewallendx=\buildingwidth+\supportwidth;
 \basewallendy=\basewallstarty;
-\rightsoilx=\buildingwidth+\rightsoildist;
-\rightsoily=\rightwallh-\rightsoildepth-\supportheight;
+\rightsoilx=\hsdistright+\supportwidth+\buildingwidth+\rightsoildist;
+\rightsoily=\rightwallh-\rightsoildepth-\supportheight-\hsdistbottom;
 %Some isolator properties
 \isospace = (\buildingwidth)/(\numberofisolators-1);
 for \kiso in {1,...,{\numberofisolators}}{
@@ -971,10 +990,11 @@ if equal(\latloadtype,4) then {
 \engbedrockmidy=\engbedrockstarty + \engbedrockdeltay/2;
 %%%Transmitting Layer
 %\translayerlinet=2pt;
-\translayerleftstartx=-\leftsoildist-\translayerlinet/2;
+\translayerleftstartx=-\supportwidth-\hsdistleft-\leftsoildist-\translayerlinet/2;
 \translayerleftstarty=\leftwallh;
 \translayerleftdeltay=\leftwallh+\soilbelowfoundtof;
-\translayerrightstartx=\rightsoildist+\buildingwidth+\translayerlinet/2;
+\translayerrightstartx=\supportwidth+\hsdistright+
+	\rightsoildist+\buildingwidth+\translayerlinet/2;
 \translayerrightstarty=\rightwallh;
 \translayerrightdeltay=\rightwallh+\soilbelowfoundtof;
 %%%Soil-Structure Interface
@@ -1122,20 +1142,20 @@ for \ibot in {2,...,{\nbotpin}}{
 	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{\levelnumber},\y{\levelnumber});
 	\draw (\arrstartx{1},\y{1}) -- (\arrstartx{1},\y{\levelnumber});
 	\draw[arrows={-[length=5pt, width=4pt]>}, line width=1pt]
-	(-\latloadshift-1cm,-\supportheight/2)--
+	(-\latloadshift,-\supportheight/2)--
 	node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\text{b}}$}
 	++(1cm,0);
 }{;}
 
 \ifthenelse{\latloadtype=5}
 {
-	\foreach \istory in {2,...,{\levelnumber}}
+	\foreach \istory in {\deflstartplusone,...,{\levelnumber}}
 	{
-		\tikzmath{\substextnum=\istory-1;}
+		\tikzmath{\substextnum=\istory-\deflstart;}
 		\draw [arrows={-[length=5pt, width=4pt]>}, line width=1pt]
-		(\x{1}+\deflect{\istory}-\toparrlen,\y{\istory}) --
+		(\x{\startcol}+\deflect{\istory}-\toparrlen,\y{\istory}) --
 			node[anchor=south, pos=0.4, inner sep=1pt]{$F_{\substextnum}$}		
-		(\x{1}+\deflect{\istory}-0.1cm, \y{\istory});
+		(\x{\startcol}+\deflect{\istory}-\latloadshift, \y{\istory});
 	}
 }{;}
 }{;}
@@ -1147,13 +1167,31 @@ for \ibot in {2,...,{\nbotpin}}{
 	%%% Rectangular half space
 	\ifthenelse{\halfspacetype=1}{
 		\path[fill=\halfspacefillcolor]
-		{(-\leftsoildist,\leftwallh) -- ++(0,-\leftwallh)
-			-- ++(0,-\soilbelowfoundtof) -- ++(\buildingwidth,0)
+		{(-\supportwidth,0) ++(-\hsdistleft,0) ++(-\leftsoildist,\leftwallh)
+			-- ++(0,-\leftwallh) -- ++(0,-\soilbelowfoundtof) -- ++(\buildingwidth,0)
 			-- ++(\leftsoildist,0) -- ++(\rightsoildist,0)
-			-- ++(0,\soilbelowfoundtof)-- ++(0,\rightwallh)
-			-- ++(-\rightsoildist,0) -- ++(-\supportwidth*1.1,0)
-			-- ++(0,\diffwallh) }
-		-- cycle;}{}
+			-- ++(\hsdistleft,0) -- ++(\hsdistright,0)
+			-- ++(\supportwidth,0) -- ++(\supportwidth,0)
+			-- ++(0,\soilbelowfoundtof) -- ++(0,\rightwallh) 
+			-- ++(-\rightsoildist,0) -- ++(0,-\rightwallh)
+			-- ++(0,-\hsdistbottom)-- ++(0,-\supportheight)
+			-- ++(-\buildingwidth,0)
+			-- ++(-\hsdistleft,0) -- ++(-\hsdistright,0)
+			-- ++(-\supportwidth,0) -- ++(-\supportwidth,0)
+			-- ++(0,\leftwallh)-- ++(0,\hsdistbottom)} -- ++(0,\supportheight)
+		-- cycle;
+		
+		\draw[line width=\hsinnerlinethk]
+		(-\supportwidth,\thinlinethk/2) ++(-\hsdistleft,\leftwallh)
+		--++(0,-\leftwallh)	--++(0,-\hsdistbottom) --++(0,-\supportheight)
+		--++(0,-\thinlinethk/2) --++(\buildingwidth,0)
+		--++(\hsdistleft,0)  --++(\hsdistright,0)
+		-- ++(\supportwidth,0) -- ++(\supportwidth,0)
+		--++(0,\thinlinethk/2) --++(0,\hsdistbottom) --++(0,\supportheight)
+		--++(0,\rightwallh);
+		%\draw(-5cm,-\soilbelowfoundtof) --++(15cm,0);
+		
+		}{}
 	
 	%%% Transmitting Layers
 	\ifthenelse{\showtranslayer=1}{
@@ -1167,17 +1205,36 @@ for \ibot in {2,...,{\nbotpin}}{
 	
 	%%% Random half space
 	\ifthenelse{\halfspacetype=2}{
+		
 		\path[fill=\halfspacefillcolor]
 		decorate[decoration={random steps, segment length=0.25cm}]
-		{(-\leftsoildist,\leftwallh) -- ++(0,-\leftsoildepth)
-			..controls ++(0,-\leftcontroly) and  ++(-\leftcontrolx,0)
-			..(0,-\soilbelowfoundtof)
+		{(-\supportwidth,0) ++(-\hsdistleft,0) ++(-\leftsoildist,\leftwallh)
+			-- ++(0,-\supportheight-\hsdistbottom)
+			-- ++(0,-\leftsoildepth)..controls ++(0,-\leftcontroly) and
+			 ++(-\leftcontrolx,0) .. (-\supportwidth-\hsdistleft,-\soilbelowfoundtof)
+			-- ++(\supportwidth,0) -- ++(\supportwidth,0)
+			-- ++(\hsdistleft,0) -- ++(\hsdistright,0)
 			-- ++(\buildingwidth,0)	..controls ++(\rightcontrolx,0)
 			and ++(0,-\rightcontroly) .. (\rightsoilx,\rightsoily)
-			-- ++(0,\supportheight) -- ++(0,\rightsoildepth)}
-		-- ++(-\rightsoildist,0) -- ++(-\supportwidth*1.1,0)
-		-- ++(0,\diffwallh)
-		-- cycle;}{}
+			-- ++(0,\hsdistbottom+\supportheight) -- ++(0,\rightsoildepth)}
+		-- ++(-\rightsoildist,0) -- ++(0,-\rightwallh)
+		-- ++(0,-\hsdistbottom)-- ++(0,-\supportheight)
+					-- ++(-\buildingwidth,0)
+		-- ++(-\hsdistleft,0) -- ++(-\hsdistright,0)
+		-- ++(-\supportwidth,0) -- ++(-\supportwidth,0)
+		-- ++(0,\leftwallh)-- ++(0,\hsdistbottom) -- ++(0,\supportheight)		
+		-- cycle;
+				
+		\draw[line width=\hsinnerlinethk]
+		(-\supportwidth,\thinlinethk/2) ++(-\hsdistleft,\leftwallh)
+		--++(0,-\leftwallh)	--++(0,-\hsdistbottom) --++(0,-\supportheight)
+		--++(0,-\thinlinethk/2) --++(\buildingwidth,0)
+		--++(\hsdistleft,0)  --++(\hsdistright,0)
+		-- ++(\supportwidth,0) -- ++(\supportwidth,0)
+		--++(0,\thinlinethk/2) --++(0,\hsdistbottom) --++(0,\supportheight)
+		--++(0,\rightwallh);
+		%\draw(-5cm,-\soilbelowfoundtof) --++(15cm,0);
+		}{}
 	
 	%% White rectangle
 	\ifthenelse{\NOT \subfloors=0}{
@@ -1420,11 +1477,13 @@ rotation=\rightrotpin]}}
 	
 	%%% Top thin line
 	\ifthenelse{\halfspacetype=1}{
-	\draw[line width=0.5pt, color=black]
-	(0,\leftwallh) -- ++(-\leftsoildist-\translayerlinet,0);
+	\draw[line width=\thinlinethk, color=black]
+	(0,\leftwallh) ++(-\supportwidth,0) ++(-\hsdistleft,0)
+	-- ++(-\leftsoildist-\translayerlinet,0);
 	
 	\draw[line width=0.5pt, color=black]
-	(\buildingwidth,\rightwallh) -- ++(\rightsoildist+\translayerlinet,0);}
+	(\buildingwidth,\rightwallh) ++(\supportwidth,0) ++(\hsdistleft,0)
+	-- ++(\rightsoildist+\translayerlinet,0);}
 	
 	%% Engineering Bedrock
 	\ifthenelse{\showengbedrock=1}{
@@ -1565,61 +1624,43 @@ rectangle ++(\shearwalldeltax,\shearwalldeltay);
 \foreach \ibeam in {\startbeam,...,{\endbeam}}
 {
 	\draw [red, line width = \beamlinet, \beamcolor]
-	(\x{\ibeam}-\fixbeamx+\deflect{\deflstartplusone}, \y{\deflstartplusone}+\fixbeamy)
+	(\x{\ibeam}+\deflect{\deflstartplusone}, \y{\deflstartplusone})
 	.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, \defparbeamx) ..
-	(\usevar\x{\ibeam+1}+\fixbeamx + \deflect{\deflstartplusone}, \y{\deflstartplusone}-\fixbeamy);
+	(\usevar\x{\ibeam+1} + \deflect{\deflstartplusone}, \y{\deflstartplusone});
 }
 %% Columns at the first story only
 \foreach \icol in {\startcol,...,{\endcol}}
 {
-	\draw [line width = \collinet, \columncolor]
+	\draw [line width = \collinet, \columncolor, opacity=1]
 	(\x{\icol}+\deflect{\deflstart},\y{\deflstart})
 	.. controls +(0.0cm, \defbase) and +(-\defparx, -\defpary) ..
-	(\x{\icol}+\deflect{\deflstartplusone}, \y{\deflstartplusone}+\beamlinet/2);
+	(\x{\icol}+\deflect{\deflstartplusone}+\fixcolx, \y{\deflstartplusone}+\fixcoly);
 }}{}
 
 
 %% If story number is larger than two, draw the storys other than first and last story
 \ifthenelse{\superstorynumber>1}{
-\ifthenelse{\superstorynumber>2}{
-\foreach \istory in {\deflstartplusone,...,{\storyminone}}
+
+\foreach \istory in {\deflstartplusone,...,{\storynumber}}
 {
 	\foreach \ibeam in {\startbeam,...,{\endbeam}}
 	{
 		\draw [blue, line width = \beamlinet, \beamcolor]
-		(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
+		(\x{\ibeam}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1})
 		.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx)
-		.. (\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1},
-		\usevar\y{\istory+1}-\fixbeamy);
+		.. (\usevar\x{\ibeam+1}+\usevar\deflect{\istory+1},
+		\usevar\y{\istory+1});
 	}
 	\foreach \icol in {\startcol,...,{\endcol}}
 	{
 		\draw [line width = \collinet, \columncolor]
-		(\x{\icol}+\deflect{\istory},\y{\istory})
+		(\x{\icol}+\deflect{\istory}+\fixcolx, \y{\istory}+\fixcoly)
 		.. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
-		(\usevar\x{\icol}+\usevar\deflect{\istory+1}, \usevar\y{\istory+1});
+		(\usevar\x{\icol}+\usevar\deflect{\istory+1}+\fixcolx, \usevar\y{\istory+1}+\fixcoly);
 	}
 }
-}{}
-	
-%% Draw the last story
-\foreach \istory in {\storynumber}
-{
-	\foreach \ibeam in {\startbeam,...,{\endbeam}}
-	{
-		\draw [line width = \beamlinet, \beamcolor]
-		(\x{\ibeam}-\fixbeamx+\usevar\deflect{\istory+1}, \usevar\y{\istory+1}+\fixbeamy)
-		.. controls +(\defparbeamy,-\defparbeamx) and +(-\defparbeamy, +\defparbeamx) ..
-		(\usevar\x{\ibeam+1}+\fixbeamx+\usevar\deflect{\istory+1},\usevar\y{\istory+1}-\fixbeamy);
-	}
-	\foreach \icol in {\startcol,...,{\endcol}}
-	{
-		\draw [line width = \collinet, \columncolor]
-		(\x{\icol}+\deflect{\istory},\y{\istory})
-		.. controls +(\defparx, \defpary) and +(-\defparx, -\defpary) ..
-		(\usevar\x{\icol}+\usevar\deflect{\istory+1}, +\usevar\y{\istory+1}+\beamlinet/2);
-	}
-}
+
+
 }{}
 
 }{} %% Closure for deflected shape
@@ -1675,14 +1716,13 @@ rectangle ++(\shearwalldeltax,\shearwalldeltay);
 
 %%% 4. Base Isolation
 \ifthenelse{\showsupports=4}{
-	\fill [fill=\supportfillcolor, draw=black, line width = \baselinet] (\rigbasestartx, 0) 
-	rectangle
-	(\rigbaseendx,-\supportheight);
+	\fill [fill=\supportfillcolor, draw=black, line width = \baselinet]
+	(\rigbasestartx, 0) rectangle 	(\rigbaseendx,-\supportheight);
 	
 	\foreach \j in {1,...,{\numberofisolators}}
 	{\filldraw [fill = white!20!black, draw=black, line width=\isolinet]
-		(\xiso{\j},\y{1}) +(-\isolationwidth/2,\isoboty) rectangle
-		+(\isolationwidth/2,\isotopy);}
+		(\xiso{\j},\isoboty) ++(-\isolationwidth/2-\isodeflx,0) -- ++(\isolationwidth,0)
+		-- ++(\isodeflx,\isolationdepth) -- ++(-\isolationwidth,0) -- cycle;}
 	
 	\fill [fill=\supportfillcolor]
 	(\foundstartx, \foundboty) rectangle (\foundendx,\foundtopy);
